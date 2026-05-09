@@ -3,8 +3,6 @@
 namespace GlobalList::API {
     std::string API_URL = "https://api.demonlist.org";
 
-    void Utils::failure(int code);
-
     void getDemonlist() {
         spawn(web::WebRequest().get(fmt::format("{}/level/classic/list", API_URL)),
             [](web::WebResponse value) {

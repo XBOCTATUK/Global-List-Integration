@@ -86,25 +86,21 @@ class $modify(MyLevelCell, LevelCell) {
                 gdlLabel->setPositionX(gdlLabel->getPositionX() - gap * (orbIcon ? 4.0f : 3.0f));
             }
 
-            GlobalList::API::getLevelPlacement(level->m_levelID.value());
-
             m_fields->m_listener = PositionEvent(level->m_levelID.value()).listen(
                 [this](int placement) {
-                    log::info("if (!m_mainLayer) return;");
                     if (!m_mainLayer) return;
 
-                    log::info("if (auto gdlLabel = static_cast<CCLabelBMFont*>(m_mainLayer->getChildByID(\"gdl-label\"_spr)))");
                     if (auto gdlLabel = static_cast<CCLabelBMFont*>(m_mainLayer->getChildByID("gdl-label"_spr))) {
-                        log::info("auto gdlIcon = m_mainLayer->getChildByID(\"gdl-icon\"_spr);");
                         auto gdlIcon = m_mainLayer->getChildByID("gdl-icon"_spr);
 
-                        log::info("{}", placement);
                         if (placement == -1) gdlLabel->setString("N/A");
                         else if (placement > 0) gdlLabel->setString(fmt::format("#{}", placement).c_str());
                         else Utils::removePlacement(m_level->m_levelID, gdlLabel, gdlIcon, m_fields->m_origPositions, true);
                     }
                 }
             );
+
+            GlobalList::API::getLevelPlacement(level->m_levelID.value());
         }
     }
 };

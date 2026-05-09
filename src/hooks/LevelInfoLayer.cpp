@@ -69,8 +69,6 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer) {
             gdlLabel->setID("gdl-label"_spr);
             this->addChild(gdlLabel);
 
-            GlobalList::API::getLevelPlacement(level->m_levelID.value());
-
             m_fields->m_listener = PositionEvent(level->m_levelID.value()).listen(
                 [this](int placement) {
                     if (auto gdlLabel = static_cast<CCLabelBMFont*>(this->getChildByID("gdl-label"_spr))) {
@@ -82,6 +80,8 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer) {
                     }
                 }
             );
+
+            GlobalList::API::getLevelPlacement(level->m_levelID.value());
         }
 
         return true;

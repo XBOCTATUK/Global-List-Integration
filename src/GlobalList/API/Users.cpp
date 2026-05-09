@@ -3,7 +3,6 @@
 namespace GlobalList::API {
     extern std::string API_URL;
 
-    void Utils::failure(int code);
     void getUserRecords(int userID, std::string username);
 
     void getUser(std::string username, bool loadRecords) {
