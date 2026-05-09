@@ -1,4 +1,4 @@
-#include "./GlobalListLayer.hpp"
+#include "./LoadingPopup.hpp"
 
 LoadingPopup* LoadingPopup::create() {
 	auto ret = new LoadingPopup();
@@ -49,19 +49,35 @@ bool LoadingPopup::init() {
 	
 	getLevels();
 
+	auto& displayFilters = GlobalList::Filters::getDisplayFilters();
+	m_userEvent = UserCachedEvent(displayFilters.username).listen(
+		[this]() {
+			if (m_requiredLevels.size() != 0) {
+				m_loading = true;
+				m_currentBatch = 0;
+				loadBatch(0.0f);
+			}
+			else afterLoading();
+		}
+	);
+
 	return true;
 }
 
 void LoadingPopup::getLevels() {
 	auto glm = GameLevelManager::sharedState();
-	g_levelsData.clear();
+	GlobalList::Cache::levelDataClear();
 	m_requiredLevels.clear();
 
-	for (const auto& [key, level] : g_levels)
-		m_requiredLevels.push_back(level.levelID);
+	for (size_t i = 0; i < GlobalList::Levels::size(); i++) {
+			int levelID = GlobalList::Levels::getLevelByIndex(i)->levelID;
 
-	if (g_levelFilters.completed && !g_levelFilters.username.empty())
-		loadPlayerInfo(g_levelFilters.username);
+			m_requiredLevels.push_back(levelID);
+		}
+
+	auto& displayFilters = GlobalList::Filters::getDisplayFilters();
+	if (displayFilters.completed && !displayFilters.username.empty())
+		GlobalList::API::getUser(displayFilters.username, true);
 	else if (m_requiredLevels.size() != 0) {
 		m_loading = true;
 		m_currentBatch = 0;
@@ -107,89 +123,26 @@ void LoadingPopup::loadBatch(float) {
 }
 
 void LoadingPopup::afterLoading() {
-	g_storedFilters = g_levelFilters;
-	auto scene = CCDirector::get()->getRunningScene();
-	auto filterPopup = static_cast<FilterPopup*>(scene->getChildByID("filter-menu"));
-	auto globalListLayer = static_cast<GlobalListLayer*>(scene->getChildByID("GlobalListLayer"));
-	filterPopup->onClose(filterPopup);
-	globalListLayer->showLoading();
-	globalListLayer->populateList("");
+	GlobalList::Filters::applyFilters();
+
+	PopulateListEvent().send();
+	MyCloseEvent(PopupType::FilterPopup).send();
+	GlobalList::Cache::updateLevelLoadTime();
+
 	onClose(this);
-}
-
-void LoadingPopup::loadPlayerInfo(std::string username) {
-	m_playerInfoLoading = true;
-	m_loadingLabel->setString("Loading player records");
-	std::string url = "https://api.demonlist.org/leaderboard/user/list?search=" + username;
-	auto req = web::WebRequest();
-
-	m_listener.spawn(req.get(url), [this, username](web::WebResponse value) {
-		if (!value.ok()) {
-			log::error("Failed to get player info. Failed code: {}", value.code());
-			failure(value.code());
-			return;
-		}
-
-		auto data = value.json();
-
-		matjson::Value json = data.ok().value();
-		if (!json.contains("data") || !json["data"].contains("users") || !json["data"]["users"].isArray() || json["data"]["users"].size() == 0) {
-			failure(204);
-			return;
-		}
-
-		for (const auto& user : json["data"]["users"]) {
-			if (user["username"].asString().unwrapOr("") == username) {
-				int id = user["id"].asInt().unwrapOr(0);
-				Loader::get()->queueInMainThread([this, id, username]() { loadPlayerRecords(id, username); });
-			}
-		}
-	});
-}
-
-void LoadingPopup::loadPlayerRecords(int id, std::string username) {
-	std::string url = "https://api.demonlist.org/user/record/list?user_id=" + std::to_string(id);
-	auto req = web::WebRequest();
-
-	m_listener.spawn(req.get(url), [this, id, username](web::WebResponse value) {
-		if (!value.ok()) {
-			log::error("Failed to get player records. Failed code: {}", value.code());
-			failure(value.code());
-			return;
-		}
-
-		auto data = value.json();
-
-		matjson::Value json = data.ok().value();
-		if (!json.contains("data") || !json["data"].contains("records") || !json["data"]["records"].isArray() || json["data"]["records"].size() == 0) {
-			failure(204);
-			return;
-		}
-
-		for (const auto& record : json["data"]["records"]) {
-			int levelID = record["level"]["id"].asInt().unwrapOr(0);
-			if (levelID != 0) g_usersRecords[username].push_back(levelID);
-		}
-
-		if (m_requiredLevels.size() != 0) {
-			m_loading = true;
-			m_currentBatch = 0;
-			loadBatch(0.0f);
-		}
-		else afterLoading();
-	});
 }
 
 void LoadingPopup::loadLevelsFinished(CCArray* levels, char const* key) {
 	bool isAllLoaded = true;
 	for (int i = 0; i < levels->count(); i++) {
 		if (auto levelData = typeinfo_cast<GJGameLevel*>(levels->objectAtIndex(i))) {
-			LevelData data = LevelData();
-			data.rated = levelData->m_stars > 0;
-			data.unrated = levelData->m_stars == 0;
-			data.holder = levelData->m_creatorName;
+			LevelData data = {
+				levelData->m_stars > 0,
+				levelData->m_stars == 0,
+				levelData->m_creatorName
+			};
 
-			g_levelsData[levelData->m_levelID] = data;
+			GlobalList::Cache::saveLevelData(levelData->m_levelID, data);
 		}
 	}
 
@@ -200,16 +153,6 @@ void LoadingPopup::loadLevelsFinished(CCArray* levels, char const* key) {
 void LoadingPopup::loadLevelsFailed(char const* key) {
 	m_loading = false;
 	FLAlertLayer::create("Loading failed", "Something wrong. Try again later.", "Ok")->show();
-}
-
-void LoadingPopup::failure(int code) {
-	auto alertLayer = FLAlertLayer::create(
-		fmt::format("Load failed ({})", code).c_str(),
-		"Failed to load player records. Please try again.",
-		"OK"
-	);
-	alertLayer->m_scene = this;
-	alertLayer->show();
 }
 
 void LoadingPopup::keyBackClicked() { onClose(this); }

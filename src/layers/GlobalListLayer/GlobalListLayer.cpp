@@ -27,7 +27,8 @@ bool GlobalListLayer::init() {
 	if (!CCLayer::init()) return false;
 
 	setID("GlobalListLayer");
-	g_levelFilters = g_defaultFilters;
+	GlobalList::Filters::applyFilters();
+
 	auto winSize = CCDirector::get()->getWinSize();
 
 	auto GlobalListBG = CCSprite::create("global-list-bg.png"_spr);
@@ -125,11 +126,10 @@ bool GlobalListLayer::init() {
 	auto refreshBtnSpr = CCSprite::createWithSpriteFrameName("GJ_updateBtn_001.png");
 	auto refreshButton = CCMenuItemExt::createSpriteExtra(refreshBtnSpr, [this](auto) {
 		m_searchBar->setString("");
-		g_levelFilters = g_defaultFilters;
-		g_storedFilters = g_defaultFilters;
+		GlobalList::Filters::clearFilters();
 
 		showLoading();
-		loadGlobalList();
+		GlobalList::API::getDemonlist();
 	});
 	refreshButton->setPosition({ winSize.width - refreshBtnSpr->getContentWidth() / 2.0f - 4.0f, refreshBtnSpr->getContentHeight() / 2.0f + 4.0f });
 	refreshButton->setID("refresh-button");
@@ -200,63 +200,32 @@ bool GlobalListLayer::init() {
 	setKeyboardEnabled(true);
 	showLoading();
 
-	loadGlobalList();
+	GlobalList::API::getDemonlist();
+
+	m_populateListener = PopulateListEvent().listen(
+		[this]() { populateList(m_query, false); }
+	);
 
 	return true;
-}
-
-void GlobalListLayer::loadGlobalList() {
-	std::string url = "https://api.demonlist.org/level/classic/list";
-
-	auto req = web::WebRequest();
-	m_listener.spawn(req.get(url), [this](web::WebResponse value) {
-		if (!value.ok()) {
-			log::error("Failed to load GlobalList. Failed code: {}", value.code());
-			failure(value.code());
-			return;
-		}
-
-		g_levels.clear();
-		auto data = value.json();
-
-		matjson::Value json = data.ok().value();
-		if (!json.contains("data") || !json["data"].contains("levels") || !json["data"]["levels"].isArray() || json["data"]["levels"].size() == 0) {
-			failure(204);
-			return;
-		}
-
-		for (const auto& level : json["data"]["levels"]) {
-			int id = level["id"].asInt().unwrapOr(0);
-			int levelID = level["ingame_id"].asInt().unwrapOr(0);
-			std::string name = level["name"].asString().unwrapOr("");
-			int placement = level["placement"].asInt().unwrapOr(0);
-			int length = level["length"].asInt().unwrapOr(0);
-			GlobalListLevel newLevel = { id, levelID, name, placement, length };
-
-			if (newLevel.levelID == 0 || newLevel.name == "" || newLevel.placement == 0) {
-				failure(204);
-				return;
-			}
-
-			g_placementsCache[newLevel.levelID] = newLevel.placement;
-			g_levels[newLevel.id] = newLevel;
-		}
-
-		populateList(m_query, false);
-	});
 }
 
 void GlobalListLayer::populateList(const std::string& query, bool useFilters) {
 	m_searchResults.clear();
 
 	if (query.empty() && !useFilters) {
-		for (const auto& [key, level] : g_levels)
-			m_searchResults.push_back(level.levelID);
+		for (size_t i = 0; i < GlobalList::Levels::size(); i++) {
+			int levelID = GlobalList::Levels::getLevelByIndex(i)->levelID;
+
+			m_searchResults.push_back(levelID);
+		}
 	}
 	else {
-		for (const auto& [key, level] : g_levels) {
-			if (isSuitable(level) && level.contains(query))
-				m_searchResults.push_back(level.levelID);
+		for (size_t i = 0; i < GlobalList::Levels::size(); i++) {
+			auto level = GlobalList::Levels::getLevelByIndex(i);
+
+			if (GlobalList::Levels::isSuitable(level) && level->contains(query)) {
+				m_searchResults.push_back(level->levelID);
+			}
 		}
 	}
 
@@ -302,7 +271,7 @@ void GlobalListLayer::search() {
 		showLoading();
 
 		m_page = 0;
-		populateList(query, !g_storedFilters.isDefault());
+		populateList(query, !GlobalList::Filters::getLevelFilters().isDefault());
 	}
 }
 
@@ -343,7 +312,7 @@ void GlobalListLayer::page(size_t page) {
 	m_page = page <= maxPage ? (page < 0 ? 0 : page) : maxPage;
 
 	showLoading();
-	populateList(m_query, !g_storedFilters.isDefault());
+	populateList(m_query, !GlobalList::Filters::getLevelFilters().isDefault());
 }
 
 void GlobalListLayer::setupPageInfo(gd::string, const char*) {
@@ -366,48 +335,10 @@ void GlobalListLayer::showLoading() {
 	m_randomButton->setVisible(false);
 }
 
-void GlobalListLayer::failure(int code) {
-	auto alertLayer = FLAlertLayer::create(
-		fmt::format("Load failed ({})", code).c_str(),
-		"Failed to load GlobalList. Please try again.",
-		"OK"
-	);
-	alertLayer->m_scene = this;
-	alertLayer->show();
-
-	m_loadingCircle->setVisible(false);
-}
-
-bool GlobalListLayer::isSuitable(GlobalListLevel level) {
-	if (g_storedFilters.isDefault()) return true;
-
-	int levelLength = 0;
-	if (level.length < 30) levelLength = 0;
-	else if (level.length < 60) levelLength = 1;
-	else if (level.length < 120) levelLength = 2;
-	else if (level.length >= 120) levelLength = 3;
-	if (g_storedFilters.lengthFilter[4] && (g_storedFilters.customLengthFilter[0] != 0 ? level.length >= g_storedFilters.customLengthFilter[0] : true) && (g_storedFilters.customLengthFilter[1] != 0 ? level.length <= g_storedFilters.customLengthFilter[1] : true)) levelLength = 4;
-
-	int levelDiff = 0;
-	if (level.placement <= 50) levelDiff = 0;
-	else if (level.placement <= 150) levelDiff = 1;
-	else if (level.placement <= 300) levelDiff = 2;
-	else if (level.placement > 300) levelDiff = 3;
-	else if (g_storedFilters.diffFilter[4] && (g_storedFilters.customDiffFilter[0] != 0 ? level.placement >= g_storedFilters.customDiffFilter[0] : true) && (g_storedFilters.customDiffFilter[1] != 0 ? level.placement < g_storedFilters.customDiffFilter[1] : true)) levelDiff = 4;
-
-	bool byLength = g_storedFilters.lengthFilter[levelLength] || g_storedFilters.lengthFilter == g_defaultFilters.lengthFilter;
-	bool byDifficulty = g_storedFilters.diffFilter[levelDiff] || g_storedFilters.diffFilter == g_defaultFilters.diffFilter;
-	bool byRate = g_storedFilters.rated ? g_levelsData[level.levelID].rated : (g_storedFilters.unrated ? g_levelsData[level.levelID].unrated : true);
-	bool byPlayer = (g_storedFilters.completed ? (g_usersRecords.contains(g_storedFilters.username) ? std::ranges::find(g_usersRecords[g_storedFilters.username], level.id) != g_usersRecords[g_storedFilters.username].end() : false) : true);
-	bool byCreator = (g_storedFilters.byHolder ? g_levelsData[level.levelID].holder == g_storedFilters.holder : true);
-
-	return byLength && byDifficulty && byRate && byPlayer && byCreator;
-}
-
 void GlobalListLayer::setIDPopupClosed(SetIDPopup*, int page) {
 	m_page = std::clamp<size_t>(page - 1, 0, (m_searchResults.size() - 1) / m_lvlsPerPage);
 	showLoading();
-	populateList(m_query, !g_storedFilters.isDefault());
+	populateList(m_query, !GlobalList::Filters::getLevelFilters().isDefault());
 }
 
 void GlobalListLayer::keyDown(enumKeyCodes key, double d) {

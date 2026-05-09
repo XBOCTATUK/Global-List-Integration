@@ -1,3 +1,4 @@
-out/
-.vs
+/out
 /build
+.vs
+.vscode

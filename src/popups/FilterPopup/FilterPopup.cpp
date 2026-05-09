@@ -1,4 +1,4 @@
-#include "./GlobalListLayer.hpp"
+#include "./FilterPopup.hpp"
 
 FilterPopup* FilterPopup::create() {
 	auto ret = new FilterPopup();
@@ -29,6 +29,8 @@ bool FilterPopup::init() {
 	this->setZOrder(100);
 	this->setTitle("Search filters");
 
+	auto& displayFilters = GlobalList::Filters::getDisplayFilters();
+
 	auto optionsSpr = CCSprite::createWithSpriteFrameName("GJ_optionsBtn_001.png");
 	optionsSpr->setContentSize({ 50.5f, 50.5f });
 	optionsSpr->setScale(0.46);
@@ -57,50 +59,50 @@ bool FilterPopup::init() {
 
 	auto top50Label = CCLabelBMFont::create("Top 50", "bigFont.fnt");
 	top50Label->setScale(0.36f);
-	if (g_levelFilters.diffFilter[0]) top50Label->setColor({ 255, 255, 255 });
+	if (displayFilters.diffFilter[0]) top50Label->setColor({ 255, 255, 255 });
 	else top50Label->setColor({ 125, 125, 125 });
 	auto top50Btn = CCMenuItemExt::createSpriteExtra(top50Label, [this, top50Label](auto) {
-		changeDiffFilter(0, top50Label);
+		changeDiffFilter(DifficultyFilter::Top50, top50Label);
 		});
 	diffFilterMenu->addChild(top50Btn);
 
 	auto top150Label = CCLabelBMFont::create("Top 150", "bigFont.fnt");
 	top150Label->setScale(0.36f);
-	if (g_levelFilters.diffFilter[1]) top150Label->setColor({ 255, 255, 255 });
+	if (displayFilters.diffFilter[1]) top150Label->setColor({ 255, 255, 255 });
 	else top150Label->setColor({ 125, 125, 125 });
 	auto top150Btn = CCMenuItemExt::createSpriteExtra(top150Label, [this, top150Label](auto) {
-		changeDiffFilter(1, top150Label);
+		changeDiffFilter(DifficultyFilter::Top150, top150Label);
 		});
 	diffFilterMenu->addChild(top150Btn);
 
 	auto top300Label = CCLabelBMFont::create("Top 300", "bigFont.fnt");
 	top300Label->setScale(0.36f);
-	if (g_levelFilters.diffFilter[2]) top300Label->setColor({ 255, 255, 255 });
+	if (displayFilters.diffFilter[2]) top300Label->setColor({ 255, 255, 255 });
 	else top300Label->setColor({ 125, 125, 125 });
 	auto top300Btn = CCMenuItemExt::createSpriteExtra(top300Label, [this, top300Label](auto) {
-		changeDiffFilter(2, top300Label);
+		changeDiffFilter(DifficultyFilter::Top300, top300Label);
 		});
 	diffFilterMenu->addChild(top300Btn);
 
-	auto beyondLabel = CCLabelBMFont::create("Unbounded", "bigFont.fnt");
-	beyondLabel->setScale(0.36f);
-	if (g_levelFilters.diffFilter[3]) beyondLabel->setColor({ 255, 255, 255 });
-	else beyondLabel->setColor({ 125, 125, 125 });
-	auto beyondBtn = CCMenuItemExt::createSpriteExtra(beyondLabel, [this, beyondLabel](auto) {
-		changeDiffFilter(3, beyondLabel);
+	auto unboundedLabel = CCLabelBMFont::create("Unbounded", "bigFont.fnt");
+	unboundedLabel->setScale(0.36f);
+	if (displayFilters.diffFilter[3]) unboundedLabel->setColor({ 255, 255, 255 });
+	else unboundedLabel->setColor({ 125, 125, 125 });
+	auto unboundedBtn = CCMenuItemExt::createSpriteExtra(unboundedLabel, [this, unboundedLabel](auto) {
+		changeDiffFilter(DifficultyFilter::Unbounded, unboundedLabel);
 		});
-	diffFilterMenu->addChild(beyondBtn);
+	diffFilterMenu->addChild(unboundedBtn);
 
 	auto customDiffLabel = CCLabelBMFont::create("Custom", "bigFont.fnt");
 	customDiffLabel->setScale(0.36f);
-	if (g_levelFilters.diffFilter[4]) customDiffLabel->setColor({ 255, 255, 255 });
+	if (displayFilters.diffFilter[4]) customDiffLabel->setColor({ 255, 255, 255 });
 	else customDiffLabel->setColor({ 125, 125, 125 });
 	auto customDiffBtn = CCMenuItemExt::createSpriteExtra(customDiffLabel, [this, customDiffLabel](auto) {
-		changeDiffFilter(4, customDiffLabel);
+		changeDiffFilter(DifficultyFilter::Custom, customDiffLabel);
 		});
 	diffFilterMenu->addChild(customDiffBtn);
 
-	auto customDiffOptionsBtn = CCMenuItemExt::createSpriteExtra(optionsSpr, [this](auto) { RangePopup::create(1)->show(); });
+	auto customDiffOptionsBtn = CCMenuItemExt::createSpriteExtra(optionsSpr, [this](auto) { RangePopup::create(FilterType::Difficulty)->show(); });
 	customDiffOptionsBtn->updateLayout();
 	diffFilterMenu->addChild(customDiffOptionsBtn);
 
@@ -129,50 +131,50 @@ bool FilterPopup::init() {
 
 	auto shortLenLabel = CCLabelBMFont::create("Short", "bigFont.fnt");
 	shortLenLabel->setScale(0.42f);
-	if (g_levelFilters.lengthFilter[0]) shortLenLabel->setColor({ 255, 255, 255 });
+	if (displayFilters.lengthFilter[0]) shortLenLabel->setColor({ 255, 255, 255 });
 	else shortLenLabel->setColor({ 125, 125, 125 });
 	auto shortLenBtn = CCMenuItemExt::createSpriteExtra(shortLenLabel, ([this, shortLenLabel](auto) {
-		changeLengthFilter(0, shortLenLabel);
+		changeLengthFilter(LengthFilter::Short, shortLenLabel);
 		}));
 	lengthFilterMenu->addChild(shortLenBtn);
 
 	auto mediumLenLabel = CCLabelBMFont::create("Medium", "bigFont.fnt");
 	mediumLenLabel->setScale(0.42f);
-	if (g_levelFilters.lengthFilter[1]) mediumLenLabel->setColor({ 255, 255, 255 });
+	if (displayFilters.lengthFilter[1]) mediumLenLabel->setColor({ 255, 255, 255 });
 	else mediumLenLabel->setColor({ 125, 125, 125 });
 	auto mediumLenBtn = CCMenuItemExt::createSpriteExtra(mediumLenLabel, [this, mediumLenLabel](auto) {
-		changeLengthFilter(1, mediumLenLabel);
+		changeLengthFilter(LengthFilter::Medium, mediumLenLabel);
 		});
 	lengthFilterMenu->addChild(mediumLenBtn);
 
 	auto longLenLabel = CCLabelBMFont::create("Long", "bigFont.fnt");
 	longLenLabel->setScale(0.42f);
-	if (g_levelFilters.lengthFilter[2]) longLenLabel->setColor({ 255, 255, 255 });
+	if (displayFilters.lengthFilter[2]) longLenLabel->setColor({ 255, 255, 255 });
 	else longLenLabel->setColor({ 125, 125, 125 });
 	auto longLenBtn = CCMenuItemExt::createSpriteExtra(longLenLabel, [this, longLenLabel](auto) {
-		changeLengthFilter(2, longLenLabel);
+		changeLengthFilter(LengthFilter::Long, longLenLabel);
 		});
 	lengthFilterMenu->addChild(longLenBtn);
 
 	auto xlLenLabel = CCLabelBMFont::create("XL", "bigFont.fnt");
 	xlLenLabel->setScale(0.42f);
-	if (g_levelFilters.lengthFilter[3]) xlLenLabel->setColor({ 255, 255, 255 });
+	if (displayFilters.lengthFilter[3]) xlLenLabel->setColor({ 255, 255, 255 });
 	else xlLenLabel->setColor({ 125, 125, 125 });
 	auto xlLenBtn = CCMenuItemExt::createSpriteExtra(xlLenLabel, [this, xlLenLabel](auto) {
-		changeLengthFilter(3, xlLenLabel);
+		changeLengthFilter(LengthFilter::XL, xlLenLabel);
 		});
 	lengthFilterMenu->addChild(xlLenBtn);
 
 	auto customLenLabel = CCLabelBMFont::create("Custom", "bigFont.fnt");
 	customLenLabel->setScale(0.42f);
-	if (g_levelFilters.lengthFilter[4]) customLenLabel->setColor({ 255, 255, 255 });
+	if (displayFilters.lengthFilter[4]) customLenLabel->setColor({ 255, 255, 255 });
 	else customLenLabel->setColor({ 125, 125, 125 });
 	auto customLenBtn = CCMenuItemExt::createSpriteExtra(customLenLabel, [this, customLenLabel](auto) {
-		changeLengthFilter(4, customLenLabel);
+		changeLengthFilter(LengthFilter::Custom, customLenLabel);
 		});
 	lengthFilterMenu->addChild(customLenBtn);
 
-	auto customLenOptionsBtn = CCMenuItemExt::createSpriteExtra(optionsSpr, [this](auto) { RangePopup::create(0)->show(); });
+	auto customLenOptionsBtn = CCMenuItemExt::createSpriteExtra(optionsSpr, [this](auto) { RangePopup::create(FilterType::Lenght)->show(); });
 	customLenOptionsBtn->updateLayout();
 	lengthFilterMenu->addChild(customLenOptionsBtn);
 
@@ -193,13 +195,12 @@ bool FilterPopup::init() {
 
 	m_ratedFilterToggler = CCMenuItemExt::createTogglerWithStandardSprites(1.0f, [this](CCMenuItemToggler* toggler) {
 		if (!toggler->isOn()) {
-			g_levelFilters.rated = true;
-			g_levelFilters.unrated = false;
+			GlobalList::Filters::setRated(true);
 			m_unratedFilterToggler->toggle(false);
 		}
-		else g_levelFilters.rated = false;
+		else GlobalList::Filters::setRated(false);
 	});
-	m_ratedFilterToggler->toggle(g_levelFilters.rated);
+	m_ratedFilterToggler->toggle(displayFilters.rated);
 	m_ratedFilterToggler->setScale(0.75f);
 	m_ratedFilterToggler->setPosition({ 19.0f, 81.0f });
 	otherFiltersMenu->addChild(m_ratedFilterToggler);
@@ -212,13 +213,12 @@ bool FilterPopup::init() {
 
 	m_unratedFilterToggler = CCMenuItemExt::createTogglerWithStandardSprites(1.0f, [this](CCMenuItemToggler* toggler) {
 		if (!toggler->isOn()) {
-			g_levelFilters.unrated = true;
-			g_levelFilters.rated = false;
+			GlobalList::Filters::setUnrated(true);
 			m_ratedFilterToggler->toggle(false);
 		}
-		else g_levelFilters.unrated = false;
+		else GlobalList::Filters::setUnrated(false);
 	});
-	m_unratedFilterToggler->toggle(g_levelFilters.unrated);
+	m_unratedFilterToggler->toggle(displayFilters.unrated);
 	m_unratedFilterToggler->setScale(0.75f);
 	m_unratedFilterToggler->setPosition({ 19.0f, 50.0f });
 	otherFiltersMenu->addChild(m_unratedFilterToggler);
@@ -230,10 +230,10 @@ bool FilterPopup::init() {
 	otherFiltersMenu->addChild(unratedFilterLabel);
 
 	auto completedFilterToggler = CCMenuItemExt::createTogglerWithStandardSprites(1.0f, [this](CCMenuItemToggler* toggler) {
-		if (!toggler->isOn()) g_levelFilters.completed = true;
-		else g_levelFilters.completed = false;
+		if (!toggler->isOn()) GlobalList::Filters::setCompleted(true);
+		else GlobalList::Filters::setCompleted(true);
 	});
-	completedFilterToggler->toggle(g_levelFilters.completed);
+	completedFilterToggler->toggle(displayFilters.completed);
 	completedFilterToggler->setScale(0.75f);
 	completedFilterToggler->setPosition({ 143.5f, 81.0f });
 	otherFiltersMenu->addChild(completedFilterToggler);
@@ -245,10 +245,10 @@ bool FilterPopup::init() {
 	otherFiltersMenu->addChild(completedFilterLabel);
 
 	auto creatorFilterToggler = CCMenuItemExt::createTogglerWithStandardSprites(1.0f, [this](CCMenuItemToggler* toggler) {
-		if (!toggler->isOn()) g_levelFilters.byHolder = true;
-		else g_levelFilters.byHolder = false;
+		if (!toggler->isOn()) GlobalList::Filters::setByHolder(true);
+		else GlobalList::Filters::setByHolder(false);
 	});
-	creatorFilterToggler->toggle(g_levelFilters.byHolder);
+	creatorFilterToggler->toggle(displayFilters.byHolder);
 	creatorFilterToggler->setScale(0.75f);
 	creatorFilterToggler->setPosition({ 143.5f, 50.0f });
 	otherFiltersMenu->addChild(creatorFilterToggler);
@@ -290,30 +290,30 @@ bool FilterPopup::init() {
 		int lastUpdate = Mod::get()->getSavedValue<int64_t>("lastLevelDataUpdate", 0);
 		int difference = timestamp - lastUpdate;
 
-		if (!g_levelFilters.isDataRequired() || (g_levelsData.empty() ? false : difference < 900)) {
-			g_storedFilters = g_levelFilters;
-			auto scene = CCDirector::get()->getRunningScene();
-			auto globalListLayer = static_cast<GlobalListLayer*>(scene->getChildByID("GlobalListLayer"));
-			globalListLayer->showLoading();
-			globalListLayer->populateList("");
+		auto& levelFilters = GlobalList::Filters::getDisplayFilters();
+		if (!levelFilters.isDataRequired() || (GlobalList::Cache::levelDataSize() == 0 ? false : difference < 900)) {
+			GlobalList::Filters::applyFilters();
+			PopulateListEvent().send();
+			
 			onClose(this);
 			return;
 		}
 
-		g_levelFilters.username = usernameInput->getString();
-		g_levelFilters.holder = holderInput->getString();
+		GlobalList::Filters::setUsername(usernameInput->getString());
+		GlobalList::Filters::setHolderName(holderInput->getString());
 		
 		if (!Mod::get()->getSavedValue<bool>("showWarning", true)) {
 			LoadingPopup::create()->show();
-			return;
+		}
+		else {
+			createQuickPopup("Warning", filterWarning, "Oh, no", "I confirm", [](auto, bool confirmBtn) {
+				if (confirmBtn) {
+					Mod::get()->setSavedValue<bool>("showWarning", false);
+					LoadingPopup::create()->show();
+				}
+			});
 		}
 
-		createQuickPopup("Warning", filterWarning, "Oh, no", "I confirm", [](auto, bool confirmBtn) {
-			if (confirmBtn) {
-				Mod::get()->setSavedValue<bool>("showWarning", false);
-				LoadingPopup::create()->show();
-			}
-		});
 	});
 	applyBtn->setPosition({ 225.0f, 28.0f });
 	m_buttonMenu->addChild(applyBtn);
@@ -322,29 +322,35 @@ bool FilterPopup::init() {
 	infoBtn->setPosition({24.0f, 24.0f});
 	m_buttonMenu->addChild(infoBtn);
 
+	m_closeListener = MyCloseEvent(PopupType::FilterPopup).listen(
+		[this]() { Popup::onClose(this); }
+	);
+
 	return true;
 }
 
-void FilterPopup::changeLengthFilter(int lengthType, CCLabelBMFont* label) {
-	bool lengthFilter = g_levelFilters.lengthFilter[lengthType];
+void FilterPopup::changeLengthFilter(LengthFilter type, CCLabelBMFont* label) {
+	auto& displayFilters = GlobalList::Filters::getDisplayFilters();
+	bool lengthFilter = displayFilters.lengthFilter[(int)type];
 	if (!lengthFilter) {
 		label->setColor({ 255, 255, 255 });
-		g_levelFilters.lengthFilter[lengthType] = true;
+		GlobalList::Filters::setLengthFilter(type, true);
 	}
 	else {
 		label->setColor({ 125, 125, 125 });
-		g_levelFilters.lengthFilter[lengthType] = false;
+		GlobalList::Filters::setLengthFilter(type, false);
 	}
 }
 
-void FilterPopup::changeDiffFilter(int diffType, CCLabelBMFont* label) {
-	bool lengthFilter = g_levelFilters.diffFilter[diffType];
-	if (!lengthFilter) {
+void FilterPopup::changeDiffFilter(DifficultyFilter type, CCLabelBMFont* label) {
+	auto& displayFilters = GlobalList::Filters::getDisplayFilters();
+	bool diffFilter = displayFilters.diffFilter[(int)type];
+	if (!diffFilter) {
 		label->setColor({ 255, 255, 255 });
-		g_levelFilters.diffFilter[diffType] = true;
+		GlobalList::Filters::setDifficultyFilter(type, true);
 	}
 	else {
 		label->setColor({ 125, 125, 125 });
-		g_levelFilters.diffFilter[diffType] = false;
+		GlobalList::Filters::setDifficultyFilter(type, false);
 	}
 }

@@ -1,8 +1,8 @@
-#include "./GlobalListLayer.hpp"
+#include "./RangePopup.hpp"
 
-RangePopup* RangePopup::create(int filterType) {
+RangePopup* RangePopup::create(FilterType type) {
 	auto ret = new RangePopup();
-	if (ret && ret->init(filterType)) {
+	if (ret && ret->init(type)) {
 		ret->autorelease();
 		return ret;
 	}
@@ -10,16 +10,17 @@ RangePopup* RangePopup::create(int filterType) {
 	return nullptr;
 }
 
-bool RangePopup::init(int filterType) {
+bool RangePopup::init(FilterType type) {
 	if (!Popup::init(200.0f, 120.0f)) return false;
 
 	this->setID("range-menu");
 	this->setZOrder(102);
-	this->setTitle(filterType == 0 ? "Custom length" : "Custom difficulty");
+	this->setTitle(type == FilterType::Lenght ? "Custom length" : "Custom difficulty");
 
 	m_closeBtn->setVisible(false);
-	m_filterType = filterType;
-	auto& saved = m_filterType == 0 ? g_levelFilters.customLengthFilter : g_levelFilters.customDiffFilter;
+	m_filterType = type;
+	auto& levelFilters = GlobalList::Filters::getLevelFilters();
+	auto& saved = type == FilterType::Lenght ? levelFilters.customLengthFilter : levelFilters.customDiffFilter;
 
 	auto label = CCLabelBMFont::create("From         to        ", "bigFont.fnt");
 	label->setScale(0.45f);
@@ -39,13 +40,13 @@ bool RangePopup::init(int filterType) {
 	m_toTextInput->setString(saved[1] != 0 ? std::to_string(saved[1]) : "");
 
 	auto okSpr = ButtonSprite::create("Ok");
-	auto okBtn = CCMenuItemExt::createSpriteExtra(okSpr, [this, filterType](auto) {
+	auto okBtn = CCMenuItemExt::createSpriteExtra(okSpr, [this, type](auto) {
+		auto& levelFilters = GlobalList::Filters::getLevelFilters();
 		int from = numFromString<int>(m_fromTextInput->getString().size() != 0 ? m_fromTextInput->getString() : "0").unwrapOrDefault();
 		int to = numFromString<int>(m_toTextInput->getString().size() != 0 ? m_toTextInput->getString() : "0").unwrapOrDefault();
-		auto& saved = m_filterType == 0 ? g_levelFilters.customLengthFilter : g_levelFilters.customDiffFilter;
 
-		if (filterType == 0) saved = {from, to};
-		else saved = {from, to};
+		if (type == FilterType::Lenght) GlobalList::Filters::setCustomLengthFilter(from, to);
+		else GlobalList::Filters::setCustomDifficultyFilter(from, to);
 
 		Popup::onClose(this);
 	});
@@ -62,11 +63,14 @@ void RangePopup::onClose(cocos2d::CCObject*) {
 	int from = numFromString<int>(m_fromTextInput->getString().size() != 0 ? m_fromTextInput->getString() : "0").unwrapOrDefault();
 	int to = numFromString<int>(m_toTextInput->getString().size() != 0 ? m_toTextInput->getString() : "0").unwrapOrDefault();
 
-	auto& saved = m_filterType == 0 ? g_levelFilters.customLengthFilter : g_levelFilters.customDiffFilter;
+	auto& levelFilters = GlobalList::Filters::getLevelFilters();
+	auto& saved = m_filterType == FilterType::Lenght ? levelFilters.customLengthFilter : levelFilters.customDiffFilter;
 	if (from != saved[0] || to != saved[1]) {
 		createQuickPopup("Hey!", "Fields not saved. Save and close?", "No", "Yes", [this, &saved, from, to](auto, bool yesBtn) {
 			if (yesBtn) {
-				saved = { from, to };
+				if (m_filterType == FilterType::Lenght) GlobalList::Filters::setCustomLengthFilter(from, to);
+				else GlobalList::Filters::setCustomDifficultyFilter(from, to);
+
 				Popup::onClose(this);
 			}
 		});
