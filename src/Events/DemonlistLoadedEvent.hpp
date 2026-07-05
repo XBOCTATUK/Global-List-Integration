@@ -5,7 +5,7 @@
 
 using namespace geode::prelude;
 
-class DemonlistLoadedEvent : public Event<DemonlistLoadedEvent, bool(std::vector<GlobalListLevel>*)> {
+class DemonlistLoadedEvent : public Event<DemonlistLoadedEvent, bool(std::vector<GlobalListLevel*>)> {
 public:
     using Event::Event;
 };

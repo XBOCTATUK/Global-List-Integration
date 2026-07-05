@@ -2,7 +2,7 @@
 
 #include <Geode/Geode.hpp>
 #include <Geode/loader/Event.hpp>
-#include "../../Models/GlobalListLevel.hpp"
+#include "../Models/GlobalListLevel.hpp"
 
 using namespace geode::prelude;
 
