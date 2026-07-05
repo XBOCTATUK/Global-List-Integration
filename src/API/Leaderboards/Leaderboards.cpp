@@ -24,8 +24,8 @@ namespace GlobalList::API {
                     std::string country = user["country"].asString().unwrapOrDefault();
                     std::string badge = user["badge"].asString().unwrapOrDefault();
 
-                    auto user = GlobalListUser{id, username, placement, points, country, badge};
-                    users.push_back(user);
+                    auto GDLUser = GlobalListUser{id, username, placement, points, country, badge};
+                    users.push_back(GDLUser);
                 }
                 
                 GlobalList::Cache::Leaderboards::setUsers(std::move(users));
@@ -56,8 +56,8 @@ namespace GlobalList::API {
                     int placement = country["placement"].asInt().unwrapOrDefault();
                     double points = country["points"].asDouble().unwrapOrDefault();
 
-                    auto country = GlobalListCountry{title, placement, points};
-                    countries.push_back(country);
+                    auto GDLCountry = GlobalListCountry{title, placement, points};
+                    countries.push_back(GDLCountry);
                 }
                 
                 GlobalList::Cache::Leaderboards::setCountries(type, std::move(countries));

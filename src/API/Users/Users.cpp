@@ -27,7 +27,7 @@ namespace GlobalList::API {
                 std::string hardestVideoURL = data["levels"]["hardest"]["video_url"].asString().unwrapOrDefault();
                 auto hardest = GlobalListBasicLevel{hardestID, hardestName, hardestPlacement, hardestVideoURL};
 
-                auto user = GlobalListUser{
+                auto GDLUser = GlobalListUser{
                     userID, username, placement, points,
                     country, badge, isBanned, hardest
                 };
@@ -49,15 +49,15 @@ namespace GlobalList::API {
                     }
                 };
 
-                parseList(data["levels"]["main"], user.mainList);
-                parseList(data["levels"]["extended"], user.extendedList);
-                parseList(data["levels"]["advanced"], user.advancedList);
-                parseList(data["levels"]["unbounded"], user.unboundedList);
-                parseList(data["levels"]["progress"], user.progressList, true);
-                parseList(data["levels"]["verified"], user.verifiedList);
-                parseList(data["levels"]["uncompleted"], user.uncompletedList);
+                parseList(data["levels"]["main"], GDLUser.mainList);
+                parseList(data["levels"]["extended"], GDLUser.extendedList);
+                parseList(data["levels"]["advanced"], GDLUser.advancedList);
+                parseList(data["levels"]["unbounded"], GDLUser.unboundedList);
+                parseList(data["levels"]["progress"], GDLUser.progressList, true);
+                parseList(data["levels"]["verified"], GDLUser.verifiedList);
+                parseList(data["levels"]["uncompleted"], GDLUser.uncompletedList);
                 
-                GlobalList::Cache::Users::setUser(std::move(user));
+                GlobalList::Cache::Users::setUser(std::move(GDLUser));
                 UserLoadedEvent(userID).send(GlobalList::Cache::Users::getUser(userID));
             }
         );
@@ -89,11 +89,11 @@ namespace GlobalList::API {
                     std::string levelName = record["level"]["name"].asString().unwrapOrDefault();
                     int placement = record["level"]["placement"].asInt().unwrapOrDefault();
 
-                    auto record = GlobalListRecord{
+                    auto GDLRecord = GlobalListRecord{
                         id, percent, status, videoURL,
                         internalID, levelName, placement
                     };
-                    records.push_back(record);
+                    records.push_back(GDLRecord);
                 }
 
                 auto userRecords = GlobalListUserRecords{userID, totalCount, completedCount, records};
