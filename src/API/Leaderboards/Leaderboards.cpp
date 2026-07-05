@@ -1,10 +1,10 @@
 #include "Leaderboards.hpp"
 
 namespace GlobalList::API {
-    void getUserLeaderboard(int page) {
+    void getUserLeaderboard(int page, std::string search, std::string country) {
         Utils::WebReq(
             userLeaderboardEP,
-            matjson::makeObject({ {"offset", 50 * (page-1)} }),
+            matjson::makeObject({ {"offset", 50 * (page-1)}, {"search", search}, {"country", country} }),
             matjson::Value::object(),
             [](matjson::Value data) {
                 if (!data.contains("users") || !data["users"].isArray() || data["users"].size() == 0) {
@@ -14,6 +14,8 @@ namespace GlobalList::API {
                     );
                 }
 
+                std::vector<GlobalListUser> users;
+
                 for (const auto& user : data["users"]) {
                     int id = user["id"].asInt().unwrapOrDefault();
                     std::string username = user["username"].asString().unwrapOrDefault();
@@ -22,8 +24,12 @@ namespace GlobalList::API {
                     std::string country = user["country"].asString().unwrapOrDefault();
                     std::string badge = user["badge"].asString().unwrapOrDefault();
 
-                    auto globalListUser = GlobalListUser{id, username, placement, points, country, badge};
+                    auto user = GlobalListUser{id, username, placement, points, country, badge};
+                    users.push_back(user);
                 }
+                
+                GlobalList::Cache::Leaderboards::setUsers(std::move(users));
+                UserLeaderboardLoadedEvent().send(GlobalList::Cache::Leaderboards::getUsers(1));
             }
         );
     }
@@ -35,7 +41,7 @@ namespace GlobalList::API {
             countryLeaderboardEP,
             matjson::makeObject({ {"type", typeStr} }),
             matjson::Value::object(),
-            [](matjson::Value data) {
+            [type](matjson::Value data) {
                 if (!data.contains("countries") || !data["countries"].isArray() || data["countries"].size() == 0) {
                     Utils::failure(
                         "Invalid Response",
@@ -43,13 +49,19 @@ namespace GlobalList::API {
                     );
                 }
 
+                std::vector<GlobalListCountry> countries;
+
                 for (const auto& country : data["countries"]) {
                     std::string title = country["title"].asString().unwrapOrDefault();
                     int placement = country["placement"].asInt().unwrapOrDefault();
                     double points = country["points"].asDouble().unwrapOrDefault();
 
-                    auto globalListCountry = GlobalListCountry{title, placement, points};
+                    auto country = GlobalListCountry{title, placement, points};
+                    countries.push_back(country);
                 }
+                
+                GlobalList::Cache::Leaderboards::setCountries(type, std::move(countries));
+                CountryLeaderboardLoadedEvent(type).send(GlobalList::Cache::Leaderboards::getCountry(type));
             }
         );
     }
@@ -59,7 +71,7 @@ namespace GlobalList::API {
             getMainCountryLeaderboardEP,
             matjson::makeObject({ {"country", country} }),
             matjson::Value::object(),
-            [](matjson::Value data) {
+            [country](matjson::Value data) {
                 if (!data.contains("users") || !data["users"].isArray() || data["users"].size() == 0) {
                     Utils::failure(
                         "Invalid Response",
@@ -67,13 +79,19 @@ namespace GlobalList::API {
                     );
                 }
 
+                std::vector<GlobalListCountryUser> countryUsers;
+                
                 for (const auto& user : data["users"]) {
                     int id = user["id"].asInt().unwrapOrDefault();
                     std::string username = user["username"].asString().unwrapOrDefault();
                     double points = user["points"].asDouble().unwrapOrDefault();
 
                     auto globalListCountryUser = GlobalListCountryUser{id, username, points};
+                    countryUsers.push_back(globalListCountryUser);
                 }
+                
+                GlobalList::Cache::Leaderboards::setCountryUsers(country, std::move(countryUsers));
+                MainCountryLeaderboardLoadedEvent(country).send(GlobalList::Cache::Leaderboards::getCountryUsers(country));
             }
         );
     }
@@ -83,7 +101,7 @@ namespace GlobalList::API {
             getAdvanvedCountryLeaderboardEP,
             matjson::makeObject({ {"country", country} }),
             matjson::Value::object(),
-            [](matjson::Value data) {
+            [country](matjson::Value data) {
                 if (!data.contains("levels") || !data["levels"].isObject() || data["levels"].size() == 0) {
                     Utils::failure(
                         "Invalid Response",
@@ -93,12 +111,12 @@ namespace GlobalList::API {
                 
                 auto globalListCountryAdvanced = GlobalListCountryAdvanced{};
 
-                int id = data["levels"]["hardest"]["id"].asInt().unwrapOrDefault();
-                std::string name = data["levels"]["hardest"]["name"].asString().unwrapOrDefault();
-                int placement = data["levels"]["hardest"]["placement"].asInt().unwrapOrDefault();
-                std::string videoURL = data["levels"]["hardest"]["video_url"].asString().unwrapOrDefault();
+                int hardestID = data["levels"]["hardest"]["id"].asInt().unwrapOrDefault();
+                std::string hardestName = data["levels"]["hardest"]["name"].asString().unwrapOrDefault();
+                int hardestPlacement = data["levels"]["hardest"]["placement"].asInt().unwrapOrDefault();
+                std::string hardestVideoURL = data["levels"]["hardest"]["video_url"].asString().unwrapOrDefault();
 
-                globalListCountryAdvanced.hardestLevel = {id, name, placement, videoURL};
+                globalListCountryAdvanced.hardestLevel = {hardestID, hardestName, hardestPlacement, hardestVideoURL};
 
                 auto parseList = [](matjson::Value& levelData, std::vector<GlobalListBasicLevel>& list, bool withPercent = false) {
                     for (const auto& level : levelData) {
@@ -125,6 +143,9 @@ namespace GlobalList::API {
 
                 int userCount = data["user_count"].asInt().unwrapOrDefault();
                 globalListCountryAdvanced.userCount = userCount;
+                
+                GlobalList::Cache::Leaderboards::setCountryAdvanced(country, std::move(globalListCountryAdvanced));
+                AdvancedCountryLeaderboardLoadedEvent(country).send(GlobalList::Cache::Leaderboards::getCountryAdvanced(country));
             }
         );
     }

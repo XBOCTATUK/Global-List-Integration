@@ -27,7 +27,7 @@ namespace GlobalList::API {
                 std::string hardestVideoURL = data["levels"]["hardest"]["video_url"].asString().unwrapOrDefault();
                 auto hardest = GlobalListBasicLevel{hardestID, hardestName, hardestPlacement, hardestVideoURL};
 
-                auto globalListUser = GlobalListUser{
+                auto user = GlobalListUser{
                     userID, username, placement, points,
                     country, badge, isBanned, hardest
                 };
@@ -49,13 +49,16 @@ namespace GlobalList::API {
                     }
                 };
 
-                parseList(data["levels"]["main"], globalListUser.mainList);
-                parseList(data["levels"]["extended"], globalListUser.extendedList);
-                parseList(data["levels"]["advanced"], globalListUser.advancedList);
-                parseList(data["levels"]["unbounded"], globalListUser.unboundedList);
-                parseList(data["levels"]["progress"], globalListUser.progressList, true);
-                parseList(data["levels"]["verified"], globalListUser.verifiedList);
-                parseList(data["levels"]["uncompleted"], globalListUser.uncompletedList);
+                parseList(data["levels"]["main"], user.mainList);
+                parseList(data["levels"]["extended"], user.extendedList);
+                parseList(data["levels"]["advanced"], user.advancedList);
+                parseList(data["levels"]["unbounded"], user.unboundedList);
+                parseList(data["levels"]["progress"], user.progressList, true);
+                parseList(data["levels"]["verified"], user.verifiedList);
+                parseList(data["levels"]["uncompleted"], user.uncompletedList);
+                
+                GlobalList::Cache::Users::setUser(std::move(user));
+                UserLoadedEvent(userID).send(GlobalList::Cache::Users::getUser(userID));
             }
         );
     }
@@ -69,52 +72,34 @@ namespace GlobalList::API {
                 if (!data.isObject() || data.size() == 0) {
                     Utils::failure(
                         "Invalid Response",
-                        "The user data is incomplete or invalid. Please try again later."
+                        "The user records data is incomplete or invalid. Please try again later."
                     );
                 }
 
-                std::string username = data["username"].asString().unwrapOrDefault();
-                int placement = data["placement"].asInt().unwrapOrDefault();
-                double points = data["points"].asDouble().unwrapOrDefault();
-                std::string country = data["country"].asString().unwrapOrDefault();
-                std::string badge = data["badge"].asString().unwrapOrDefault();
-                bool isBanned = data["is_banned"].asBool().unwrapOrDefault();
+                int totalCount = data["total_count"].asInt().unwrapOrDefault();
+                int completedCount = data["completed_count"].asInt().unwrapOrDefault();
+                std::vector<GlobalListRecord> records;
 
-                int hardestID = data["levels"]["hardest"]["id"].asInt().unwrapOrDefault();
-                std::string hardestName = data["levels"]["hardest"]["name"].asString().unwrapOrDefault();
-                int hardestPlacement = data["levels"]["hardest"]["placement"].asInt().unwrapOrDefault();
-                std::string hardestVideoURL = data["levels"]["hardest"]["video_url"].asString().unwrapOrDefault();
-                auto hardest = GlobalListBasicLevel{hardestID, hardestName, hardestPlacement, hardestVideoURL};
+                for (const auto& record : data["records"]) {
+                    int id = record["id"].asInt().unwrapOrDefault();
+                    int percent = record["percent"].asInt().unwrapOrDefault();
+                    std::string status = record["status"].asString().unwrapOrDefault();
+                    std::string videoURL = record["video_url"].asString().unwrapOrDefault();
+                    int internalID = record["level"]["id"].asInt().unwrapOrDefault();
+                    std::string levelName = record["level"]["name"].asString().unwrapOrDefault();
+                    int placement = record["level"]["placement"].asInt().unwrapOrDefault();
 
-                auto globalListUser = GlobalListUser{
-                    userID, username, placement, points,
-                    country, badge, isBanned, hardest
-                };
+                    auto record = GlobalListRecord{
+                        id, percent, status, videoURL,
+                        internalID, levelName, placement
+                    };
+                    records.push_back(record);
+                }
 
-                auto parseList = [](matjson::Value& levelData, optGlobalListBasicLevels& list, bool withPercent = false) {
-                    for (const auto& level : levelData) {
-                        int id = level["id"].asInt().unwrapOrDefault();
-                        std::string name = level["name"].asString().unwrapOrDefault();
-                        int placement = level["placement"].asInt().unwrapOrDefault();
-                        std::string videoURL = level["video_url"].asString().unwrapOrDefault();
-                        std::optional<int> percent =
-                            withPercent
-                            ? std::make_optional(level["percent"].asInt().unwrapOrDefault())
-                            : std::nullopt;
-
-                        if (list.has_value()) {
-                            list.value().push_back({id, name, placement, videoURL, percent});
-                        }
-                    }
-                };
-
-                parseList(data["levels"]["main"], globalListUser.mainList);
-                parseList(data["levels"]["extended"], globalListUser.extendedList);
-                parseList(data["levels"]["advanced"], globalListUser.advancedList);
-                parseList(data["levels"]["unbounded"], globalListUser.unboundedList);
-                parseList(data["levels"]["progress"], globalListUser.progressList, true);
-                parseList(data["levels"]["verified"], globalListUser.verifiedList);
-                parseList(data["levels"]["uncompleted"], globalListUser.uncompletedList);
+                auto userRecords = GlobalListUserRecords{userID, totalCount, completedCount, records};
+                
+                GlobalList::Cache::Users::setUserRecords(std::move(userRecords));
+                UserRecordsLoadedEvent(userID).send(GlobalList::Cache::Users::getUserRecords(userID));
             }
         );
     }

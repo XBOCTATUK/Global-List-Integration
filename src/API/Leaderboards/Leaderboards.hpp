@@ -2,8 +2,11 @@
 
 #include "../API.hpp"
 #include "../../Utils/WedReq.hpp"
-
-enum CountriesLeaderboardType { Main, Advanced };
+#include "../../Cache/Leaderboards/Leaderboards.hpp"
+#include "../../Events/UserLeaderboardLoadedEvent.hpp"
+#include "../../Events/CountryLeaderboardLoadedEvent.hpp"
+#include "../../Events/MainCountryLeaderboardLoadedEvent.hpp"
+#include "../../Events/AdvancedCountryLeaderboardLoadedEvent.hpp"
 
 namespace GlobalList::API {
     void getUserLeaderboard(int page);

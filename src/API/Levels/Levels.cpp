@@ -1,10 +1,10 @@
 #include "Levels.hpp"
 
 namespace GlobalList::API {
-    void getDemonlist(int page) {
+    void getDemonlist() {
         Utils::WebReq(
             levelListEP,
-            matjson::makeObject({ {"limit", 100}, {"offset", true ? 25 : 10 * (page-1)} }),
+            matjson::Value::object(),
             matjson::Value::object(),
             [](matjson::Value data) {
                 if (!data.contains("levels") || !data["levels"].isArray() || data["levels"].size() == 0) {
@@ -13,6 +13,8 @@ namespace GlobalList::API {
                         "The demonlist data is incomplete or invalid. Please try again later."
                     );
                 }
+
+                std::vector<GlobalListLevel> levels;
 
                 for (const auto& level : data["levels"]) {
                     int id = level["id"].asInt().unwrapOrDefault();
@@ -33,7 +35,11 @@ namespace GlobalList::API {
                         listPercent, length, holder, verifier,
                         verifierID, verificationURL, dateCreated
                     };
+                    levels.push_back(globalListLevel);
                 }
+                
+                GlobalList::Cache::Levels::setDemonlist(std::move(levels));
+                DemonlistLoadedEvent().send(GlobalList::Cache::Levels::getDemonlist(1));
             }
         );
     }
@@ -43,7 +49,7 @@ namespace GlobalList::API {
             levelEP,
             matjson::makeObject({ {"ingame_id", levelID} }),
             matjson::Value::object(),
-            [](matjson::Value data) {
+            [levelID](matjson::Value data) {
                 if (!data.isObject() || data.size() == 0) {
                     Utils::failure(
                         "Invalid Response",
@@ -71,12 +77,15 @@ namespace GlobalList::API {
                 std::string password = data["data"]["copy_info"]["password"].asString().unwrapOrDefault();
                 std::string dateCreated = data["data"]["date_created"].asString().unwrapOrDefault();
 
-                auto globalListLevelData = GlobalListLevel{
+                auto level = GlobalListLevel{
                     id, ingameID, placement, name, points, listPercent,
                     length, holder, verifier, verifierID, verificationURL,
                     dateCreated, objects, description, creator,
                     songURL, gameVersion, isCopyable, password
                 };
+                
+                GlobalList::Cache::Levels::setLevel(std::move(level));
+                LevelLoadedEvent(levelID).send(GlobalList::Cache::Levels::getLevel(levelID));
             }
         );
     }
