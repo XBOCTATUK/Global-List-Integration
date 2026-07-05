@@ -12,21 +12,21 @@ namespace GlobalList::Cache::Leaderboards {
     static std::unordered_map<std::string, CacheEntry<std::vector<GlobalListCountryUser>>> countryUserData;
     static std::unordered_map<std::string, CacheEntry<GlobalListCountryAdvanced>> countryAdvancedData;
 
-    std::vector<GlobalListUser>* getUsers(int page) {
-        if (page < 0) return nullptr;
+    std::vector<GlobalListUser*> getUsers(int page) {
+        if (page < 0) return {};
 
-        std::vector<GlobalListUser> users;
+        std::vector<GlobalListUser*> users;
         for (int i = 10 * page + 1; i < 10 * (page+1) + 1; i++) {
             auto it = userData.find(i);
             if (
                 it == userData.end() ||
                 isExpired(it->second.cachedAt, USERS_TTL)
-            ) return nullptr;
+            ) return {};
 
-            users.push_back(it->second.value);
+            users.push_back(&it->second.value);
         }
 
-        return &users;
+        return users;
     }
 
     void setUsers(std::vector<GlobalListUser>&& users) {

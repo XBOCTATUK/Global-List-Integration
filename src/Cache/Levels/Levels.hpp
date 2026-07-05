@@ -6,7 +6,7 @@
 #include "../../Models/GlobalListCountry.hpp"
 
 namespace GlobalList::Cache::Levels {
-    std::vector<GlobalListLevel>* getDemonlist(int page);
+    std::vector<GlobalListLevel*> getDemonlist(int page);
     void setDemonlist(std::vector<GlobalListLevel>&& levels);
 
     GlobalListLevel* getLevel(int levelID);

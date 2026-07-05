@@ -7,7 +7,7 @@
 #include "../../Models/GlobalListUser.hpp"
 
 namespace GlobalList::Cache::Leaderboards {
-    std::vector<GlobalListUser>* getUsers(int page);
+    std::vector<GlobalListUser*> getUsers(int page);
     void setUsers(std::vector<GlobalListUser>&& users);
     void clearUsers();
 
