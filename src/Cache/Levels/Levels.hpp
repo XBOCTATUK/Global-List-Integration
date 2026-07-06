@@ -10,7 +10,10 @@ namespace GlobalList::Cache::Levels {
     void setDemonlist(std::vector<GlobalListLevel>&& levels);
 
     GlobalListLevel* getLevel(int levelID);
+    bool isLevelWOPlacement(int levelID);
+
     void setLevel(GlobalListLevel&& level);
+    void setLevelWOPlacement(int levelID);
 
     void clear();
 };

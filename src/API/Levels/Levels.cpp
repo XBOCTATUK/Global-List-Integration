@@ -2,6 +2,12 @@
 
 namespace GlobalList::API {
     void getDemonlist() {
+        auto cachedDemonlist = GlobalList::Cache::Levels::getDemonlist(1);
+        if (!cachedDemonlist.empty()) {
+            DemonlistLoadedEvent().send(cachedDemonlist);
+            return;
+        }
+
         Utils::WebReq(
             levelListEP,
             matjson::Value::object(),
@@ -45,6 +51,12 @@ namespace GlobalList::API {
     }
 
     void getLevel(int levelID) {
+        auto cachedLevel = GlobalList::Cache::Levels::getLevel(levelID);
+        if (cachedLevel) {
+            LevelLoadedEvent(levelID).send(cachedLevel);
+            return;
+        }
+
         Utils::WebReq(
             levelEP,
             matjson::makeObject({ {"ingame_id", levelID} }),
@@ -57,25 +69,25 @@ namespace GlobalList::API {
                     );
                 }
 
-                int id = data["data"]["id"].asInt().unwrapOrDefault();
-                int ingameID = data["data"]["ingame_id"].asInt().unwrapOrDefault();
-                int placement = data["data"]["placement"].asInt().unwrapOrDefault();
-                std::string name = data["data"]["name"].asString().unwrapOrDefault();
-                double points = data["data"]["points"].asDouble().unwrapOrDefault();
-                int listPercent = data["data"]["list_percent"].asInt().unwrapOrDefault();
-                int length = data["data"]["length"].asInt().unwrapOrDefault();
-                int objects = data["data"]["objects"].asInt().unwrapOrDefault();
-                std::string description = data["data"]["description"].asString().unwrapOrDefault();
-                std::string creator = data["data"]["creator"].asString().unwrapOrDefault();
-                std::string holder = data["data"]["holder"].asString().unwrapOrDefault();
-                std::string songURL = data["data"]["song_url"].asString().unwrapOrDefault();
-                int gameVersion = data["data"]["game_version"].asInt().unwrapOrDefault();
-                std::string verifier = data["data"]["verification"]["username"].asString().unwrapOrDefault();
-                int verifierID = data["data"]["verification"]["user_id"].asInt().unwrapOrDefault();
-                std::string verificationURL = data["data"]["verification"]["video_url"].asString().unwrapOrDefault();
-                bool isCopyable = data["data"]["copy_info"]["is_copyable"].asBool().unwrapOrDefault();
-                std::string password = data["data"]["copy_info"]["password"].asString().unwrapOrDefault();
-                std::string dateCreated = data["data"]["date_created"].asString().unwrapOrDefault();
+                int id = data["id"].asInt().unwrapOrDefault();
+                int ingameID = data["ingame_id"].asInt().unwrapOrDefault();
+                int placement = data["placement"].asInt().unwrapOrDefault();
+                std::string name = data["name"].asString().unwrapOrDefault();
+                double points = data["points"].asDouble().unwrapOrDefault();
+                int listPercent = data["list_percent"].asInt().unwrapOrDefault();
+                int length = data["length"].asInt().unwrapOrDefault();
+                int objects = data["objects"].asInt().unwrapOrDefault();
+                std::string description = data["description"].asString().unwrapOrDefault();
+                std::string creator = data["creator"].asString().unwrapOrDefault();
+                std::string holder = data["holder"].asString().unwrapOrDefault();
+                std::string songURL = data["song_url"].asString().unwrapOrDefault();
+                int gameVersion = data["game_version"].asInt().unwrapOrDefault();
+                std::string verifier = data["verification"]["username"].asString().unwrapOrDefault();
+                int verifierID = data["verification"]["user_id"].asInt().unwrapOrDefault();
+                std::string verificationURL = data["verification"]["video_url"].asString().unwrapOrDefault();
+                bool isCopyable = data["copy_info"]["is_copyable"].asBool().unwrapOrDefault();
+                std::string password = data["copy_info"]["password"].asString().unwrapOrDefault();
+                std::string dateCreated = data["date_created"].asString().unwrapOrDefault();
 
                 auto GDLLevel = GlobalListLevel{
                     id, ingameID, placement, name, points, listPercent,

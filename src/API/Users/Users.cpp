@@ -2,6 +2,12 @@
 
 namespace GlobalList::API {
     void getUser(int userID) {
+        auto cachedUser = GlobalList::Cache::Users::getUser(userID);
+        if (cachedUser) {
+            UserLoadedEvent(userID).send(cachedUser);
+            return;
+        }
+
         Utils::WebReq(
             userEP,
             matjson::makeObject({ {"id", userID} }),
@@ -64,6 +70,12 @@ namespace GlobalList::API {
     }
 
     void getUserRecords(int userID) {
+        auto cachedUserRecords = GlobalList::Cache::Users::getUserRecords(userID);
+        if (cachedUserRecords) {
+            UserRecordsLoadedEvent(userID).send(cachedUserRecords);
+            return;
+        }
+
         Utils::WebReq(
             userRecordsEP,
             matjson::makeObject({ {"user_id", userID} }),

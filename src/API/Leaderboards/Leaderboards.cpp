@@ -2,11 +2,17 @@
 
 namespace GlobalList::API {
     void getUserLeaderboard(int page, std::string search, std::string country) {
+        auto cachedUsers = GlobalList::Cache::Leaderboards::getUsers(page);
+        if (!cachedUsers.empty()) {
+            UserLeaderboardLoadedEvent().send(cachedUsers);
+            return;
+        }
+
         Utils::WebReq(
             userLeaderboardEP,
             matjson::makeObject({ {"offset", 50 * (page-1)}, {"search", search}, {"country", country} }),
             matjson::Value::object(),
-            [](matjson::Value data) {
+            [page](matjson::Value data) {
                 if (!data.contains("users") || !data["users"].isArray() || data["users"].size() == 0) {
                     Utils::failure(
                         "Invalid Response",
@@ -29,12 +35,18 @@ namespace GlobalList::API {
                 }
                 
                 GlobalList::Cache::Leaderboards::setUsers(std::move(users));
-                UserLeaderboardLoadedEvent().send(GlobalList::Cache::Leaderboards::getUsers(1));
+                UserLeaderboardLoadedEvent().send(GlobalList::Cache::Leaderboards::getUsers(page));
             }
         );
     }
 
     void getCountryLeaderboard(CountriesLeaderboardType type) {
+        auto cachedCountry = GlobalList::Cache::Leaderboards::getCountry(type);
+        if (cachedCountry) {
+            CountryLeaderboardLoadedEvent(type).send(cachedCountry);
+            return;
+        }
+
         auto typeStr = type == CountriesLeaderboardType::Main ? "main" : "advanced";
 
         Utils::WebReq(
@@ -67,6 +79,12 @@ namespace GlobalList::API {
     }
 
     void getMainCountryLeaderboard(std::string country) {
+        auto cachedCountryUsers = GlobalList::Cache::Leaderboards::getCountryUsers(country);
+        if (cachedCountryUsers) {
+            MainCountryLeaderboardLoadedEvent(country).send(cachedCountryUsers);
+            return;
+        }
+
         Utils::WebReq(
             getMainCountryLeaderboardEP,
             matjson::makeObject({ {"country", country} }),
@@ -97,6 +115,12 @@ namespace GlobalList::API {
     }
 
     void getAdvancedCountryLeaderboard(std::string country) {
+        auto cachedCountryAdvanced = GlobalList::Cache::Leaderboards::getCountryAdvanced(country);
+        if (cachedCountryAdvanced) {
+            AdvancedCountryLeaderboardLoadedEvent(country).send(cachedCountryAdvanced);
+            return;
+        }
+
         Utils::WebReq(
             getAdvanvedCountryLeaderboardEP,
             matjson::makeObject({ {"country", country} }),

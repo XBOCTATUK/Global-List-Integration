@@ -6,6 +6,7 @@ namespace GlobalList::Cache::Levels {
 
     static std::unordered_map<int, CacheEntry<GlobalListLevel>> levelData;
     static std::unordered_map<int, int> levelIDByPlacement;
+    static std::vector<int> levelsWOPlacement;
 
     std::vector<GlobalListLevel*> getDemonlist(int page) {
         if (page < 0) return {};
@@ -35,11 +36,16 @@ namespace GlobalList::Cache::Levels {
     GlobalListLevel* getLevel(int levelID) {
         auto it = levelData.find(levelID);
         if (
-            it == levelData.end() ||
-            isExpired(it->second.cachedAt, LEVELS_TTL)
+            it == levelData.end() /*||
+            isExpired(it->second.cachedAt, LEVELS_TTL)*/
         ) return nullptr;
 
         return &it->second.value;
+    }
+
+    bool isLevelWOPlacement(int levelID) {
+        auto it = std::find(levelsWOPlacement.begin(), levelsWOPlacement.end(), levelID);
+        return it != levelsWOPlacement.end();
     }
 
     void setLevel(GlobalListLevel&& level) {
@@ -47,8 +53,13 @@ namespace GlobalList::Cache::Levels {
         levelIDByPlacement[level.placement] = level.ingameID;
     }
 
+    void setLevelWOPlacement(int levelID) {
+        levelsWOPlacement.push_back(levelID);
+    }
+
     void clear() {
         levelData.clear();
         levelIDByPlacement.clear();
+        levelsWOPlacement.clear();
     }
 };
