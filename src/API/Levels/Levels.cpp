@@ -1,8 +1,8 @@
 #include "Levels.hpp"
 
-namespace GlobalList::API {
+namespace GDL::API {
     void getDemonlist() {
-        auto cachedDemonlist = GlobalList::Cache::Levels::getDemonlist(1);
+        auto cachedDemonlist = GDL::Cache::Levels::getDemonlist(1);
         if (!cachedDemonlist.empty()) {
             DemonlistLoadedEvent().send(Ok(cachedDemonlist));
             return;
@@ -23,7 +23,7 @@ namespace GlobalList::API {
                     return;
                 }
 
-                std::vector<GlobalListLevel> levels;
+                std::vector<GDLLevel> levels;
 
                 for (const auto& level : data["levels"]) {
                     int id = level["id"].asInt().unwrapOrDefault();
@@ -39,7 +39,7 @@ namespace GlobalList::API {
                     std::string verificationURL = level["verification_url"].asString().unwrapOrDefault();
                     std::string dateCreated = level["date_created"].asString().unwrapOrDefault();
 
-                    auto GDLLLevel = GlobalListLevel{
+                    auto GDLLLevel = GDLLevel{
                         id, ingameID, placement, name, points,
                         listPercent, length, holder, verifier,
                         verifierID, verificationURL, dateCreated
@@ -47,14 +47,14 @@ namespace GlobalList::API {
                     levels.push_back(GDLLLevel);
                 }
                 
-                GlobalList::Cache::Levels::setDemonlist(std::move(levels));
-                DemonlistLoadedEvent().send(Ok(GlobalList::Cache::Levels::getDemonlist(1)));
+                GDL::Cache::Levels::setDemonlist(std::move(levels));
+                DemonlistLoadedEvent().send(Ok(GDL::Cache::Levels::getDemonlist(1)));
             }
         );
     }
 
     void getLevel(int levelID) {
-        auto cachedLevel = GlobalList::Cache::Levels::getLevel(levelID);
+        auto cachedLevel = GDL::Cache::Levels::getLevel(levelID);
         if (cachedLevel) {
             LevelLoadedEvent(levelID).send(Ok(cachedLevel));
             return;
@@ -95,15 +95,15 @@ namespace GlobalList::API {
                 std::string password = data["copy_info"]["password"].asString().unwrapOrDefault();
                 std::string dateCreated = data["date_created"].asString().unwrapOrDefault();
 
-                auto GDLLevel = GlobalListLevel{
+                auto GDLLevel = GDLLevel{
                     id, ingameID, placement, name, points, listPercent,
                     length, holder, verifier, verifierID, verificationURL,
                     dateCreated, objects, description, creator,
                     songURL, gameVersion, isCopyable, password
                 };
                 
-                GlobalList::Cache::Levels::setLevel(std::move(GDLLevel));
-                LevelLoadedEvent(levelID).send(Ok(GlobalList::Cache::Levels::getLevel(levelID)));
+                GDL::Cache::Levels::setLevel(std::move(GDLLevel));
+                LevelLoadedEvent(levelID).send(Ok(GDL::Cache::Levels::getLevel(levelID)));
             }
         );
     }

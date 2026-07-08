@@ -3,7 +3,7 @@
 #include <string>
 #include <optional>
 
-struct GlobalListBasicLevel {
+struct GDLBasicLevel {
     int id;
     std::string name;
     int placement;

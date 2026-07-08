@@ -1,8 +1,8 @@
 #include "Leaderboards.hpp"
 
-namespace GlobalList::API {
+namespace GDL::API {
     void getUserLeaderboard(int page, std::string search, std::string country) {
-        auto cachedUsers = GlobalList::Cache::Leaderboards::getUsers(page);
+        auto cachedUsers = GDL::Cache::Leaderboards::getUsers(page);
         if (!cachedUsers.empty()) {
             UserLeaderboardLoadedEvent().send(Ok(cachedUsers));
             return;
@@ -23,7 +23,7 @@ namespace GlobalList::API {
                     return;
                 }
 
-                std::vector<GlobalListUser> users;
+                std::vector<GDLUser> users;
 
                 for (const auto& user : data["users"]) {
                     int id = user["id"].asInt().unwrapOrDefault();
@@ -33,18 +33,18 @@ namespace GlobalList::API {
                     std::string country = user["country"].asString().unwrapOrDefault();
                     std::string badge = user["badge"].asString().unwrapOrDefault();
 
-                    auto GDLUser = GlobalListUser{id, username, placement, points, country, badge};
+                    auto GDLUser = GDLUser{id, username, placement, points, country, badge};
                     users.push_back(GDLUser);
                 }
                 
-                GlobalList::Cache::Leaderboards::setUsers(std::move(users));
-                UserLeaderboardLoadedEvent().send(Ok(GlobalList::Cache::Leaderboards::getUsers(page)));
+                GDL::Cache::Leaderboards::setUsers(std::move(users));
+                UserLeaderboardLoadedEvent().send(Ok(GDL::Cache::Leaderboards::getUsers(page)));
             }
         );
     }
 
     void getCountryLeaderboard(CountriesLeaderboardType type) {
-        auto cachedCountry = GlobalList::Cache::Leaderboards::getCountry(type);
+        auto cachedCountry = GDL::Cache::Leaderboards::getCountry(type);
         if (cachedCountry) {
             CountryLeaderboardLoadedEvent(type).send(Ok(cachedCountry));
             return;
@@ -67,25 +67,25 @@ namespace GlobalList::API {
                     return;
                 }
 
-                std::vector<GlobalListCountry> countries;
+                std::vector<GDLCountry> countries;
 
                 for (const auto& country : data["countries"]) {
                     std::string title = country["title"].asString().unwrapOrDefault();
                     int placement = country["placement"].asInt().unwrapOrDefault();
                     double points = country["points"].asDouble().unwrapOrDefault();
 
-                    auto GDLCountry = GlobalListCountry{title, placement, points};
+                    auto GDLCountry = GDLCountry{title, placement, points};
                     countries.push_back(GDLCountry);
                 }
                 
-                GlobalList::Cache::Leaderboards::setCountries(type, std::move(countries));
-                CountryLeaderboardLoadedEvent(type).send(Ok(GlobalList::Cache::Leaderboards::getCountry(type)));
+                GDL::Cache::Leaderboards::setCountries(type, std::move(countries));
+                CountryLeaderboardLoadedEvent(type).send(Ok(GDL::Cache::Leaderboards::getCountry(type)));
             }
         );
     }
 
     void getMainCountryLeaderboard(std::string country) {
-        auto cachedCountryUsers = GlobalList::Cache::Leaderboards::getCountryUsers(country);
+        auto cachedCountryUsers = GDL::Cache::Leaderboards::getCountryUsers(country);
         if (cachedCountryUsers) {
             MainCountryLeaderboardLoadedEvent(country).send(Ok(cachedCountryUsers));
             return;
@@ -106,25 +106,25 @@ namespace GlobalList::API {
                     return;
                 }
 
-                std::vector<GlobalListCountryUser> countryUsers;
+                std::vector<GDLCountryUser> countryUsers;
                 
                 for (const auto& user : data["users"]) {
                     int id = user["id"].asInt().unwrapOrDefault();
                     std::string username = user["username"].asString().unwrapOrDefault();
                     double points = user["points"].asDouble().unwrapOrDefault();
 
-                    auto globalListCountryUser = GlobalListCountryUser{id, username, points};
+                    auto globalListCountryUser = GDLCountryUser{id, username, points};
                     countryUsers.push_back(globalListCountryUser);
                 }
                 
-                GlobalList::Cache::Leaderboards::setCountryUsers(country, std::move(countryUsers));
-                MainCountryLeaderboardLoadedEvent(country).send(Ok(GlobalList::Cache::Leaderboards::getCountryUsers(country)));
+                GDL::Cache::Leaderboards::setCountryUsers(country, std::move(countryUsers));
+                MainCountryLeaderboardLoadedEvent(country).send(Ok(GDL::Cache::Leaderboards::getCountryUsers(country)));
             }
         );
     }
 
     void getAdvancedCountryLeaderboard(std::string country) {
-        auto cachedCountryAdvanced = GlobalList::Cache::Leaderboards::getCountryAdvanced(country);
+        auto cachedCountryAdvanced = GDL::Cache::Leaderboards::getCountryAdvanced(country);
         if (cachedCountryAdvanced) {
             AdvancedCountryLeaderboardLoadedEvent(country).send(Ok(cachedCountryAdvanced));
             return;
@@ -145,7 +145,7 @@ namespace GlobalList::API {
                     return;
                 }
                 
-                auto globalListCountryAdvanced = GlobalListCountryAdvanced{};
+                auto globalListCountryAdvanced = GDLCountryAdvanced{};
 
                 int hardestID = data["levels"]["hardest"]["id"].asInt().unwrapOrDefault();
                 std::string hardestName = data["levels"]["hardest"]["name"].asString().unwrapOrDefault();
@@ -154,7 +154,7 @@ namespace GlobalList::API {
 
                 globalListCountryAdvanced.hardestLevel = {hardestID, hardestName, hardestPlacement, hardestVideoURL};
 
-                auto parseList = [](matjson::Value& levelData, std::vector<GlobalListBasicLevel>& list, bool withPercent = false) {
+                auto parseList = [](matjson::Value& levelData, std::vector<GDLBasicLevel>& list, bool withPercent = false) {
                     for (const auto& level : levelData) {
                         int id = level["id"].asInt().unwrapOrDefault();
                         std::string name = level["name"].asString().unwrapOrDefault();
@@ -180,8 +180,8 @@ namespace GlobalList::API {
                 int userCount = data["user_count"].asInt().unwrapOrDefault();
                 globalListCountryAdvanced.userCount = userCount;
                 
-                GlobalList::Cache::Leaderboards::setCountryAdvanced(country, std::move(globalListCountryAdvanced));
-                AdvancedCountryLeaderboardLoadedEvent(country).send(Ok(GlobalList::Cache::Leaderboards::getCountryAdvanced(country)));
+                GDL::Cache::Leaderboards::setCountryAdvanced(country, std::move(globalListCountryAdvanced));
+                AdvancedCountryLeaderboardLoadedEvent(country).send(Ok(GDL::Cache::Leaderboards::getCountryAdvanced(country)));
             }
         );
     }

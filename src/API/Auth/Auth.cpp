@@ -1,6 +1,6 @@
 #include "Auth.hpp"
 
-namespace GlobalList::API {
+namespace GDL::API {
     static std::string g_verificationToken;
 
     void getVerificationToken(std::string username, std::string password) {

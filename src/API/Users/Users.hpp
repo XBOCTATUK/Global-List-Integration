@@ -6,7 +6,7 @@
 #include "../../Events/UserLoadedEvent.hpp"
 #include "../../Events/UserRecordsLoadedEvent.hpp"
 
-namespace GlobalList::API {
+namespace GDL::API {
     void getUser(int userID);
     void getUserRecords(int userID);
 };

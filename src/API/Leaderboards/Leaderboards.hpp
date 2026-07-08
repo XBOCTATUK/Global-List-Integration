@@ -8,7 +8,7 @@
 #include "../../Events/MainCountryLeaderboardLoadedEvent.hpp"
 #include "../../Events/AdvancedCountryLeaderboardLoadedEvent.hpp"
 
-namespace GlobalList::API {
+namespace GDL::API {
     void getUserLeaderboard(int page);
     void getCountryLeaderboard(CountriesLeaderboardType type);
     void getMainCountryLeaderboard(std::string country);

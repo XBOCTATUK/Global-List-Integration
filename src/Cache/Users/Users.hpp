@@ -1,16 +1,16 @@
 #pragma once
 
 #include "../Cache.hpp"
-#include "../../Models/GlobalListUser.hpp"
-#include "../../Models/GlobalListUserRecords.hpp"
+#include "../../Models/GDLUser.hpp"
+#include "../../Models/GDLUserRecords.hpp"
 
-namespace GlobalList::Cache::Users {
-    GlobalListUser* getUser(int userID);
-    void setUser(GlobalListUser&& user);
+namespace GDL::Cache::Users {
+    GDLUser* getUser(int userID);
+    void setUser(GDLUser&& user);
     void clearUsers();
 
-    GlobalListUserRecords* getUserRecords(int userID);
-    void setUserRecords(GlobalListUserRecords&& records);
+    GDLUserRecords* getUserRecords(int userID);
+    void setUserRecords(GDLUserRecords&& records);
     void clearRecords();
 
     void clearAll();

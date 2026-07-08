@@ -4,7 +4,7 @@
 
 enum class CountriesLeaderboardType { Main, Advanced };
 
-struct GlobalListCountry {
+struct GDLCountry {
     std::string title;
     int placement;
     double points;

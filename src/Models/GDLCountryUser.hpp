@@ -2,7 +2,7 @@
 
 #include <string>
 
-struct GlobalListCountryUser {
+struct GDLCountryUser {
     int id;
     std::string username;
     double points;

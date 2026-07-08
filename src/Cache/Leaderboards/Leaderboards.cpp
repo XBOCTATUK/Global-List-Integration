@@ -1,21 +1,21 @@
 #include "Leaderboards.hpp"
 #include <unordered_map>
 
-namespace GlobalList::Cache::Leaderboards {
+namespace GDL::Cache::Leaderboards {
     constexpr auto USERS_TTL = std::chrono::minutes{30};
     constexpr auto COUNTRIES_TTL = std::chrono::minutes{30};
     constexpr auto COUNTRY_USERS_TTL = std::chrono::minutes{30};
     constexpr auto COUNTRY_ADVANCED_TTL = std::chrono::minutes{30};
 
-    static std::unordered_map<int, CacheEntry<GlobalListUser>> userData;
-    static std::unordered_map<CountriesLeaderboardType, CacheEntry<std::vector<GlobalListCountry>>> countryData;
-    static std::unordered_map<std::string, CacheEntry<std::vector<GlobalListCountryUser>>> countryUserData;
-    static std::unordered_map<std::string, CacheEntry<GlobalListCountryAdvanced>> countryAdvancedData;
+    static std::unordered_map<int, CacheEntry<GDLUser>> userData;
+    static std::unordered_map<CountriesLeaderboardType, CacheEntry<std::vector<GDLCountry>>> countryData;
+    static std::unordered_map<std::string, CacheEntry<std::vector<GDLCountryUser>>> countryUserData;
+    static std::unordered_map<std::string, CacheEntry<GDLCountryAdvanced>> countryAdvancedData;
 
-    std::vector<GlobalListUser*> getUsers(int page) {
+    std::vector<GDLUser*> getUsers(int page) {
         if (page < 0) return {};
 
-        std::vector<GlobalListUser*> users;
+        std::vector<GDLUser*> users;
         for (int i = 10 * page + 1; i < 10 * (page+1) + 1; i++) {
             auto it = userData.find(i);
             if (
@@ -29,11 +29,11 @@ namespace GlobalList::Cache::Leaderboards {
         return users;
     }
 
-    void setUsers(std::vector<GlobalListUser>&& users) {
+    void setUsers(std::vector<GDLUser>&& users) {
         for (auto& user : users) {
             userData.insert_or_assign(
                 user.placement,
-                CacheEntry<GlobalListUser>{std::move(user), std::chrono::steady_clock::now()}
+                CacheEntry<GDLUser>{std::move(user), std::chrono::steady_clock::now()}
             );
         }
     }
@@ -43,7 +43,7 @@ namespace GlobalList::Cache::Leaderboards {
     }
 
 
-    std::vector<GlobalListCountry>* getCountry(CountriesLeaderboardType type) {
+    std::vector<GDLCountry>* getCountry(CountriesLeaderboardType type) {
         auto it = countryData.find(type);
         if (
             it == countryData.end() ||
@@ -53,7 +53,7 @@ namespace GlobalList::Cache::Leaderboards {
         return &it->second.value;
     }
 
-    void setCountries(CountriesLeaderboardType type, std::vector<GlobalListCountry>&& countries) {
+    void setCountries(CountriesLeaderboardType type, std::vector<GDLCountry>&& countries) {
         countryData[type] = {std::move(countries), std::chrono::steady_clock::now()};
     }
 
@@ -62,7 +62,7 @@ namespace GlobalList::Cache::Leaderboards {
     }
 
 
-    std::vector<GlobalListCountryUser>* getCountryUsers(const std::string& country) {
+    std::vector<GDLCountryUser>* getCountryUsers(const std::string& country) {
         auto it = countryUserData.find(country);
         if (
             it == countryUserData.end() ||
@@ -72,7 +72,7 @@ namespace GlobalList::Cache::Leaderboards {
         return &it->second.value;
     }
 
-    void setCountryUsers(const std::string& country, std::vector<GlobalListCountryUser>&& users) {
+    void setCountryUsers(const std::string& country, std::vector<GDLCountryUser>&& users) {
         countryUserData[country] = {std::move(users), std::chrono::steady_clock::now()};
     }
 
@@ -81,7 +81,7 @@ namespace GlobalList::Cache::Leaderboards {
     }
 
 
-    GlobalListCountryAdvanced* getCountryAdvanced(const std::string& country) {
+    GDLCountryAdvanced* getCountryAdvanced(const std::string& country) {
         auto it = countryAdvancedData.find(country);
         if (
             it == countryAdvancedData.end() ||
@@ -91,7 +91,7 @@ namespace GlobalList::Cache::Leaderboards {
         return &it->second.value;
     }
 
-    void setCountryAdvanced(const std::string& country, GlobalListCountryAdvanced&& data) {
+    void setCountryAdvanced(const std::string& country, GDLCountryAdvanced&& data) {
         countryAdvancedData[country] = {std::move(data), std::chrono::steady_clock::now()};
     }
 

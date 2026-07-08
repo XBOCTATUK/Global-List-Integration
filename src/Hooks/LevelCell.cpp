@@ -12,7 +12,7 @@ class $modify(MyLevelCell, LevelCell) {
         LevelCell::loadFromLevel(level);
         if (
             !level || level->m_levelType == GJLevelType::Main || level->m_levelType == GJLevelType::Editor ||
-            GlobalList::Cache::Levels::isLevelWOPlacement(level->m_levelID.value())
+            GDL::Cache::Levels::isLevelWOPlacement(level->m_levelID.value())
         ) return;
 
         bool isExtremeDemon =
@@ -78,7 +78,7 @@ class $modify(MyLevelCell, LevelCell) {
             }
 
             m_fields->m_listener = LevelLoadedEvent(level->m_levelID.value()).listen(
-                [this](Result<GlobalListLevel*, APIError> result) {
+                [this](Result<GDLLevel*, APIError> result) {
                     if (!this || !m_mainLayer) return;
 
                     auto gdlLabel = static_cast<CCLabelBMFont*>(m_mainLayer->getChildByID("gdl-label"_spr));
@@ -101,7 +101,7 @@ class $modify(MyLevelCell, LevelCell) {
                 }
             );
 
-            GlobalList::API::getLevel(level->m_levelID.value());
+            GDL::API::getLevel(level->m_levelID.value());
         }
     }
 };

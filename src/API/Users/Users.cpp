@@ -1,8 +1,8 @@
 #include "Users.hpp"
 
-namespace GlobalList::API {
+namespace GDL::API {
     void getUser(int userID) {
-        auto cachedUser = GlobalList::Cache::Users::getUser(userID);
+        auto cachedUser = GDL::Cache::Users::getUser(userID);
         if (cachedUser) {
             UserLoadedEvent(userID).send(Ok(cachedUser));
             return;
@@ -34,14 +34,14 @@ namespace GlobalList::API {
                 std::string hardestName = data["levels"]["hardest"]["name"].asString().unwrapOrDefault();
                 int hardestPlacement = data["levels"]["hardest"]["placement"].asInt().unwrapOrDefault();
                 std::string hardestVideoURL = data["levels"]["hardest"]["video_url"].asString().unwrapOrDefault();
-                auto hardest = GlobalListBasicLevel{hardestID, hardestName, hardestPlacement, hardestVideoURL};
+                auto hardest = GDLBasicLevel{hardestID, hardestName, hardestPlacement, hardestVideoURL};
 
-                auto GDLUser = GlobalListUser{
+                auto GDLUser = GDLUser{
                     userID, username, placement, points,
                     country, badge, isBanned, hardest
                 };
 
-                auto parseList = [](matjson::Value& levelData, optGlobalListBasicLevels& list, bool withPercent = false) {
+                auto parseList = [](matjson::Value& levelData, optGDLBasicLevels& list, bool withPercent = false) {
                     for (const auto& level : levelData) {
                         int id = level["id"].asInt().unwrapOrDefault();
                         std::string name = level["name"].asString().unwrapOrDefault();
@@ -66,14 +66,14 @@ namespace GlobalList::API {
                 parseList(data["levels"]["verified"], GDLUser.verifiedList);
                 parseList(data["levels"]["uncompleted"], GDLUser.uncompletedList);
                 
-                GlobalList::Cache::Users::setUser(std::move(GDLUser));
-                UserLoadedEvent(userID).send(Ok(GlobalList::Cache::Users::getUser(userID)));
+                GDL::Cache::Users::setUser(std::move(GDLUser));
+                UserLoadedEvent(userID).send(Ok(GDL::Cache::Users::getUser(userID)));
             }
         );
     }
 
     void getUserRecords(int userID) {
-        auto cachedUserRecords = GlobalList::Cache::Users::getUserRecords(userID);
+        auto cachedUserRecords = GDL::Cache::Users::getUserRecords(userID);
         if (cachedUserRecords) {
             UserRecordsLoadedEvent(userID).send(Ok(cachedUserRecords));
             return;
@@ -96,7 +96,7 @@ namespace GlobalList::API {
 
                 int totalCount = data["total_count"].asInt().unwrapOrDefault();
                 int completedCount = data["completed_count"].asInt().unwrapOrDefault();
-                std::vector<GlobalListRecord> records;
+                std::vector<GDLRecord> records;
 
                 for (const auto& record : data["records"]) {
                     int id = record["id"].asInt().unwrapOrDefault();
@@ -107,17 +107,17 @@ namespace GlobalList::API {
                     std::string levelName = record["level"]["name"].asString().unwrapOrDefault();
                     int placement = record["level"]["placement"].asInt().unwrapOrDefault();
 
-                    auto GDLRecord = GlobalListRecord{
+                    auto GDLRecord = GDLRecord{
                         id, percent, status, videoURL,
                         internalID, levelName, placement
                     };
                     records.push_back(GDLRecord);
                 }
 
-                auto userRecords = GlobalListUserRecords{userID, totalCount, completedCount, records};
+                auto userRecords = GDLUserRecords{userID, totalCount, completedCount, records};
                 
-                GlobalList::Cache::Users::setUserRecords(std::move(userRecords));
-                UserRecordsLoadedEvent(userID).send(Ok(GlobalList::Cache::Users::getUserRecords(userID)));
+                GDL::Cache::Users::setUserRecords(std::move(userRecords));
+                UserRecordsLoadedEvent(userID).send(Ok(GDL::Cache::Users::getUserRecords(userID)));
             }
         );
     }

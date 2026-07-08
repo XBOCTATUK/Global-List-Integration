@@ -3,7 +3,7 @@
 #include <string>
 #include <optional>
 
-struct GlobalListLevel {
+struct GDLLevel {
     int id;
     int ingameID;
     int placement;

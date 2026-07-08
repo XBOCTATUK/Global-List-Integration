@@ -2,17 +2,17 @@
 
 #include <vector>
 #include "../Cache.hpp"
-#include "../../Models/GlobalListLevel.hpp"
-#include "../../Models/GlobalListCountry.hpp"
+#include "../../Models/GDLLevel.hpp"
+#include "../../Models/GDLCountry.hpp"
 
-namespace GlobalList::Cache::Levels {
-    std::vector<GlobalListLevel*> getDemonlist(int page);
-    void setDemonlist(std::vector<GlobalListLevel>&& levels);
+namespace GDL::Cache::Levels {
+    std::vector<GDLLevel*> getDemonlist(int page);
+    void setDemonlist(std::vector<GDLLevel>&& levels);
 
-    GlobalListLevel* getLevel(int levelID);
+    GDLLevel* getLevel(int levelID);
     bool isLevelWOPlacement(int levelID);
 
-    void setLevel(GlobalListLevel&& level);
+    void setLevel(GDLLevel&& level);
     void setLevelWOPlacement(int levelID);
 
     void clear();

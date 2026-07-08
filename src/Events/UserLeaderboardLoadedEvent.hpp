@@ -7,7 +7,7 @@
 
 using namespace geode::prelude;
 
-class UserLeaderboardLoadedEvent : public Event<UserLeaderboardLoadedEvent, bool(Result<std::vector<GlobalListUser*>, APIError>)> {
+class UserLeaderboardLoadedEvent : public Event<UserLeaderboardLoadedEvent, bool(Result<std::vector<GDLUser*>, APIError>)> {
 public:
     using Event::Event;
 };

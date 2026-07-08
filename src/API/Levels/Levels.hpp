@@ -6,7 +6,7 @@
 #include "../../Events/DemonlistLoadedEvent.hpp"
 #include "../../Events/LevelLoadedEvent.hpp"
 
-namespace GlobalList::API {
+namespace GDL::API {
     void getDemonlist(int page);
     void getLevel(int levelID);
 };

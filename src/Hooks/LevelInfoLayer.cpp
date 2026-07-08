@@ -12,7 +12,7 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer) {
         if (!LevelInfoLayer::init(level, challenge)) return false;
         if (
             !level || level->m_levelType == GJLevelType::Main || level->m_levelType == GJLevelType::Editor ||
-            GlobalList::Cache::Levels::isLevelWOPlacement(level->m_levelID.value())
+            GDL::Cache::Levels::isLevelWOPlacement(level->m_levelID.value())
         ) return true;
 
         bool isExtremeDemon =
@@ -68,7 +68,7 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer) {
             addChild(gdlLabel);
 
             m_fields->m_listener = LevelLoadedEvent(level->m_levelID.value()).listen(
-                [this](Result<GlobalListLevel*, APIError> result) {
+                [this](Result<GDLLevel*, APIError> result) {
                     if (!this) return;
 
                     auto gdlLabel = static_cast<CCLabelBMFont*>(getChildByID("gdl-label"_spr));
@@ -91,7 +91,7 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer) {
                 }
             );
 
-            GlobalList::API::getLevel(level->m_levelID.value());
+            GDL::API::getLevel(level->m_levelID.value());
         }
 
         return true;

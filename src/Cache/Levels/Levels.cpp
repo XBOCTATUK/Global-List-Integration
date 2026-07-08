@@ -1,17 +1,17 @@
 #include "Levels.hpp"
 #include <unordered_map>
 
-namespace GlobalList::Cache::Levels {
+namespace GDL::Cache::Levels {
     constexpr auto LEVELS_TTL = std::chrono::minutes{30};
 
-    static std::unordered_map<int, CacheEntry<GlobalListLevel>> levelData;
+    static std::unordered_map<int, CacheEntry<GDLLevel>> levelData;
     static std::unordered_map<int, int> levelIDByPlacement;
     static std::vector<int> levelsWOPlacement;
 
-    std::vector<GlobalListLevel*> getDemonlist(int page) {
+    std::vector<GDLLevel*> getDemonlist(int page) {
         if (page < 0) return {};
 
-        std::vector<GlobalListLevel*> levels;
+        std::vector<GDLLevel*> levels;
         for (int i = 10 * page + 1; i < 10 * (page+1) + 1; i++) {
             auto levelID = levelIDByPlacement.find(i);
             if (
@@ -25,7 +25,7 @@ namespace GlobalList::Cache::Levels {
         return levels;
     }
 
-    void setDemonlist(std::vector<GlobalListLevel>&& levels) {
+    void setDemonlist(std::vector<GDLLevel>&& levels) {
         for (auto& level : levels) {
             levelData[level.ingameID] = {std::move(level), std::chrono::steady_clock::now()};
             levelIDByPlacement[level.placement] = level.ingameID;
@@ -33,7 +33,7 @@ namespace GlobalList::Cache::Levels {
     }
 
 
-    GlobalListLevel* getLevel(int levelID) {
+    GDLLevel* getLevel(int levelID) {
         auto it = levelData.find(levelID);
         if (
             it == levelData.end() /*||
@@ -48,7 +48,7 @@ namespace GlobalList::Cache::Levels {
         return it != levelsWOPlacement.end();
     }
 
-    void setLevel(GlobalListLevel&& level) {
+    void setLevel(GDLLevel&& level) {
         levelData[level.ingameID] = {std::move(level), std::chrono::steady_clock::now()};
         levelIDByPlacement[level.placement] = level.ingameID;
     }

@@ -1,14 +1,14 @@
 #include "Users.hpp"
 #include <unordered_map>
 
-namespace GlobalList::Cache::Users {
+namespace GDL::Cache::Users {
     constexpr auto USERS_TTL = std::chrono::minutes{30};
     constexpr auto USER_RECORDS_TTL = std::chrono::minutes{30};
 
-    static std::unordered_map<int, CacheEntry<GlobalListUser>> userData;
-    static std::unordered_map<int, CacheEntry<GlobalListUserRecords>> userRecords;
+    static std::unordered_map<int, CacheEntry<GDLUser>> userData;
+    static std::unordered_map<int, CacheEntry<GDLUserRecords>> userRecords;
 
-    GlobalListUser* getUser(int userID) {
+    GDLUser* getUser(int userID) {
         auto it = userData.find(userID);
         if (
             it == userData.end() ||
@@ -18,7 +18,7 @@ namespace GlobalList::Cache::Users {
         return &it->second.value;
     }
 
-    void setUser(GlobalListUser&& user) {
+    void setUser(GDLUser&& user) {
         userData[user.id] = {std::move(user), std::chrono::steady_clock::now()};
     }
 
@@ -27,7 +27,7 @@ namespace GlobalList::Cache::Users {
     }
 
 
-    GlobalListUserRecords* getUserRecords(int userID) {
+    GDLUserRecords* getUserRecords(int userID) {
         auto it = userRecords.find(userID);
         if (
             it == userRecords.end() ||
@@ -37,7 +37,7 @@ namespace GlobalList::Cache::Users {
         return &it->second.value;
     }
 
-    void setUserRecords(GlobalListUserRecords&& records) {
+    void setUserRecords(GDLUserRecords&& records) {
         userRecords[records.userID] = {std::move(records), std::chrono::steady_clock::now()};
     }
 

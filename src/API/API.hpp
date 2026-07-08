@@ -4,7 +4,7 @@
 #include <Geode/utils/web.hpp>
 #include "../Cache/Cache.hpp"
 
-namespace GlobalList::API {
+namespace GDL::API {
     static inline std::string baseURL = "https://api.demonlist.org";
 
     static inline std::string loginEP = baseURL + "/auth/login";

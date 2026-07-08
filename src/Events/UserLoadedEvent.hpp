@@ -7,7 +7,7 @@
 
 using namespace geode::prelude;
 
-class UserLoadedEvent : public Event<UserLoadedEvent, bool(Result<GlobalListUser*, APIError>), int> {
+class UserLoadedEvent : public Event<UserLoadedEvent, bool(Result<GDLUser*, APIError>), int> {
 public:
     using Event::Event;
 };

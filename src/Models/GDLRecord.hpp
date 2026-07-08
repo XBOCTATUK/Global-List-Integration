@@ -2,7 +2,7 @@
 
 #include <string>
 
-struct GlobalListRecord {
+struct GDLRecord {
     int id;
     int percent;
     std::string status;

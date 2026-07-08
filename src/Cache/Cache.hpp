@@ -2,7 +2,7 @@
 
 #include <chrono>
 
-namespace GlobalList::Cache {
+namespace GDL::Cache {
     template <typename T>
     struct CacheEntry {
         T value;
