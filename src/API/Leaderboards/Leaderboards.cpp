@@ -33,8 +33,8 @@ namespace GDL::API {
                     std::string country = user["country"].asString().unwrapOrDefault();
                     std::string badge = user["badge"].asString().unwrapOrDefault();
 
-                    auto GDLUser = GDLUser{id, username, placement, points, country, badge};
-                    users.push_back(GDLUser);
+                    auto gdlUser = GDLUser{id, username, placement, points, country, badge};
+                    users.push_back(gdlUser);
                 }
                 
                 GDL::Cache::Leaderboards::setUsers(std::move(users));
@@ -74,8 +74,8 @@ namespace GDL::API {
                     int placement = country["placement"].asInt().unwrapOrDefault();
                     double points = country["points"].asDouble().unwrapOrDefault();
 
-                    auto GDLCountry = GDLCountry{title, placement, points};
-                    countries.push_back(GDLCountry);
+                    auto gdlCountry = GDLCountry{title, placement, points};
+                    countries.push_back(gdlCountry);
                 }
                 
                 GDL::Cache::Leaderboards::setCountries(type, std::move(countries));
@@ -113,8 +113,8 @@ namespace GDL::API {
                     std::string username = user["username"].asString().unwrapOrDefault();
                     double points = user["points"].asDouble().unwrapOrDefault();
 
-                    auto globalListCountryUser = GDLCountryUser{id, username, points};
-                    countryUsers.push_back(globalListCountryUser);
+                    auto gdlCountryUser = GDLCountryUser{id, username, points};
+                    countryUsers.push_back(gdlCountryUser);
                 }
                 
                 GDL::Cache::Leaderboards::setCountryUsers(country, std::move(countryUsers));
@@ -145,14 +145,14 @@ namespace GDL::API {
                     return;
                 }
                 
-                auto globalListCountryAdvanced = GDLCountryAdvanced{};
+                auto gdlCountryAdvanced = GDLCountryAdvanced{};
 
                 int hardestID = data["levels"]["hardest"]["id"].asInt().unwrapOrDefault();
                 std::string hardestName = data["levels"]["hardest"]["name"].asString().unwrapOrDefault();
                 int hardestPlacement = data["levels"]["hardest"]["placement"].asInt().unwrapOrDefault();
                 std::string hardestVideoURL = data["levels"]["hardest"]["video_url"].asString().unwrapOrDefault();
 
-                globalListCountryAdvanced.hardestLevel = {hardestID, hardestName, hardestPlacement, hardestVideoURL};
+                gdlCountryAdvanced.hardestLevel = {hardestID, hardestName, hardestPlacement, hardestVideoURL};
 
                 auto parseList = [](matjson::Value& levelData, std::vector<GDLBasicLevel>& list, bool withPercent = false) {
                     for (const auto& level : levelData) {
@@ -169,18 +169,18 @@ namespace GDL::API {
                     }
                 };
 
-                parseList(data["levels"]["main"], globalListCountryAdvanced.mainList);
-                parseList(data["levels"]["extended"], globalListCountryAdvanced.extendedList);
-                parseList(data["levels"]["advanced"], globalListCountryAdvanced.advancedList);
-                parseList(data["levels"]["unbounded"], globalListCountryAdvanced.unboundedList);
-                parseList(data["levels"]["progress"], globalListCountryAdvanced.progressList, true);
-                parseList(data["levels"]["verified"], globalListCountryAdvanced.verifiedList);
-                parseList(data["levels"]["uncompleted"], globalListCountryAdvanced.uncompletedList);
+                parseList(data["levels"]["main"], gdlCountryAdvanced.mainList);
+                parseList(data["levels"]["extended"], gdlCountryAdvanced.extendedList);
+                parseList(data["levels"]["advanced"], gdlCountryAdvanced.advancedList);
+                parseList(data["levels"]["unbounded"], gdlCountryAdvanced.unboundedList);
+                parseList(data["levels"]["progress"], gdlCountryAdvanced.progressList, true);
+                parseList(data["levels"]["verified"], gdlCountryAdvanced.verifiedList);
+                parseList(data["levels"]["uncompleted"], gdlCountryAdvanced.uncompletedList);
 
                 int userCount = data["user_count"].asInt().unwrapOrDefault();
-                globalListCountryAdvanced.userCount = userCount;
+                gdlCountryAdvanced.userCount = userCount;
                 
-                GDL::Cache::Leaderboards::setCountryAdvanced(country, std::move(globalListCountryAdvanced));
+                GDL::Cache::Leaderboards::setCountryAdvanced(country, std::move(gdlCountryAdvanced));
                 AdvancedCountryLeaderboardLoadedEvent(country).send(Ok(GDL::Cache::Leaderboards::getCountryAdvanced(country)));
             }
         );

@@ -39,12 +39,12 @@ namespace GDL::API {
                     std::string verificationURL = level["verification_url"].asString().unwrapOrDefault();
                     std::string dateCreated = level["date_created"].asString().unwrapOrDefault();
 
-                    auto GDLLLevel = GDLLevel{
+                    auto gdlLevel = GDLLevel{
                         id, ingameID, placement, name, points,
                         listPercent, length, holder, verifier,
                         verifierID, verificationURL, dateCreated
                     };
-                    levels.push_back(GDLLLevel);
+                    levels.push_back(gdlLevel);
                 }
                 
                 GDL::Cache::Levels::setDemonlist(std::move(levels));
@@ -95,14 +95,14 @@ namespace GDL::API {
                 std::string password = data["copy_info"]["password"].asString().unwrapOrDefault();
                 std::string dateCreated = data["date_created"].asString().unwrapOrDefault();
 
-                auto GDLLevel = GDLLevel{
+                auto gdlLevel = GDLLevel{
                     id, ingameID, placement, name, points, listPercent,
                     length, holder, verifier, verifierID, verificationURL,
                     dateCreated, objects, description, creator,
                     songURL, gameVersion, isCopyable, password
                 };
                 
-                GDL::Cache::Levels::setLevel(std::move(GDLLevel));
+                GDL::Cache::Levels::setLevel(std::move(gdlLevel));
                 LevelLoadedEvent(levelID).send(Ok(GDL::Cache::Levels::getLevel(levelID)));
             }
         );

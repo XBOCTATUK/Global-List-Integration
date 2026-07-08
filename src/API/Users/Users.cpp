@@ -36,7 +36,7 @@ namespace GDL::API {
                 std::string hardestVideoURL = data["levels"]["hardest"]["video_url"].asString().unwrapOrDefault();
                 auto hardest = GDLBasicLevel{hardestID, hardestName, hardestPlacement, hardestVideoURL};
 
-                auto GDLUser = GDLUser{
+                auto gdlUser = GDLUser{
                     userID, username, placement, points,
                     country, badge, isBanned, hardest
                 };
@@ -58,15 +58,15 @@ namespace GDL::API {
                     }
                 };
 
-                parseList(data["levels"]["main"], GDLUser.mainList);
-                parseList(data["levels"]["extended"], GDLUser.extendedList);
-                parseList(data["levels"]["advanced"], GDLUser.advancedList);
-                parseList(data["levels"]["unbounded"], GDLUser.unboundedList);
-                parseList(data["levels"]["progress"], GDLUser.progressList, true);
-                parseList(data["levels"]["verified"], GDLUser.verifiedList);
-                parseList(data["levels"]["uncompleted"], GDLUser.uncompletedList);
+                parseList(data["levels"]["main"], gdlUser.mainList);
+                parseList(data["levels"]["extended"], gdlUser.extendedList);
+                parseList(data["levels"]["advanced"], gdlUser.advancedList);
+                parseList(data["levels"]["unbounded"], gdlUser.unboundedList);
+                parseList(data["levels"]["progress"], gdlUser.progressList, true);
+                parseList(data["levels"]["verified"], gdlUser.verifiedList);
+                parseList(data["levels"]["uncompleted"], gdlUser.uncompletedList);
                 
-                GDL::Cache::Users::setUser(std::move(GDLUser));
+                GDL::Cache::Users::setUser(std::move(gdlUser));
                 UserLoadedEvent(userID).send(Ok(GDL::Cache::Users::getUser(userID)));
             }
         );
@@ -107,11 +107,11 @@ namespace GDL::API {
                     std::string levelName = record["level"]["name"].asString().unwrapOrDefault();
                     int placement = record["level"]["placement"].asInt().unwrapOrDefault();
 
-                    auto GDLRecord = GDLRecord{
+                    auto gdlRecord = GDLRecord{
                         id, percent, status, videoURL,
                         internalID, levelName, placement
                     };
-                    records.push_back(GDLRecord);
+                    records.push_back(gdlRecord);
                 }
 
                 auto userRecords = GDLUserRecords{userID, totalCount, completedCount, records};
