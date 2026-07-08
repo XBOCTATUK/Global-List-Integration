@@ -51,8 +51,8 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer) {
 
             float gdlIconX = lengthIcon->getPositionX() + lengthIcon->getContentWidth() / 2.0f;
             float gdlIconY = m_orbsIcon->isVisible()
-                ? m_orbsIcon->getPositionY() - (lengthIcon->getPositionY() - m_orbsIcon->getPositionY()) + 4.0f
-                : lengthIcon->getPositionY() - (m_likesIcon->getPositionY() - lengthIcon->getPositionY() + 4.0f);
+                ? m_orbsIcon->getPositionY() - (downloadsIcon->getPositionY() - m_likesIcon->getPositionY())
+                : lengthIcon->getPositionY() - (m_likesIcon->getPositionY() - lengthIcon->getPositionY());
 
             auto gdlIcon = CCSprite::create("global-list.png"_spr);
             gdlIcon->setScale(23.0f / gdlIcon->getContentWidth());
@@ -68,14 +68,25 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer) {
             addChild(gdlLabel);
 
             m_fields->m_listener = LevelLoadedEvent(level->m_levelID.value()).listen(
-                [this](GlobalListLevel* GDLLevel) {
+                [this](Result<GlobalListLevel*, APIError> result) {
                     if (!this) return;
-                    
-                    if (auto gdlLabel = static_cast<CCLabelBMFont*>(getChildByID("gdl-label"_spr))) {
-                        auto gdlIcon = getChildByID("gdl-icon"_spr);
 
-                        if (!GDLLevel) Utils::removePlacement(m_level->m_levelID, gdlLabel, gdlIcon, m_fields->m_origPositions, true);
-                        else gdlLabel->setString(fmt::format("#{}", GDLLevel->placement).c_str());
+                    auto gdlLabel = static_cast<CCLabelBMFont*>(getChildByID("gdl-label"_spr));
+                    auto gdlIcon = getChildByID("gdl-icon"_spr);
+                    if (result.isOk()) {
+                        auto GDLLevel = result.unwrap();
+                        if (gdlLabel && gdlIcon) {
+                            gdlLabel->setString(fmt::format("#{}", GDLLevel->placement).c_str());
+                        }
+                    }
+                    else if (gdlLabel && gdlIcon) {
+                        auto error = result.err().value();
+                        if (error.message == APIMessage::LevelNotFound) {
+                            Utils::removePlacement(m_level->m_levelID, gdlLabel, gdlIcon, m_fields->m_origPositions, true);
+                        }
+                        else {
+                            gdlLabel->setString("N/A");
+                        }
                     }
                 }
             );

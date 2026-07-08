@@ -4,7 +4,7 @@ namespace GlobalList::API {
     void getDemonlist() {
         auto cachedDemonlist = GlobalList::Cache::Levels::getDemonlist(1);
         if (!cachedDemonlist.empty()) {
-            DemonlistLoadedEvent().send(cachedDemonlist);
+            DemonlistLoadedEvent().send(Ok(cachedDemonlist));
             return;
         }
 
@@ -12,12 +12,15 @@ namespace GlobalList::API {
             levelListEP,
             matjson::Value::object(),
             matjson::Value::object(),
-            [](matjson::Value data) {
-                if (!data.contains("levels") || !data["levels"].isArray() || data["levels"].size() == 0) {
-                    Utils::failure(
-                        "Invalid Response",
-                        "The demonlist data is incomplete or invalid. Please try again later."
-                    );
+            [](matjson::Value data, APIError error) {
+                if (data.size() == 0 && error) {
+                    DemonlistLoadedEvent().send(Err(error));
+                    return;
+                }
+                else if (!data.contains("levels") || !data["levels"].isArray() || data["levels"].size() == 0) {
+                    log::error("The demonlist data is incomplete or invalid.");
+                    DemonlistLoadedEvent().send(Err(APIError{APIErrorType::InvalidEndpointResponse, APIMessage::None}));
+                    return;
                 }
 
                 std::vector<GlobalListLevel> levels;
@@ -45,7 +48,7 @@ namespace GlobalList::API {
                 }
                 
                 GlobalList::Cache::Levels::setDemonlist(std::move(levels));
-                DemonlistLoadedEvent().send(GlobalList::Cache::Levels::getDemonlist(1));
+                DemonlistLoadedEvent().send(Ok(GlobalList::Cache::Levels::getDemonlist(1)));
             }
         );
     }
@@ -53,7 +56,7 @@ namespace GlobalList::API {
     void getLevel(int levelID) {
         auto cachedLevel = GlobalList::Cache::Levels::getLevel(levelID);
         if (cachedLevel) {
-            LevelLoadedEvent(levelID).send(cachedLevel);
+            LevelLoadedEvent(levelID).send(Ok(cachedLevel));
             return;
         }
 
@@ -61,12 +64,15 @@ namespace GlobalList::API {
             levelEP,
             matjson::makeObject({ {"ingame_id", levelID} }),
             matjson::Value::object(),
-            [levelID](matjson::Value data) {
-                if (!data.isObject() || data.size() == 0) {
-                    Utils::failure(
-                        "Invalid Response",
-                        "The level data is incomplete or invalid. Please try again later."
-                    );
+            [levelID](matjson::Value data, APIError error) {
+                if (data.size() == 0 && error) {
+                    LevelLoadedEvent(levelID).send(Err(error));
+                    return;
+                }
+                else if (!data.isObject() || data.size() == 0) {
+                    log::error("The level data is incomplete or invalid.");
+                    LevelLoadedEvent(levelID).send(Err(APIError{APIErrorType::InvalidEndpointResponse, APIMessage::None}));
+                    return;
                 }
 
                 int id = data["id"].asInt().unwrapOrDefault();
@@ -97,7 +103,7 @@ namespace GlobalList::API {
                 };
                 
                 GlobalList::Cache::Levels::setLevel(std::move(GDLLevel));
-                LevelLoadedEvent(levelID).send(GlobalList::Cache::Levels::getLevel(levelID));
+                LevelLoadedEvent(levelID).send(Ok(GlobalList::Cache::Levels::getLevel(levelID)));
             }
         );
     }

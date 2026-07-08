@@ -4,7 +4,7 @@ namespace GlobalList::API {
     void getUser(int userID) {
         auto cachedUser = GlobalList::Cache::Users::getUser(userID);
         if (cachedUser) {
-            UserLoadedEvent(userID).send(cachedUser);
+            UserLoadedEvent(userID).send(Ok(cachedUser));
             return;
         }
 
@@ -12,12 +12,15 @@ namespace GlobalList::API {
             userEP,
             matjson::makeObject({ {"id", userID} }),
             matjson::Value::object(),
-            [userID](matjson::Value data) {
-                if (!data.isObject() || data.size() == 0) {
-                    Utils::failure(
-                        "Invalid Response",
-                        "The user data is incomplete or invalid. Please try again later."
-                    );
+            [userID](matjson::Value data, APIError error) {
+                if (data.size() == 0 && error) {
+                    UserLoadedEvent(userID).send(Err(error));
+                    return;
+                }
+                else if (!data.isObject() || data.size() == 0) {
+                    log::error("The user data is incomplete or invalid.");
+                    UserLoadedEvent(userID).send(Err(APIError{APIErrorType::InvalidEndpointResponse, APIMessage::None}));
+                    return;
                 }
 
                 std::string username = data["username"].asString().unwrapOrDefault();
@@ -64,7 +67,7 @@ namespace GlobalList::API {
                 parseList(data["levels"]["uncompleted"], GDLUser.uncompletedList);
                 
                 GlobalList::Cache::Users::setUser(std::move(GDLUser));
-                UserLoadedEvent(userID).send(GlobalList::Cache::Users::getUser(userID));
+                UserLoadedEvent(userID).send(Ok(GlobalList::Cache::Users::getUser(userID)));
             }
         );
     }
@@ -72,7 +75,7 @@ namespace GlobalList::API {
     void getUserRecords(int userID) {
         auto cachedUserRecords = GlobalList::Cache::Users::getUserRecords(userID);
         if (cachedUserRecords) {
-            UserRecordsLoadedEvent(userID).send(cachedUserRecords);
+            UserRecordsLoadedEvent(userID).send(Ok(cachedUserRecords));
             return;
         }
 
@@ -80,12 +83,15 @@ namespace GlobalList::API {
             userRecordsEP,
             matjson::makeObject({ {"user_id", userID} }),
             matjson::Value::object(),
-            [userID](matjson::Value data) {
-                if (!data.isObject() || data.size() == 0) {
-                    Utils::failure(
-                        "Invalid Response",
-                        "The user records data is incomplete or invalid. Please try again later."
-                    );
+            [userID](matjson::Value data, APIError error) {
+                if (data.size() == 0 && error) {
+                    UserRecordsLoadedEvent(userID).send(Err(error));
+                    return;
+                }
+                else if (!data.isObject() || data.size() == 0) {
+                    log::error("The user records data is incomplete or invalid.");
+                    UserRecordsLoadedEvent(userID).send(Err(APIError{APIErrorType::InvalidEndpointResponse, APIMessage::None}));
+                    return;
                 }
 
                 int totalCount = data["total_count"].asInt().unwrapOrDefault();
@@ -111,7 +117,7 @@ namespace GlobalList::API {
                 auto userRecords = GlobalListUserRecords{userID, totalCount, completedCount, records};
                 
                 GlobalList::Cache::Users::setUserRecords(std::move(userRecords));
-                UserRecordsLoadedEvent(userID).send(GlobalList::Cache::Users::getUserRecords(userID));
+                UserRecordsLoadedEvent(userID).send(Ok(GlobalList::Cache::Users::getUserRecords(userID)));
             }
         );
     }

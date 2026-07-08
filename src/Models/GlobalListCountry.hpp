@@ -2,7 +2,7 @@
 
 #include <string>
 
-enum CountriesLeaderboardType { Main, Advanced };
+enum class CountriesLeaderboardType { Main, Advanced };
 
 struct GlobalListCountry {
     std::string title;

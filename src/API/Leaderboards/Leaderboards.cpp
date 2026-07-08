@@ -4,7 +4,7 @@ namespace GlobalList::API {
     void getUserLeaderboard(int page, std::string search, std::string country) {
         auto cachedUsers = GlobalList::Cache::Leaderboards::getUsers(page);
         if (!cachedUsers.empty()) {
-            UserLeaderboardLoadedEvent().send(cachedUsers);
+            UserLeaderboardLoadedEvent().send(Ok(cachedUsers));
             return;
         }
 
@@ -12,12 +12,15 @@ namespace GlobalList::API {
             userLeaderboardEP,
             matjson::makeObject({ {"offset", 50 * (page-1)}, {"search", search}, {"country", country} }),
             matjson::Value::object(),
-            [page](matjson::Value data) {
-                if (!data.contains("users") || !data["users"].isArray() || data["users"].size() == 0) {
-                    Utils::failure(
-                        "Invalid Response",
-                        "The player leaderboard data is incomplete or invalid. Please try again later."
-                    );
+            [page](matjson::Value data, APIError error) {
+                if (data.size() == 0 && error) {
+                    UserLeaderboardLoadedEvent().send(Err(error));
+                    return;
+                }
+                else if (!data.contains("users") || !data["users"].isArray() || data["users"].size() == 0) {
+                    log::error("The player leaderboard data is incomplete or invalid.");
+                    UserLeaderboardLoadedEvent().send(Err(APIError{APIErrorType::InvalidEndpointResponse, APIMessage::None}));
+                    return;
                 }
 
                 std::vector<GlobalListUser> users;
@@ -35,7 +38,7 @@ namespace GlobalList::API {
                 }
                 
                 GlobalList::Cache::Leaderboards::setUsers(std::move(users));
-                UserLeaderboardLoadedEvent().send(GlobalList::Cache::Leaderboards::getUsers(page));
+                UserLeaderboardLoadedEvent().send(Ok(GlobalList::Cache::Leaderboards::getUsers(page)));
             }
         );
     }
@@ -43,7 +46,7 @@ namespace GlobalList::API {
     void getCountryLeaderboard(CountriesLeaderboardType type) {
         auto cachedCountry = GlobalList::Cache::Leaderboards::getCountry(type);
         if (cachedCountry) {
-            CountryLeaderboardLoadedEvent(type).send(cachedCountry);
+            CountryLeaderboardLoadedEvent(type).send(Ok(cachedCountry));
             return;
         }
 
@@ -53,12 +56,15 @@ namespace GlobalList::API {
             countryLeaderboardEP,
             matjson::makeObject({ {"type", typeStr} }),
             matjson::Value::object(),
-            [type](matjson::Value data) {
-                if (!data.contains("countries") || !data["countries"].isArray() || data["countries"].size() == 0) {
-                    Utils::failure(
-                        "Invalid Response",
-                        "The countries leaderboard data is incomplete or invalid. Please try again later."
-                    );
+            [type](matjson::Value data, APIError error) {
+                if (data.size() == 0 && error) {
+                    CountryLeaderboardLoadedEvent(type).send(Err(error));
+                    return;
+                }
+                else if (!data.contains("countries") || !data["countries"].isArray() || data["countries"].size() == 0) {
+                    log::error("The countries leaderboard data is incomplete or invalid.");
+                    CountryLeaderboardLoadedEvent(type).send(Err(APIError{APIErrorType::InvalidEndpointResponse, APIMessage::None}));
+                    return;
                 }
 
                 std::vector<GlobalListCountry> countries;
@@ -73,7 +79,7 @@ namespace GlobalList::API {
                 }
                 
                 GlobalList::Cache::Leaderboards::setCountries(type, std::move(countries));
-                CountryLeaderboardLoadedEvent(type).send(GlobalList::Cache::Leaderboards::getCountry(type));
+                CountryLeaderboardLoadedEvent(type).send(Ok(GlobalList::Cache::Leaderboards::getCountry(type)));
             }
         );
     }
@@ -81,7 +87,7 @@ namespace GlobalList::API {
     void getMainCountryLeaderboard(std::string country) {
         auto cachedCountryUsers = GlobalList::Cache::Leaderboards::getCountryUsers(country);
         if (cachedCountryUsers) {
-            MainCountryLeaderboardLoadedEvent(country).send(cachedCountryUsers);
+            MainCountryLeaderboardLoadedEvent(country).send(Ok(cachedCountryUsers));
             return;
         }
 
@@ -89,12 +95,15 @@ namespace GlobalList::API {
             getMainCountryLeaderboardEP,
             matjson::makeObject({ {"country", country} }),
             matjson::Value::object(),
-            [country](matjson::Value data) {
-                if (!data.contains("users") || !data["users"].isArray() || data["users"].size() == 0) {
-                    Utils::failure(
-                        "Invalid Response",
-                        "The main country leaderboard data is incomplete or invalid. Please try again later."
-                    );
+            [country](matjson::Value data, APIError error) {
+                if (data.size() == 0 && error) {
+                    MainCountryLeaderboardLoadedEvent(country).send(Err(error));
+                    return;
+                }
+                else if (!data.contains("users") || !data["users"].isArray() || data["users"].size() == 0) {
+                    log::error("The main country leaderboard data is incomplete or invalid.");
+                    MainCountryLeaderboardLoadedEvent(country).send(Err(APIError{APIErrorType::InvalidEndpointResponse, APIMessage::None}));
+                    return;
                 }
 
                 std::vector<GlobalListCountryUser> countryUsers;
@@ -109,7 +118,7 @@ namespace GlobalList::API {
                 }
                 
                 GlobalList::Cache::Leaderboards::setCountryUsers(country, std::move(countryUsers));
-                MainCountryLeaderboardLoadedEvent(country).send(GlobalList::Cache::Leaderboards::getCountryUsers(country));
+                MainCountryLeaderboardLoadedEvent(country).send(Ok(GlobalList::Cache::Leaderboards::getCountryUsers(country)));
             }
         );
     }
@@ -117,7 +126,7 @@ namespace GlobalList::API {
     void getAdvancedCountryLeaderboard(std::string country) {
         auto cachedCountryAdvanced = GlobalList::Cache::Leaderboards::getCountryAdvanced(country);
         if (cachedCountryAdvanced) {
-            AdvancedCountryLeaderboardLoadedEvent(country).send(cachedCountryAdvanced);
+            AdvancedCountryLeaderboardLoadedEvent(country).send(Ok(cachedCountryAdvanced));
             return;
         }
 
@@ -125,12 +134,15 @@ namespace GlobalList::API {
             getAdvanvedCountryLeaderboardEP,
             matjson::makeObject({ {"country", country} }),
             matjson::Value::object(),
-            [country](matjson::Value data) {
-                if (!data.contains("levels") || !data["levels"].isObject() || data["levels"].size() == 0) {
-                    Utils::failure(
-                        "Invalid Response",
-                        "The advanced country leaderboard data is incomplete or invalid. Please try again later."
-                    );
+            [country](matjson::Value data, APIError error) {
+                if (data.size() == 0 && error) {
+                    UserLeaderboardLoadedEvent().send(Err(error));
+                    return;
+                }
+                else if (!data.contains("levels") || !data["levels"].isObject() || data["levels"].size() == 0) {
+                    log::error("The advanced country leaderboard data is incomplete or invalid.");
+                    UserLeaderboardLoadedEvent().send(Err(APIError{APIErrorType::InvalidEndpointResponse, APIMessage::None}));
+                    return;
                 }
                 
                 auto globalListCountryAdvanced = GlobalListCountryAdvanced{};
@@ -169,7 +181,7 @@ namespace GlobalList::API {
                 globalListCountryAdvanced.userCount = userCount;
                 
                 GlobalList::Cache::Leaderboards::setCountryAdvanced(country, std::move(globalListCountryAdvanced));
-                AdvancedCountryLeaderboardLoadedEvent(country).send(GlobalList::Cache::Leaderboards::getCountryAdvanced(country));
+                AdvancedCountryLeaderboardLoadedEvent(country).send(Ok(GlobalList::Cache::Leaderboards::getCountryAdvanced(country)));
             }
         );
     }

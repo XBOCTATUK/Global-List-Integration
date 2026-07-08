@@ -3,33 +3,29 @@
 #include <Geode/Geode.hpp>
 #include <Geode/utils/web.hpp>
 #include "../API/API.hpp"
-#include "Failure.hpp"
+#include "../Models/APIError.hpp"
 
 using namespace geode::prelude;
 
 inline std::string toParam(matjson::Value const& value) {
-    if (value.isString())
-        return value.asString().unwrap();
-    if (value.isNumber())
-        return value.dump();
-    if (value.isBool())
-        return value.asBool().unwrap() ? "true" : "false";
+    if (value.isString()) return value.asString().unwrap();
+    if (value.isNumber()) return value.dump();
+    if (value.isBool()) return value.asBool().unwrap() ? "true" : "false";
 
     return value.dump();
 }
 
-inline std::string getEndPointName(const std::string& endPoint) {
-    if (endPoint == GlobalList::API::loginEP) return "verification";
-    else if (endPoint == GlobalList::API::verifyLoginEP) return "JWT";
-    else if (endPoint == GlobalList::API::levelEP) return "level";
-    else if (endPoint == GlobalList::API::levelListEP) return "demonlist";
-    else if (endPoint == GlobalList::API::userEP) return "user";
-    else if (endPoint == GlobalList::API::userRecordsEP) return "user records";
-    else if (endPoint == GlobalList::API::userLeaderboardEP) return "user leaderboard";
-    else if (endPoint == GlobalList::API::countryLeaderboardEP) return "country leaderboard";
-    else if (endPoint == GlobalList::API::getMainCountryLeaderboardEP) return "main country leaderboard";
-    else if (endPoint == GlobalList::API::getAdvanvedCountryLeaderboardEP) return "advanced country leaderboard";
-    else return "some";
+inline APIMessage getAPIMessage(std::string msg) {
+    if (msg == "too_many_requests") return APIMessage::TooManyRequests;
+    if (msg == "unauthorized") return APIMessage::Unauthorized;
+    if (msg == "invalid_login_or_password") return APIMessage::InvalidLoginOrPassword;
+    if (msg == "invalid_verification_token_or_secret_code") return APIMessage::InvalidVerifTokenOrSecretCode;
+    if (msg == "country_not_found") return APIMessage::CountryNotFound;
+    if (msg == "level_not_found") return APIMessage::LevelNotFound;
+    if (msg == "user_not_found") return APIMessage::UserNotFound;
+    if (msg == "invalid_level_parameters") return APIMessage::InvalidLevelParameters;
+
+    return APIMessage::Unknown;
 }
 
 namespace Utils {
@@ -46,37 +42,48 @@ namespace Utils {
         }
 
         return geode::async::spawn(req.get(url), [cb = std::forward<Callback>(cb), url](web::WebResponse res) mutable {
-            auto whatsFailed = getEndPointName(url);
-
             if (!res.ok()) {
-                Utils::failure(
-                    "HTTP Req Error",
-                    fmt::format("Failed to load {} data. Please try again later.", whatsFailed).c_str()
-                );
+                if (res.code() == -1) {
+                    log::error("Failed to load data from endpoint '{}'. HTTP Error w/o message.", url);
+                    cb(matjson::Value::object(), {APIErrorType::HTTPError, APIMessage::None});
+                }
+                else {
+                    auto wrappedJSON = res.json();
+                    if (!wrappedJSON) {
+                        log::error("Failed to load data from endpoint '{}'. HTTP Error, failed to parse json", url);
+                        cb(matjson::Value::object(), {APIErrorType::JSONError, APIMessage::None});
+                    }
+
+                    auto json = wrappedJSON.unwrap();
+                    if (!json.contains("message") || !json["message"].isString()) {
+                        log::error("Failed to load data from endpoint '{}'. HTTP Error, failed to receive message.", url);
+                        cb(matjson::Value::object(), {APIErrorType::JSONError, APIMessage::None});
+                    }
+
+                    auto message = json["message"].asString().unwrapOrDefault();
+                    log::error("Failed to load data from endpoint '{}'. HTTP Error, message: {}.", url, message);
+                    cb(matjson::Value::object(), {APIErrorType::HTTPError, getAPIMessage(message)});
+                }
                 return;
             }
 
             auto wrappedJSON = res.json();
             if (!wrappedJSON) {
-                Utils::failure(
-                    "Unwrap JSON Error",
-                    fmt::format("Failed to parse {} data. Please try again later.", whatsFailed).c_str()
-                );
+                log::error("Failed to parse data from endpoint '{}'.", url);
+                cb(matjson::Value::object(), {APIErrorType::JSONError, APIMessage::None});
                 return;
             }
 
             auto json = wrappedJSON.unwrap();
-            if (!json.contains("data") || !json["data"].isObject() || json["data"].size() == 0) {
-                Utils::failure(
-                    "Invalid Response",
-                    fmt::format("The server returned an invalid response while loading {} data. Please try again later.", whatsFailed).c_str()
-                );
+            if (!json.contains("data") || !json["data"].isObject()) {
+                log::error("The server returned an invalid response while loading data from endpoint '{}'.", url);
+                cb(matjson::Value::object(), {APIErrorType::InvalidAPIResponse, APIMessage::None});
                 return;
             }
 
             auto data = json["data"];
 
-            cb(std::move(data));
+            cb(std::move(data), {});
         });
     }
 }
