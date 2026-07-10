@@ -9,7 +9,7 @@ namespace GDL::API {
         }
 
         Utils::WebReq(
-            userEP,
+            USER_EP,
             matjson::makeObject({ {"id", userID} }),
             matjson::Value::object(),
             [userID](matjson::Value data, APIError error) {
@@ -80,7 +80,7 @@ namespace GDL::API {
         }
 
         Utils::WebReq(
-            userRecordsEP,
+            USER_RECORDS_EP,
             matjson::makeObject({ {"user_id", userID} }),
             matjson::Value::object(),
             [userID](matjson::Value data, APIError error) {

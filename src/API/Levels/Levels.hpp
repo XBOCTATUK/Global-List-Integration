@@ -7,6 +7,6 @@
 #include "../../Events/LevelLoadedEvent.hpp"
 
 namespace GDL::API {
-    void getDemonlist(int page);
+    void getDemonlist();
     void getLevel(int levelID);
 };

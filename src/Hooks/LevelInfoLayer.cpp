@@ -1,6 +1,7 @@
 #include <Geode/modify/LevelInfoLayer.hpp>
 #include "../API/Levels/Levels.hpp"
 #include "../Utils/RemovePlacement.hpp"
+#include "../Settings/Settings.hpp"
 
 class $modify(MyLevelInfoLayer, LevelInfoLayer) {
     struct Fields {
@@ -12,7 +13,8 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer) {
         if (!LevelInfoLayer::init(level, challenge)) return false;
         if (
             !level || level->m_levelType == GJLevelType::Main || level->m_levelType == GJLevelType::Editor ||
-            GDL::Cache::Levels::isLevelWOPlacement(level->m_levelID.value())
+            GDL::Cache::Levels::isLevelWOPlacement(level->m_levelID.value()) ||
+            !Settings::shouldLoadPlacement()
         ) return true;
 
         bool isExtremeDemon =

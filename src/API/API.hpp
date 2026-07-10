@@ -5,19 +5,19 @@
 #include "../Cache/Cache.hpp"
 
 namespace GDL::API {
-    static inline std::string baseURL = "https://api.demonlist.org";
+    inline const std::string BASE_URL = "https://api.demonlist.org";
 
-    static inline std::string loginEP = baseURL + "/auth/login";
-    static inline std::string verifyLoginEP = baseURL + "/auth/login/verify";
+    inline const std::string LOGIN_EP = BASE_URL + "/auth/login";
+    inline const std::string VERIFY_LOGIN_EP = BASE_URL + "/auth/login/verify";
 
-    static inline std::string levelEP = baseURL + "/level/classic/get";
-    static inline std::string levelListEP = baseURL + "/level/classic/list";
+    inline const std::string LEVEL_EP = BASE_URL + "/level/classic/get";
+    inline const std::string LEVEL_LIST_EP = BASE_URL + "/level/classic/list";
 
-    static inline std::string userEP = baseURL + "/user/get";
-    static inline std::string userRecordsEP = baseURL + "/user/record/list";
+    inline const std::string USER_EP = BASE_URL + "/user/get";
+    inline const std::string USER_RECORDS_EP = BASE_URL + "/user/record/list";
 
-    static inline std::string userLeaderboardEP = baseURL + "/leaderboard/user/list";
-    static inline std::string countryLeaderboardEP = baseURL + "/leaderboard/country/list";
-    static inline std::string getMainCountryLeaderboardEP = baseURL + "/leaderboard/country/main/get";
-    static inline std::string getAdvanvedCountryLeaderboardEP = baseURL + "/leaderboard/country/advanced/get";
+    inline const std::string USER_LEADERBOARD_EP = BASE_URL + "/leaderboard/user/list";
+    inline const std::string COUNTRY_LEADERBOARD_EP = BASE_URL + "/leaderboard/country/list";
+    inline const std::string MAIN_COUNTRY_LEADERBOARD_EP = BASE_URL + "/leaderboard/country/main/get";
+    inline const std::string ADVANCED_COUNTRY_LEADERBOARD_EP = BASE_URL + "/leaderboard/country/advanced/get";
 };

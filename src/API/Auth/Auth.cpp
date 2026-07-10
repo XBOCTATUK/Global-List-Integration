@@ -5,7 +5,7 @@ namespace GDL::API {
 
     void getVerificationToken(std::string username, std::string password) {
         Utils::WebReq(
-            loginEP,
+            LOGIN_EP,
             matjson::Value::object(),
             matjson::makeObject({ {"login", username}, {"password", password} }),
             [](matjson::Value data, APIError error) {
@@ -23,7 +23,7 @@ namespace GDL::API {
 
     void getAccessToken(std::string secretCode) {
         Utils::WebReq(
-            verifyLoginEP,
+            VERIFY_LOGIN_EP,
             matjson::Value::object(),
             matjson::makeObject({ {"verification_token", g_verificationToken}, {"secret_code", secretCode} }),
             [](matjson::Value data, APIError error) {

@@ -57,7 +57,7 @@ namespace Utils {
                     auto json = wrappedJSON.unwrap();
                     if (!json.contains("message") || !json["message"].isString()) {
                         log::error("Failed to load data from endpoint '{}'. HTTP Error, failed to receive message.", url);
-                        cb(matjson::Value::object(), {APIErrorType::JSONError, APIMessage::None});
+                        cb(matjson::Value::object(), {APIErrorType::InvalidAPIResponse, APIMessage::None});
                     }
 
                     auto message = json["message"].asString().unwrapOrDefault();

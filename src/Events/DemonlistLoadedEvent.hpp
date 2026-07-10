@@ -7,7 +7,7 @@
 
 using namespace geode::prelude;
 
-class DemonlistLoadedEvent : public Event<DemonlistLoadedEvent, bool(Result<std::vector<GDLLevel*>, APIError>)> {
+class DemonlistLoadedEvent : public Event<DemonlistLoadedEvent, bool(Result<std::vector<GDLLevel*>&, APIError>)> {
 public:
     using Event::Event;
 };

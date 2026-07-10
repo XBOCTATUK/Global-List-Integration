@@ -6,7 +6,7 @@
 #include "../../Models/GDLCountry.hpp"
 
 namespace GDL::Cache::Levels {
-    std::vector<GDLLevel*> getDemonlist(int page);
+    std::vector<GDLLevel*>& getDemonlist();
     void setDemonlist(std::vector<GDLLevel>&& levels);
 
     GDLLevel* getLevel(int levelID);

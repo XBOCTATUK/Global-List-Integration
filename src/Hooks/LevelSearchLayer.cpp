@@ -1,6 +1,6 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/LevelSearchLayer.hpp>
-// #include "../Layers/GlobalListLayer/GlobalListLayer.hpp"
+#include "../Layers/GDLListLayer/GDLListLayer.hpp"
 
 using namespace geode::prelude;
 
@@ -11,9 +11,9 @@ class $modify(MyLevelSearchLayer, LevelSearchLayer) {
         auto filterMenu = getChildByID("other-filter-menu");
         if (!filterMenu) return true;
 
-        auto spr = CircleButtonSprite::createWithSprite("global-list.png"_spr, 1.0f, CircleBaseColor::Green, CircleBaseSize::Small);
+        auto spr = CircleButtonSprite::createWithSprite("global-list.png"_spr, 0.9f, CircleBaseColor::Green, CircleBaseSize::Small);
         auto btn = CCMenuItemSpriteExtra::create(spr, this, menu_selector(MyLevelSearchLayer::onBtn));
-        btn->setID("global-list-button");
+        btn->setID("global-list-button"_spr);
         
         filterMenu->addChild(btn);
         filterMenu->updateLayout();
@@ -22,6 +22,6 @@ class $modify(MyLevelSearchLayer, LevelSearchLayer) {
     }
 
     void onBtn(CCObject* sender) {
-        // CCDirector::get()->pushScene(CCTransitionFade::create(0.5f, GlobalListLayer::scene()));
+        CCDirector::get()->pushScene(CCTransitionFade::create(0.5f, GDLListLayer::scene()));
     }
 };

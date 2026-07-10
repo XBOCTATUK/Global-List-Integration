@@ -11,11 +11,32 @@
 	"version": "v3.0.0",
 	"developer": "xboctatuk",
 	"description": "Mod adds some features from demonlist.org",
+	"settings": {
+		"placements": {
+			"type": "title",
+			"name": "Placements"
+		},
+		"load-only-on-demonlist": {
+			"type": "bool",
+			"name": "Load only on Demonlist",
+			"default": false,
+			"description": "The level placement won't be loaded or displayed unless you're on the Demonlist screen. On a level page, it will only be shown if you navigated to the level from the Demonlist."
+		},
+		"demonlist": {
+			"type": "title",
+			"name": "Demonlist"
+		},
+		"increase-levels-per-page": {
+			"type": "bool",
+			"name": "Increase levels per page",
+			"default": false,
+			"description": "Increases the number of levels on one page in the demonlist from 10 to 25."
+		}
+	},
 	"resources": {
 		"sprites": [
 			"resources/BGs/*.png",
 			"resources/icons/*.png",
-			"resources/screenshots/*.png",
 			"resources/flags_png/*.png"
 		]
 	},

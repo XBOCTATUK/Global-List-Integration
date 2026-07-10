@@ -2,14 +2,14 @@
 
 namespace GDL::API {
     void getDemonlist() {
-        auto cachedDemonlist = GDL::Cache::Levels::getDemonlist(1);
+        auto& cachedDemonlist = GDL::Cache::Levels::getDemonlist();
         if (!cachedDemonlist.empty()) {
             DemonlistLoadedEvent().send(Ok(cachedDemonlist));
             return;
         }
 
         Utils::WebReq(
-            levelListEP,
+            LEVEL_LIST_EP,
             matjson::Value::object(),
             matjson::Value::object(),
             [](matjson::Value data, APIError error) {
@@ -48,7 +48,7 @@ namespace GDL::API {
                 }
                 
                 GDL::Cache::Levels::setDemonlist(std::move(levels));
-                DemonlistLoadedEvent().send(Ok(GDL::Cache::Levels::getDemonlist(1)));
+                DemonlistLoadedEvent().send(Ok(GDL::Cache::Levels::getDemonlist()));
             }
         );
     }
@@ -61,7 +61,7 @@ namespace GDL::API {
         }
 
         Utils::WebReq(
-            levelEP,
+            LEVEL_EP,
             matjson::makeObject({ {"ingame_id", levelID} }),
             matjson::Value::object(),
             [levelID](matjson::Value data, APIError error) {

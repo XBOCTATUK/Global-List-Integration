@@ -11,7 +11,7 @@ class $modify(MyLeaderboardsLayer, LeaderboardsLayer) {
         auto bottomRightMenu = getChildByID("bottom-right-menu");
         if (!bottomRightMenu) return true;
 
-        auto spr = CircleButtonSprite::createWithSprite("global-list.png"_spr, 1.0f, CircleBaseColor::Green, CircleBaseSize::Small);
+        auto spr = CircleButtonSprite::createWithSprite("global-list.png"_spr, 0.9f, CircleBaseColor::Green, CircleBaseSize::Small);
         auto btn = CCMenuItemSpriteExtra::create(spr, this, menu_selector(MyLeaderboardsLayer::onBtn));
         btn->setID("global-list-button");
 

@@ -9,7 +9,7 @@ namespace GDL::API {
         }
 
         Utils::WebReq(
-            userLeaderboardEP,
+            USER_LEADERBOARD_EP,
             matjson::makeObject({ {"offset", 50 * (page-1)}, {"search", search}, {"country", country} }),
             matjson::Value::object(),
             [page](matjson::Value data, APIError error) {
@@ -53,7 +53,7 @@ namespace GDL::API {
         auto typeStr = type == CountriesLeaderboardType::Main ? "main" : "advanced";
 
         Utils::WebReq(
-            countryLeaderboardEP,
+            COUNTRY_LEADERBOARD_EP,
             matjson::makeObject({ {"type", typeStr} }),
             matjson::Value::object(),
             [type](matjson::Value data, APIError error) {
@@ -92,7 +92,7 @@ namespace GDL::API {
         }
 
         Utils::WebReq(
-            getMainCountryLeaderboardEP,
+            MAIN_COUNTRY_LEADERBOARD_EP,
             matjson::makeObject({ {"country", country} }),
             matjson::Value::object(),
             [country](matjson::Value data, APIError error) {
@@ -131,7 +131,7 @@ namespace GDL::API {
         }
 
         Utils::WebReq(
-            getAdvanvedCountryLeaderboardEP,
+            ADVANCED_COUNTRY_LEADERBOARD_EP,
             matjson::makeObject({ {"country", country} }),
             matjson::Value::object(),
             [country](matjson::Value data, APIError error) {
