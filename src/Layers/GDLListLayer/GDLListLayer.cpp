@@ -21,6 +21,12 @@ CCScene* GDLListLayer::scene() {
 constexpr const char* GLOBAL_LIST_INFO =
 "The <cg>most complete</c> and <cf>trusted</c> ranking of the <cr>hardest</c> Geometry Dash demons, maintained by a <cy>dedicated community</c>.";
 
+// Do you think I'll remove this comment after two major code refactorings? NOPE, HERE IT IS:
+//
+//              This layer contains hiimjasmine00's work (Integrated DemonList).
+//              I'm too silly to do something like this completely on my own =3
+//
+// I just want to give credit to hiimjasmine00 for the original source code that this project started from.
 bool GDLListLayer::init() {
 	if (!CCLayer::init()) return false;
 
