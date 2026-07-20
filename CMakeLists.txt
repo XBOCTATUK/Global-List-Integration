@@ -22,4 +22,7 @@ endif()
 
 add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 
+CPMAddPackage("gh:dankmeme01/cue#main")
+target_link_libraries(${PROJECT_NAME} cue)
+
 setup_geode_mod(${PROJECT_NAME})
