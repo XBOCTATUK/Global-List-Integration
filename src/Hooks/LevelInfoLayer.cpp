@@ -21,7 +21,6 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer) {
             level->m_demonDifficulty == static_cast<int>(DemonDifficultyType::ExtremeDemon) ||
             level->m_demonDifficulty == static_cast<int>(DemonDifficultyType::InsaneDemon);
 
-        std::unordered_map<CCNode*, float>& origPositions = m_fields->m_origPositions;
         if (isExtremeDemon || level->m_stars == 0) {
             auto downloadsIcon = getChildByID("downloads-icon");
             auto lengthIcon = getChildByID("length-icon");
@@ -30,6 +29,8 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer) {
                 !downloadsIcon || !m_downloadsLabel || !lengthIcon || !m_lengthLabel ||
                 !m_likesIcon || !m_likesLabel || !m_orbsIcon || !m_orbsLabel
             ) return true;
+
+            auto& origPositions = m_fields->m_origPositions;
 
             origPositions[downloadsIcon] = downloadsIcon->getPositionY();
             origPositions[m_downloadsLabel] = m_downloadsLabel->getPositionY();
@@ -52,7 +53,8 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer) {
             m_orbsLabel->setPositionY(m_orbsLabel->getPositionY() + 14.0f + 2.0f);
 
             float gdlIconX = lengthIcon->getPositionX() + lengthIcon->getContentWidth() / 2.0f;
-            float gdlIconY = m_orbsIcon->isVisible()
+            float gdlIconY =
+                m_orbsIcon->isVisible()
                 ? m_orbsIcon->getPositionY() - (downloadsIcon->getPositionY() - m_likesIcon->getPositionY())
                 : lengthIcon->getPositionY() - (m_likesIcon->getPositionY() - lengthIcon->getPositionY());
 
@@ -70,14 +72,14 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer) {
             addChild(gdlLabel);
 
             m_fields->m_listener = LevelLoadedEvent(level->m_levelID.value()).listen(
-                [this](Result<GDLLevel*, APIError> result) {
+                [this](Result<const GDLLevel*, APIError> result) {
                     if (!this) return;
 
                     auto gdlLabel = static_cast<CCLabelBMFont*>(getChildByID("gdl-label"_spr));
                     auto gdlIcon = getChildByID("gdl-icon"_spr);
                     if (result.isOk()) {
-                        auto GDLLevel = result.unwrap();
                         if (gdlLabel && gdlIcon) {
+                            auto GDLLevel = result.unwrap();
                             gdlLabel->setString(fmt::format("#{}", GDLLevel->placement).c_str());
                         }
                     }
@@ -93,7 +95,7 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer) {
                 }
             );
 
-            GDL::API::getLevel(level->m_levelID.value());
+            GDL::API::Levels::getLevel(level->m_levelID.value(), false);
         }
 
         return true;

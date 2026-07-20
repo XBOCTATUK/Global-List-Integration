@@ -7,7 +7,7 @@
 
 using namespace geode::prelude;
 
-class AdvancedCountryLeaderboardLoadedEvent : public Event<AdvancedCountryLeaderboardLoadedEvent, bool(Result<GDLCountryAdvanced*, APIError>), std::string> {
+class AdvancedCountryLeaderboardLoadedEvent : public Event<AdvancedCountryLeaderboardLoadedEvent, bool(Result<const GDLCountryAdvanced*, APIError>), std::string> {
 public:
     using Event::Event;
 };

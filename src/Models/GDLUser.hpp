@@ -22,5 +22,29 @@ struct GDLUser {
     optGDLBasicLevels unboundedList;
     optGDLBasicLevels progressList;
     optGDLBasicLevels verifiedList;
-    optGDLBasicLevels uncompletedList;
+
+    mutable optGDLBasicLevels completedList;
+
+    bool isFull() const {
+        return isBanned.has_value();
+    }
+
+    const std::vector<GDLBasicLevel>& getCompletedList() const {
+        if (!completedList) {
+            completedList.emplace();
+
+            auto append = [this](const optGDLBasicLevels& list) {
+                if (!list.has_value()) return;
+
+                completedList->insert(completedList->end(), list->begin(), list->end());
+            };
+
+            append(mainList);
+            append(extendedList);
+            append(advancedList);
+            append(unboundedList);
+        }
+
+        return *completedList;
+    }
 };

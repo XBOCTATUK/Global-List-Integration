@@ -11,14 +11,12 @@ namespace GDL::Filters {
         levelFilters = displayFilters;
     }
 
-    void setLengthFilter(LengthFilter type, bool select) {
-        int idx = static_cast<int>(type);
-        displayFilters.lengthFilter[idx] = select;
+    void setLengthFilter(LengthFilter type) {
+        displayFilters.lengthFilter = type;
     }
 
-    void setDifficultyFilter(DifficultyFilter type, bool select) {
-        int idx = static_cast<int>(type);
-        displayFilters.diffFilter[idx] = select;
+    void setDifficultyFilter(DifficultyFilter type) {
+        displayFilters.diffFilter = type;
     }
 
     void setCustomLengthFilter(int from, int to) {
@@ -32,16 +30,18 @@ namespace GDL::Filters {
     }
 
     void setRateFilter(bool rated, bool unrated) {
+        if (rated && unrated) return;
+        
         displayFilters.rated = rated;
         displayFilters.unrated = unrated;
     }    
 
-    void setCompleted(bool completed) {
-        displayFilters.completed = completed;
+    void setCompletedBy(bool completedBy) {
+        displayFilters.completedBy = completedBy;
     }
 
-    void setByHolder(bool byHolder) {
-        displayFilters.byHolder = byHolder;
+    void setCreatedBy(bool createdBy) {
+        displayFilters.createdBy = createdBy;
     }
 
     void setUserID(int userID) {
@@ -52,8 +52,8 @@ namespace GDL::Filters {
         displayFilters.username = username;
     }
 
-    void setHolderName(const std::string& holderName) {
-        displayFilters.holder = holderName;
+    void setCreatorName(const std::string& creatorName) {
+        displayFilters.holder = creatorName;
     }
 
     void clearFilters(bool clearDisplayFilters, bool clearLevelFilters) {

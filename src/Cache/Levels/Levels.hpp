@@ -6,13 +6,13 @@
 #include "../../Models/GDLCountry.hpp"
 
 namespace GDL::Cache::Levels {
-    std::vector<GDLLevel*>& getDemonlist();
+    const std::vector<int>& getDemonlist();
     void setDemonlist(std::vector<GDLLevel>&& levels);
 
-    GDLLevel* getLevel(int levelID);
-    bool isLevelWOPlacement(int levelID);
-
+    const GDLLevel* getLevel(int levelID);
     void setLevel(GDLLevel&& level);
+    
+    bool isLevelWOPlacement(int levelID);
     void setLevelWOPlacement(int levelID);
 
     void clear();

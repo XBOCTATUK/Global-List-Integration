@@ -26,8 +26,12 @@ struct GDLLevel {
     std::optional<bool> isCopyable;
     std::optional<std::string> password;
 
+    bool isFull() const {
+        return objects.has_value();
+    }
+
     bool contains(const std::string& query) const {
-		std::string lowerName = this->name;
+		std::string lowerName = name;
         std::string lowerQuery = query;
 
         std::transform(
@@ -42,6 +46,6 @@ struct GDLLevel {
 		
 		return 
             lowerName.find(lowerQuery) != std::string::npos ||
-            std::to_string(this->ingameID) == lowerQuery;
+            std::to_string(ingameID) == lowerQuery;
 	}
 };

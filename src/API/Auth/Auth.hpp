@@ -3,7 +3,7 @@
 #include "../API.hpp"
 #include "../../Utils/WedReq.hpp"
 
-namespace GDL::API {
-    void getVerificationToken(std::string username, std::string password);
-    void getAccessToken(std::string verificationToken, std::string secretCode);
+namespace GDL::API::Auth {
+    void getVerificationToken(const std::string& username, const std::string& password);
+    void getAccessToken(const std::string& secretCode);
 }

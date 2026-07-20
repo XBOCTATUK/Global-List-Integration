@@ -3,11 +3,13 @@
 #include <string>
 
 enum class APIErrorType {
-    None, HTTPError, JSONError, InvalidAPIResponse, InvalidEndpointResponse
+    None, HTTPError, JSONError,
+    InvalidAPIResponse, NoSearchResults, InvalidEndpointResponse
 };
 
 enum class APIMessage {
-    None, Unknown, Success, InvalidLoginOrPassword, InvalidVerifTokenOrSecretCode, CountryNotFound, LevelNotFound, InvalidLevelParameters, UserNotFound, TooManyRequests, Unauthorized
+    None, Unknown, Success, InvalidLoginOrPassword, InvalidVerifTokenOrSecretCode,
+    CountryNotFound, LevelNotFound, InvalidLevelParameters, UserNotFound, TooManyRequests, Unauthorized
 };
 
 struct APIError {
@@ -24,6 +26,7 @@ struct APIError {
             case APIErrorType::HTTPError: return "HTTP Error";
             case APIErrorType::JSONError: return "JSON Error";
             case APIErrorType::InvalidAPIResponse: return "Invalid API Response";
+            case APIErrorType::NoSearchResults: return "No Search Results";
             case APIErrorType::InvalidEndpointResponse: return "Invalid Endpoint Response";
         }
 

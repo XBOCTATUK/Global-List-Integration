@@ -3,15 +3,23 @@
 #include <string>
 #include <array>
 
+enum class LengthFilter {
+    None, Short, Medium, Long, XL, Custom
+};
+
+enum class DifficultyFilter {
+    None, Top75, Top150, Top300, Unbounded, Custom
+};
+
 struct LevelFilters {
-	std::array<bool, 5> lengthFilter{};
-	std::array<bool, 5> diffFilter{};
+	LengthFilter lengthFilter;
+	DifficultyFilter diffFilter;
 	std::array<int, 2> customLengthFilter{};
 	std::array<int, 2> customDiffFilter{};
 	bool rated = false;
 	bool unrated = false;
-	bool completed = false;
-	bool byHolder = false;
+	bool completedBy = false;
+	bool createdBy = false;
 	std::string username;
 	int userID;
 	std::string holder;
@@ -23,20 +31,12 @@ struct LevelFilters {
     }
 
 	bool isDataRequired() const {
-		return rated || unrated || completed || byHolder;
+		return rated || unrated || createdBy;
 	}
 
     void clear() {
 		*this = {};
 	}
-};
-
-enum class LengthFilter {
-    Short, Medium, Long, XL, Custom
-};
-
-enum class DifficultyFilter {
-    Top50, Top150, Top300, Unbounded, Custom
 };
 
 namespace GDL::Filters {
@@ -45,19 +45,19 @@ namespace GDL::Filters {
 
     void applyFilters();
 
-    void setLengthFilter(LengthFilter type, bool select);
-    void setDifficultyFilter(DifficultyFilter type, bool select);
+    void setLengthFilter(LengthFilter type);
+    void setDifficultyFilter(DifficultyFilter type);
 
     void setCustomLengthFilter(int from, int to);
     void setCustomDifficultyFilter(int from, int to);
 
     void setRateFilter(bool rated, bool unrated);
-    void setCompleted(bool completed);
-    void setByHolder(bool byHolder);
+    void setCompletedBy(bool completedBy);
+    void setCreatedBy(bool createdBy);
 
     void setUserID(int userID);
     void setUsername(const std::string& username);
-    void setHolderName(const std::string& holderName);
+    void setCreatorName(const std::string& creatorName);
 
     void clearFilters(bool clearDisplayFilters = true, bool clearLevelFilters = true);
 };

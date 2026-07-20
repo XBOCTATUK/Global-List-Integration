@@ -7,7 +7,7 @@
 
 using namespace geode::prelude;
 
-class LevelLoadedEvent : public Event<LevelLoadedEvent, bool(Result<GDLLevel*, APIError>), int> {
+class LevelLoadedEvent : public Event<LevelLoadedEvent, bool(Result<const GDLLevel*, APIError>), int> {
 public:
     using Event::Event;
 };

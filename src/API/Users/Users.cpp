@@ -1,10 +1,12 @@
 #include "Users.hpp"
 
-namespace GDL::API {
-    void getUser(int userID) {
+namespace GDL::API::Users {
+    void getUser(int userID, bool isFullInfoRequire) {
         auto cachedUser = GDL::Cache::Users::getUser(userID);
-        if (cachedUser) {
-            UserLoadedEvent(userID).send(Ok(cachedUser));
+        if (cachedUser && (isFullInfoRequire ? cachedUser->isFull() : true)) {
+            UserLoadedEvent(userID).send(
+                Ok(cachedUser)
+            );
             return;
         }
 
@@ -13,13 +15,17 @@ namespace GDL::API {
             matjson::makeObject({ {"id", userID} }),
             matjson::Value::object(),
             [userID](matjson::Value data, APIError error) {
-                if (data.size() == 0 && error) {
-                    UserLoadedEvent(userID).send(Err(error));
+                if (error) {
+                    UserLoadedEvent(userID).send(
+                        Err(error)
+                    );
                     return;
                 }
                 else if (!data.isObject() || data.size() == 0) {
                     log::error("The user data is incomplete or invalid.");
-                    UserLoadedEvent(userID).send(Err(APIError{APIErrorType::InvalidEndpointResponse, APIMessage::None}));
+                    UserLoadedEvent(userID).send(
+                        Err(APIError{APIErrorType::InvalidEndpointResponse, APIMessage::None})
+                    );
                     return;
                 }
 
@@ -34,6 +40,7 @@ namespace GDL::API {
                 std::string hardestName = data["levels"]["hardest"]["name"].asString().unwrapOrDefault();
                 int hardestPlacement = data["levels"]["hardest"]["placement"].asInt().unwrapOrDefault();
                 std::string hardestVideoURL = data["levels"]["hardest"]["video_url"].asString().unwrapOrDefault();
+                
                 auto hardest = GDLBasicLevel{hardestID, hardestName, hardestPlacement, hardestVideoURL};
 
                 auto gdlUser = GDLUser{
@@ -52,9 +59,10 @@ namespace GDL::API {
                             ? std::make_optional(level["percent"].asInt().unwrapOrDefault())
                             : std::nullopt;
 
-                        if (list.has_value()) {
-                            list.value().push_back({id, name, placement, videoURL, percent});
+                        if (!list.has_value()) {
+                            list.emplace();
                         }
+                        list.value().push_back({id, name, placement, videoURL, percent});
                     }
                 };
 
@@ -64,10 +72,11 @@ namespace GDL::API {
                 parseList(data["levels"]["unbounded"], gdlUser.unboundedList);
                 parseList(data["levels"]["progress"], gdlUser.progressList, true);
                 parseList(data["levels"]["verified"], gdlUser.verifiedList);
-                parseList(data["levels"]["uncompleted"], gdlUser.uncompletedList);
                 
                 GDL::Cache::Users::setUser(std::move(gdlUser));
-                UserLoadedEvent(userID).send(Ok(GDL::Cache::Users::getUser(userID)));
+                UserLoadedEvent(userID).send(
+                    Ok(GDL::Cache::Users::getUser(userID))
+                );
             }
         );
     }
@@ -75,7 +84,9 @@ namespace GDL::API {
     void getUserRecords(int userID) {
         auto cachedUserRecords = GDL::Cache::Users::getUserRecords(userID);
         if (cachedUserRecords) {
-            UserRecordsLoadedEvent(userID).send(Ok(cachedUserRecords));
+            UserRecordsLoadedEvent(userID).send(
+                Ok(cachedUserRecords)
+            );
             return;
         }
 
@@ -84,13 +95,17 @@ namespace GDL::API {
             matjson::makeObject({ {"user_id", userID} }),
             matjson::Value::object(),
             [userID](matjson::Value data, APIError error) {
-                if (data.size() == 0 && error) {
-                    UserRecordsLoadedEvent(userID).send(Err(error));
+                if (error) {
+                    UserRecordsLoadedEvent(userID).send(
+                        Err(error)
+                    );
                     return;
                 }
                 else if (!data.isObject() || data.size() == 0) {
                     log::error("The user records data is incomplete or invalid.");
-                    UserRecordsLoadedEvent(userID).send(Err(APIError{APIErrorType::InvalidEndpointResponse, APIMessage::None}));
+                    UserRecordsLoadedEvent(userID).send(
+                        Err(APIError{APIErrorType::InvalidEndpointResponse, APIMessage::None})
+                    );
                     return;
                 }
 
@@ -117,7 +132,9 @@ namespace GDL::API {
                 auto userRecords = GDLUserRecords{userID, totalCount, completedCount, records};
                 
                 GDL::Cache::Users::setUserRecords(std::move(userRecords));
-                UserRecordsLoadedEvent(userID).send(Ok(GDL::Cache::Users::getUserRecords(userID)));
+                UserRecordsLoadedEvent(userID).send(
+                    Ok(GDL::Cache::Users::getUserRecords(userID))
+                );
             }
         );
     }

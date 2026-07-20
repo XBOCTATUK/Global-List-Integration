@@ -4,12 +4,11 @@
 namespace GDL::Cache::Levels {
     constexpr auto LEVELS_TTL = std::chrono::minutes{30};
 
+    static std::vector<int> levelList;
     static std::unordered_map<int, CacheEntry<GDLLevel>> levelData;
-    static std::vector<GDLLevel*> levelList;
-    static std::unordered_map<int, int> levelIDByPlacement;
     static std::vector<int> levelsWOPlacement;
 
-    std::vector<GDLLevel*>& getDemonlist() {
+    const std::vector<int>& getDemonlist() {
         return levelList;
     }
 
@@ -17,14 +16,16 @@ namespace GDL::Cache::Levels {
         clear();
 
         for (auto& level : levels) {
-            levelData[level.ingameID] = {std::move(level), std::chrono::steady_clock::now()};
-            levelList.push_back(&levelData[level.ingameID].value);
-            levelIDByPlacement[level.placement] = level.ingameID;
+            levelData.insert_or_assign(
+                level.ingameID,
+                CacheEntry{std::move(level), std::chrono::steady_clock::now()}
+            );
+            levelList.push_back(levelData[level.ingameID].value.ingameID);
         }
     }
 
 
-    GDLLevel* getLevel(int levelID) {
+    const GDLLevel* getLevel(int levelID) {
         auto it = levelData.find(levelID);
         if (
             it == levelData.end() ||
@@ -33,25 +34,29 @@ namespace GDL::Cache::Levels {
 
         return &it->second.value;
     }
+    
+    void setLevel(GDLLevel&& level) {
+        levelData.insert_or_assign(
+            level.ingameID,
+            CacheEntry{std::move(level), std::chrono::steady_clock::now()}
+        );
+        levelList.push_back(level.ingameID);
+    }
 
+    
     bool isLevelWOPlacement(int levelID) {
         auto it = std::find(levelsWOPlacement.begin(), levelsWOPlacement.end(), levelID);
         return it != levelsWOPlacement.end();
     }
 
-    void setLevel(GDLLevel&& level) {
-        levelData[level.ingameID] = {std::move(level), std::chrono::steady_clock::now()};
-        levelIDByPlacement[level.placement] = level.ingameID;
-    }
-
     void setLevelWOPlacement(int levelID) {
         levelsWOPlacement.push_back(levelID);
     }
+    
 
     void clear() {
         levelData.clear();
         levelList.clear();
-        levelIDByPlacement.clear();
         levelsWOPlacement.clear();
     }
 };

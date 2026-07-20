@@ -6,7 +6,7 @@
 #include "../../Events/DemonlistLoadedEvent.hpp"
 #include "../../Events/LevelLoadedEvent.hpp"
 
-namespace GDL::API {
+namespace GDL::API::Levels {
     void getDemonlist();
-    void getLevel(int levelID);
+    void getLevel(int levelID, bool isFullInfoRequire = true);
 };

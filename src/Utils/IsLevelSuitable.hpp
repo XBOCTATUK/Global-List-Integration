@@ -5,44 +5,67 @@
 #include <ranges>
 
 namespace Utils {
-    inline bool isLevelSuitable(GDLLevel* level) {
+    inline bool isLevelSuitable(const GDLLevel* level) {
         auto& levelFilters = GDL::Filters::getLevelFilters();
         if (levelFilters.isDefault()) return true;
 
-        int levelLength = 0;
-        if (level->length < 30) levelLength = 0;
-        else if (level->length < 60) levelLength = 1;
-        else if (level->length < 120) levelLength = 2;
-        else if (level->length >= 120) levelLength = 3;
-        if (levelFilters.lengthFilter[4] && (levelFilters.customLengthFilter[0] != 0 ? level->length >= levelFilters.customLengthFilter[0] : true) && (levelFilters.customLengthFilter[1] != 0 ? level->length <= levelFilters.customLengthFilter[1] : true)) levelLength = 4;
+        DifficultyFilter levelDiff;
+        if (level->placement <= 75) levelDiff = DifficultyFilter::Top75;
+        else if (level->placement <= 150) levelDiff = DifficultyFilter::Top150;
+        else if (level->placement <= 300) levelDiff = DifficultyFilter::Top300;
+        else if (level->placement > 300) levelDiff = DifficultyFilter::Unbounded;
+        if (
+            levelFilters.diffFilter == DifficultyFilter::Custom &&
+            level->placement >= levelFilters.customDiffFilter[0] &&
+            level->placement <= levelFilters.customDiffFilter[1]
+        ) levelDiff = DifficultyFilter::Custom;
 
-        int levelDiff = 0;
-        if (level->placement <= 50) levelDiff = 0;
-        else if (level->placement <= 150) levelDiff = 1;
-        else if (level->placement <= 300) levelDiff = 2;
-        else if (level->placement > 300) levelDiff = 3;
-        if (levelFilters.diffFilter[4] && (levelFilters.customDiffFilter[0] != 0 ? level->placement >= levelFilters.customDiffFilter[0] : true) && (levelFilters.customDiffFilter[1] != 0 ? level->placement < levelFilters.customDiffFilter[1] : true)) levelDiff = 4;
+        LengthFilter levelLength;
+        if (level->length < 30) levelLength = LengthFilter::Short;
+        else if (level->length < 60) levelLength = LengthFilter::Medium;
+        else if (level->length < 120) levelLength = LengthFilter::Long;
+        else if (level->length >= 120) levelLength = LengthFilter::XL;
+        if (
+            levelFilters.lengthFilter == LengthFilter::Custom &&
+            level->length >= levelFilters.customLengthFilter[0] &&
+            level->length <= levelFilters.customLengthFilter[1]
+        ) levelLength = LengthFilter::Custom;
+
+        
+        bool levelIsCompleted = false;
+        if (auto user = GDL::Cache::Users::getUser(levelFilters.userID)) {
+            auto& completedList = user->getCompletedList();
+
+            levelIsCompleted = std::ranges::find_if(
+                completedList,
+                [internalID = level->id](const GDLBasicLevel& record) {
+                    return record.id == internalID;
+                }
+            ) != completedList.end();
+        }
 
         auto gameLevel = GDL::Cache::GameLevels::getGameLevel(level->ingameID);
-        auto userData = GDL::Cache::Users::getUserRecords(levelFilters.userID);
-        bool levelIsCompleted = userData ? std::ranges::find_if(
-            userData->records,
-            [internalID = level->id](const GDLRecord& record) {
-                return record.internalID == internalID;
-            }
-        ) != userData->records.end() : false;
-        
-        bool byLength = levelFilters.lengthFilter[levelLength] || levelFilters.lengthFilter == LevelFilters{}.lengthFilter;
-        bool byDifficulty = levelFilters.diffFilter[levelDiff] || levelFilters.diffFilter == LevelFilters{}.diffFilter;
-        bool byRate =
-        gameLevel ?
-            levelFilters.rated ? gameLevel->rated
-            : levelFilters.unrated ? !gameLevel->rated
-            : true
-        : false;
-        bool byCreator = gameLevel ? (levelFilters.byHolder ? gameLevel->creatorName == levelFilters.holder : true) : false;
-        bool byPlayer = levelFilters.completed ? ((userData && userData->records.size() != 0) ? levelIsCompleted : false) : true;
 
-        return byLength && byDifficulty && byRate && byPlayer && byCreator;
+        
+        bool byDifficulty = levelFilters.diffFilter == levelDiff || levelFilters.diffFilter == DifficultyFilter::None;
+        bool byLength = levelFilters.lengthFilter == levelLength || levelFilters.lengthFilter == LengthFilter::None;
+        
+        bool byRate =
+        levelFilters.rated || levelFilters.unrated ?
+            gameLevel ?
+                levelFilters.rated ? gameLevel->rated : !gameLevel->rated
+            : false
+        : true;
+
+        bool byPlayer = levelFilters.completedBy ? levelIsCompleted : true;
+
+        bool byCreator =
+        levelFilters.createdBy ?
+            gameLevel ?
+                levelFilters.createdBy ? gameLevel->creatorName == levelFilters.holder : true
+            : false
+        : true;
+
+        return byDifficulty && byLength && byRate && byPlayer && byCreator;
     }
 };

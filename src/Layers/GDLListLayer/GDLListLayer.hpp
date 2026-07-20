@@ -5,6 +5,8 @@
 #include "../../Utils/CalculateCoverScale.hpp"
 #include "../../Utils/IsLevelSuitable.hpp"
 #include "../../Settings/Settings.hpp"
+#include "../../Popups/FilterPopup/FilterPopup.hpp"
+#include "../../Events/PopulateListEvent.hpp"
 
 using namespace geode::prelude;
 
@@ -20,13 +22,14 @@ public:
 
 protected:
 	ListenerHandle m_demonlistLoadListener;
-	std::vector<GDLLevel*> m_gdlLevels;
+	ListenerHandle m_populateListListener;
+	std::vector<int> m_gdlLevels;
 
 	GJListLayer* m_levelList;
 	CCLabelBMFont* m_errorMessage;
 	LoadingSpinner* m_loadingSpinner;
 
-	CCMenu* m_searchBarMenu;
+	CCNode* m_searchBarMenu;
 	TextInput* m_searchBar;
 
 	CCLabelBMFont* m_levelsCountLabel;

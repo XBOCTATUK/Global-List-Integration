@@ -12,5 +12,4 @@ struct GDLCountryAdvanced {
     std::vector<GDLBasicLevel> unboundedList;
     std::vector<GDLBasicLevel> progressList;
     std::vector<GDLBasicLevel> verifiedList;
-    std::vector<GDLBasicLevel> uncompletedList;
 };

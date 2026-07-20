@@ -1,9 +1,9 @@
 #include "Auth.hpp"
 
-namespace GDL::API {
+namespace GDL::API::Auth {
     static std::string g_verificationToken;
 
-    void getVerificationToken(std::string username, std::string password) {
+    void getVerificationToken(const std::string& username, const std::string& password) {
         Utils::WebReq(
             LOGIN_EP,
             matjson::Value::object(),
@@ -21,7 +21,7 @@ namespace GDL::API {
         );
     }
 
-    void getAccessToken(std::string secretCode) {
+    void getAccessToken(const std::string& secretCode) {
         Utils::WebReq(
             VERIFY_LOGIN_EP,
             matjson::Value::object(),

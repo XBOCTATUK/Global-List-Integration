@@ -1,10 +1,12 @@
 #include "Levels.hpp"
 
-namespace GDL::API {
+namespace GDL::API::Levels {
     void getDemonlist() {
         auto& cachedDemonlist = GDL::Cache::Levels::getDemonlist();
         if (!cachedDemonlist.empty()) {
-            DemonlistLoadedEvent().send(Ok(cachedDemonlist));
+            DemonlistLoadedEvent().send(
+                Ok(cachedDemonlist)
+            );
             return;
         }
 
@@ -13,13 +15,17 @@ namespace GDL::API {
             matjson::Value::object(),
             matjson::Value::object(),
             [](matjson::Value data, APIError error) {
-                if (data.size() == 0 && error) {
-                    DemonlistLoadedEvent().send(Err(error));
+                if (error) {
+                    DemonlistLoadedEvent().send(
+                        Err(error)
+                    );
                     return;
                 }
                 else if (!data.contains("levels") || !data["levels"].isArray() || data["levels"].size() == 0) {
                     log::error("The demonlist data is incomplete or invalid.");
-                    DemonlistLoadedEvent().send(Err(APIError{APIErrorType::InvalidEndpointResponse, APIMessage::None}));
+                    DemonlistLoadedEvent().send(
+                        Err(APIError{APIErrorType::InvalidEndpointResponse, APIMessage::None})
+                    );
                     return;
                 }
 
@@ -48,15 +54,19 @@ namespace GDL::API {
                 }
                 
                 GDL::Cache::Levels::setDemonlist(std::move(levels));
-                DemonlistLoadedEvent().send(Ok(GDL::Cache::Levels::getDemonlist()));
+                DemonlistLoadedEvent().send(
+                    Ok(GDL::Cache::Levels::getDemonlist())
+                );
             }
         );
     }
 
-    void getLevel(int levelID) {
+    void getLevel(int levelID, bool isFullInfoRequire) {
         auto cachedLevel = GDL::Cache::Levels::getLevel(levelID);
-        if (cachedLevel) {
-            LevelLoadedEvent(levelID).send(Ok(cachedLevel));
+        if (cachedLevel && (isFullInfoRequire ? cachedLevel->isFull() : true)) {
+            LevelLoadedEvent(levelID).send(
+                Ok(cachedLevel)
+            );
             return;
         }
 
@@ -65,13 +75,17 @@ namespace GDL::API {
             matjson::makeObject({ {"ingame_id", levelID} }),
             matjson::Value::object(),
             [levelID](matjson::Value data, APIError error) {
-                if (data.size() == 0 && error) {
-                    LevelLoadedEvent(levelID).send(Err(error));
+                if (error) {
+                    LevelLoadedEvent(levelID).send(
+                        Err(error)
+                    );
                     return;
                 }
                 else if (!data.isObject() || data.size() == 0) {
                     log::error("The level data is incomplete or invalid.");
-                    LevelLoadedEvent(levelID).send(Err(APIError{APIErrorType::InvalidEndpointResponse, APIMessage::None}));
+                    LevelLoadedEvent(levelID).send(
+                        Err(APIError{APIErrorType::InvalidEndpointResponse, APIMessage::None})
+                    );
                     return;
                 }
 
@@ -103,7 +117,9 @@ namespace GDL::API {
                 };
                 
                 GDL::Cache::Levels::setLevel(std::move(gdlLevel));
-                LevelLoadedEvent(levelID).send(Ok(GDL::Cache::Levels::getLevel(levelID)));
+                LevelLoadedEvent(levelID).send(
+                    Ok(GDL::Cache::Levels::getLevel(levelID))
+                );
             }
         );
     }

@@ -8,7 +8,7 @@ namespace GDL::Cache::Users {
     static std::unordered_map<int, CacheEntry<GDLUser>> userData;
     static std::unordered_map<int, CacheEntry<GDLUserRecords>> userRecords;
 
-    GDLUser* getUser(int userID) {
+    const GDLUser* getUser(int userID) {
         auto it = userData.find(userID);
         if (
             it == userData.end() ||
@@ -19,7 +19,10 @@ namespace GDL::Cache::Users {
     }
 
     void setUser(GDLUser&& user) {
-        userData[user.id] = {std::move(user), std::chrono::steady_clock::now()};
+        userData.insert_or_assign(
+            user.id,
+            CacheEntry{std::move(user), std::chrono::steady_clock::now()}
+        );
     }
 
     void clearUsers() {
@@ -27,7 +30,7 @@ namespace GDL::Cache::Users {
     }
 
 
-    GDLUserRecords* getUserRecords(int userID) {
+    const GDLUserRecords* getUserRecords(int userID) {
         auto it = userRecords.find(userID);
         if (
             it == userRecords.end() ||
@@ -38,7 +41,10 @@ namespace GDL::Cache::Users {
     }
 
     void setUserRecords(GDLUserRecords&& records) {
-        userRecords[records.userID] = {std::move(records), std::chrono::steady_clock::now()};
+        userRecords.insert_or_assign(
+            records.userID,
+            CacheEntry{std::move(records), std::chrono::steady_clock::now()}
+        );
     }
 
     void clearRecords() {

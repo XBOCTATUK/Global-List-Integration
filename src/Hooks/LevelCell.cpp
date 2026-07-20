@@ -35,10 +35,12 @@ class $modify(MyLevelCell, LevelCell) {
             float likesIconPos = likesIcon->getPositionX() - likesIcon->getScaledContentWidth() / 2.0f;
             float downloadsLabelPos = downloadsLabel->getPositionX() + downloadsLabel->getScaledContentWidth();
             
-            float gdlIconX = (orbsLabel
+            float gdlIconX = (
+                orbsLabel
                 ? orbsLabel->getPositionX() + orbsLabel->getScaledContentWidth() + (likesIconPos - downloadsLabelPos)
-                : likesLabelPos + (likesIconPos - downloadsLabelPos))
-                + (m_compactView ? 9.2f : 13.8f) / 2.0f;
+                : likesLabelPos + (likesIconPos - downloadsLabelPos)
+            )
+            + (m_compactView ? 9.2f : 13.8f) / 2.0f;
 
             auto gdlIcon = CCSprite::create("global-list.png"_spr);
             gdlIcon->setScale((m_compactView ? 9.2f : 13.8f) / gdlIcon->getContentWidth());
@@ -55,7 +57,7 @@ class $modify(MyLevelCell, LevelCell) {
             gdlLabel->setID("gdl-label"_spr);
             m_mainLayer->addChild(gdlLabel);
 
-            std::unordered_map<CCNode*, float>& origPositions = m_fields->m_origPositions;
+            auto& origPositions = m_fields->m_origPositions;
 
             if (gdlLabel->getPositionX() + 50.0f > 350.0f) {
                 float gap = ((gdlLabel->getPositionX() + 50.0f) - 350.0f) / (orbsIcon ? 4.0f : 3.0f);
@@ -80,14 +82,14 @@ class $modify(MyLevelCell, LevelCell) {
             }
 
             m_fields->m_listener = LevelLoadedEvent(level->m_levelID.value()).listen(
-                [this](Result<GDLLevel*, APIError> result) {
+                [this](Result<const GDLLevel*, APIError> result) {
                     if (!this || !m_mainLayer) return;
 
                     auto gdlLabel = static_cast<CCLabelBMFont*>(m_mainLayer->getChildByID("gdl-label"_spr));
                     auto gdlIcon = m_mainLayer->getChildByID("gdl-icon"_spr);
                     if (result.isOk()) {
-                        auto GDLLevel = result.unwrap();
                         if (gdlLabel && gdlIcon) {
+                            auto GDLLevel = result.unwrap();
                             gdlLabel->setString(fmt::format("#{}", GDLLevel->placement).c_str());
                         }
                     }
@@ -103,7 +105,7 @@ class $modify(MyLevelCell, LevelCell) {
                 }
             );
 
-            GDL::API::getLevel(level->m_levelID.value());
+            GDL::API::Levels::getLevel(level->m_levelID.value(), false);
         }
     }
 };

@@ -5,23 +5,24 @@
 #include "../../Models/GDLCountryAdvanced.hpp"
 #include "../../Models/GDLCountryUser.hpp"
 #include "../../Models/GDLUser.hpp"
+#include "../../Models/UserLeaderboardKey.hpp"
 
 namespace GDL::Cache::Leaderboards {
-    std::vector<GDLUser*> getUsers(int page);
-    void setUsers(std::vector<GDLUser>&& users);
-    void clearUsers();
+    const std::vector<int>* getUserLeaderboard(UserLeaderboardKey key);
+    void setUserLeaderboard(UserLeaderboardKey key, std::vector<int>&& userQuery);
+    void clearUserLeaderboard();
 
-    std::vector<GDLCountry>* getCountry(CountriesLeaderboardType type);
-    void setCountries(CountriesLeaderboardType type, std::vector<GDLCountry>&& countries);
-    void clearCountries();
+    const std::vector<GDLCountry>* getCountryLeaderboard(CountriesLeaderboardType type);
+    void setCountryLeaderboard(CountriesLeaderboardType type, std::vector<GDLCountry>&& countries);
+    void clearCountryLeaderboard();
 
-    std::vector<GDLCountryUser>* getCountryUsers(const std::string& country);
-    void setCountryUsers(const std::string& country, std::vector<GDLCountryUser>&& users);
-    void clearCountryUsers();
+    const std::vector<GDLCountryUser>* getMainCountryLeaderboard(const std::string& country);
+    void setMainCountryLeaderboard(const std::string& country, std::vector<GDLCountryUser>&& users);
+    void clearMainCountryLeaderboard();
 
-    GDLCountryAdvanced* getCountryAdvanced(const std::string& country);
-    void setCountryAdvanced(const std::string& country, GDLCountryAdvanced&& data);
-    void clearCountryAdvanced();
+    const GDLCountryAdvanced* getAdvancedCountryLeaderboard(const std::string& country);
+    void setAdvancedCountryLeaderboard(const std::string& country, GDLCountryAdvanced&& data);
+    void clearAdvancedCountryLeaderboard();
 
     void clearAll();
 };

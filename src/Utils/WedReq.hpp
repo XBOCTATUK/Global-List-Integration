@@ -34,56 +34,66 @@ namespace Utils {
         web::WebRequest req;
 
         if (params.isObject() && params.size() != 0) {
-            for (auto const& [key, value] : params)
-                req.param(key, toParam(value));
+            for (auto const& [key, value] : params) {
+                auto param = toParam(value);
+                if (param.empty()) continue;
+
+                req.param(key, param);
+            }
         }
         if (bodyJSON.isObject() && bodyJSON.size() != 0) {
             req.bodyJSON(bodyJSON);
         }
 
-        return geode::async::spawn(req.get(url), [cb = std::forward<Callback>(cb), url](web::WebResponse res) mutable {
-            if (!res.ok()) {
-                if (res.code() == -1) {
-                    log::error("Failed to load data from endpoint '{}'. HTTP Error w/o message.", url);
-                    cb(matjson::Value::object(), {APIErrorType::HTTPError, APIMessage::None});
-                }
-                else {
-                    auto wrappedJSON = res.json();
-                    if (!wrappedJSON) {
-                        log::error("Failed to load data from endpoint '{}'. HTTP Error, failed to parse json", url);
-                        cb(matjson::Value::object(), {APIErrorType::JSONError, APIMessage::None});
+        return async::spawn(
+            req.get(url),
+            [cb = std::forward<Callback>(cb), url](web::WebResponse res) {
+                if (!res.ok()) {
+                    if (res.code() == -1) {
+                        log::error("Failed to load data from endpoint '{}'. HTTP Error, connection failed.", url);
+                        cb(matjson::Value::object(), {APIErrorType::HTTPError, APIMessage::None});
+                        return;
                     }
+                    else {
+                        auto wrappedJSON = res.json();
+                        if (wrappedJSON.isErr()) {
+                            log::error("Failed to load data from endpoint '{}'. JSON Error, failed to parse json", url);
+                            cb(matjson::Value::object(), {APIErrorType::JSONError, APIMessage::None});
+                            return;
+                        }
 
-                    auto json = wrappedJSON.unwrap();
-                    if (!json.contains("message") || !json["message"].isString()) {
-                        log::error("Failed to load data from endpoint '{}'. HTTP Error, failed to receive message.", url);
-                        cb(matjson::Value::object(), {APIErrorType::InvalidAPIResponse, APIMessage::None});
+                        auto json = wrappedJSON.unwrap();
+                        if (!json.contains("message") || !json["message"].isString()) {
+                            log::error("Failed to load data from endpoint '{}'. Unknown Error, failed to receive error message.", url);
+                            cb(matjson::Value::object(), {APIErrorType::InvalidAPIResponse, APIMessage::None});
+                            return;
+                        }
+
+                        auto message = json["message"].asString().unwrapOrDefault();
+                        log::error("Failed to load data from endpoint '{}'. API Error, message: {}.", url, message);
+                        cb(matjson::Value::object(), {APIErrorType::HTTPError, getAPIMessage(message)});
+                        return;
                     }
-
-                    auto message = json["message"].asString().unwrapOrDefault();
-                    log::error("Failed to load data from endpoint '{}'. HTTP Error, message: {}.", url, message);
-                    cb(matjson::Value::object(), {APIErrorType::HTTPError, getAPIMessage(message)});
                 }
-                return;
+
+                auto wrappedJSON = res.json();
+                if (wrappedJSON.isErr()) {
+                    log::error("Failed to parse data from endpoint '{}'.", url);
+                    cb(matjson::Value::object(), {APIErrorType::JSONError, APIMessage::None});
+                    return;
+                }
+
+                auto json = wrappedJSON.unwrap();
+                if (!json.contains("data") || !json["data"].isObject()) {
+                    log::error("The server returned an invalid response while loading data from endpoint '{}'.", url);
+                    cb(matjson::Value::object(), {APIErrorType::InvalidAPIResponse, APIMessage::None});
+                    return;
+                }
+
+                auto data = json["data"];
+
+                cb(std::move(data), {});
             }
-
-            auto wrappedJSON = res.json();
-            if (!wrappedJSON) {
-                log::error("Failed to parse data from endpoint '{}'.", url);
-                cb(matjson::Value::object(), {APIErrorType::JSONError, APIMessage::None});
-                return;
-            }
-
-            auto json = wrappedJSON.unwrap();
-            if (!json.contains("data") || !json["data"].isObject()) {
-                log::error("The server returned an invalid response while loading data from endpoint '{}'.", url);
-                cb(matjson::Value::object(), {APIErrorType::InvalidAPIResponse, APIMessage::None});
-                return;
-            }
-
-            auto data = json["data"];
-
-            cb(std::move(data), {});
-        });
+        );
     }
 }

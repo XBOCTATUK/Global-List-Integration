@@ -4,7 +4,11 @@
 #include "../../Models/GameLevel.hpp"
 
 namespace GDL::Cache::GameLevels {
-    GameLevel* getGameLevel(int levelID);
+    const GameLevel* getGameLevel(int levelID);
     void setGameLevel(GameLevel&& gameLevel);
+
+    bool isOutToDate();
+    void updateCachedAt();
+
     void clear();
 };

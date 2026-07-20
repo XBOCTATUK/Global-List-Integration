@@ -7,7 +7,7 @@
 
 using namespace geode::prelude;
 
-class CountryLeaderboardLoadedEvent : public Event<CountryLeaderboardLoadedEvent, bool(Result<std::vector<GDLCountry>*, APIError>), CountriesLeaderboardType> {
+class CountryLeaderboardLoadedEvent : public Event<CountryLeaderboardLoadedEvent, bool(Result<const std::vector<GDLCountry>*, APIError>), CountriesLeaderboardType> {
 public:
     using Event::Event;
 };

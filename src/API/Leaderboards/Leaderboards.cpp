@@ -1,29 +1,43 @@
 #include "Leaderboards.hpp"
 
-namespace GDL::API {
-    void getUserLeaderboard(int page, std::string search, std::string country) {
-        auto cachedUsers = GDL::Cache::Leaderboards::getUsers(page);
-        if (!cachedUsers.empty()) {
-            UserLeaderboardLoadedEvent().send(Ok(cachedUsers));
+namespace GDL::API::Leaderboards {
+    void getUserLeaderboard(int page, const std::string& search, const std::string& country) {
+        auto key = UserLeaderboardKey{page, search, country};
+        auto cachedUsers = GDL::Cache::Leaderboards::getUserLeaderboard(key);
+        if (cachedUsers) {
+            UserLeaderboardLoadedEvent().send(
+                Ok(cachedUsers)
+            );
             return;
         }
 
         Utils::WebReq(
             USER_LEADERBOARD_EP,
-            matjson::makeObject({ {"offset", 50 * (page-1)}, {"search", search}, {"country", country} }),
+            matjson::makeObject({ {"limit", 50}, {"offset", 50 * (page-1)}, {"search", search}, {"country", country} }),
             matjson::Value::object(),
-            [page](matjson::Value data, APIError error) {
-                if (data.size() == 0 && error) {
-                    UserLeaderboardLoadedEvent().send(Err(error));
+            [key](matjson::Value data, APIError error) {
+                if (error) {
+                    UserLeaderboardLoadedEvent().send(
+                        Err(error)
+                    );
                     return;
                 }
-                else if (!data.contains("users") || !data["users"].isArray() || data["users"].size() == 0) {
-                    log::error("The player leaderboard data is incomplete or invalid.");
-                    UserLeaderboardLoadedEvent().send(Err(APIError{APIErrorType::InvalidEndpointResponse, APIMessage::None}));
+                else if (!data.contains("users") || !data["users"].isArray()) {
+                    log::error("The user leaderboard data is incomplete or invalid.");
+                    UserLeaderboardLoadedEvent().send(
+                        Err(APIError{APIErrorType::InvalidEndpointResponse, APIMessage::None})
+                    );
+                    return;
+                }
+                else if (data["users"].size() == 0) {
+                    log::error("The user leaderboard data is empty (no search results).");
+                    UserLeaderboardLoadedEvent().send(
+                        Err(APIError{APIErrorType::NoSearchResults, APIMessage::None})
+                    );
                     return;
                 }
 
-                std::vector<GDLUser> users;
+                std::vector<int> userIDs;
 
                 for (const auto& user : data["users"]) {
                     int id = user["id"].asInt().unwrapOrDefault();
@@ -34,19 +48,25 @@ namespace GDL::API {
                     std::string badge = user["badge"].asString().unwrapOrDefault();
 
                     auto gdlUser = GDLUser{id, username, placement, points, country, badge};
-                    users.push_back(gdlUser);
+
+                    GDL::Cache::Users::setUser(std::move(gdlUser));
+                    userIDs.push_back(id);
                 }
                 
-                GDL::Cache::Leaderboards::setUsers(std::move(users));
-                UserLeaderboardLoadedEvent().send(Ok(GDL::Cache::Leaderboards::getUsers(page)));
+                GDL::Cache::Leaderboards::setUserLeaderboard(key, std::move(userIDs));
+                UserLeaderboardLoadedEvent().send(
+                    Ok(GDL::Cache::Leaderboards::getUserLeaderboard(key))
+                );
             }
         );
     }
 
     void getCountryLeaderboard(CountriesLeaderboardType type) {
-        auto cachedCountry = GDL::Cache::Leaderboards::getCountry(type);
+        auto cachedCountry = GDL::Cache::Leaderboards::getCountryLeaderboard(type);
         if (cachedCountry) {
-            CountryLeaderboardLoadedEvent(type).send(Ok(cachedCountry));
+            CountryLeaderboardLoadedEvent(type).send(
+                Ok(cachedCountry)
+            );
             return;
         }
 
@@ -57,13 +77,17 @@ namespace GDL::API {
             matjson::makeObject({ {"type", typeStr} }),
             matjson::Value::object(),
             [type](matjson::Value data, APIError error) {
-                if (data.size() == 0 && error) {
-                    CountryLeaderboardLoadedEvent(type).send(Err(error));
+                if (error) {
+                    CountryLeaderboardLoadedEvent(type).send(
+                        Err(error)
+                    );
                     return;
                 }
                 else if (!data.contains("countries") || !data["countries"].isArray() || data["countries"].size() == 0) {
                     log::error("The countries leaderboard data is incomplete or invalid.");
-                    CountryLeaderboardLoadedEvent(type).send(Err(APIError{APIErrorType::InvalidEndpointResponse, APIMessage::None}));
+                    CountryLeaderboardLoadedEvent(type).send(
+                        Err(APIError{APIErrorType::InvalidEndpointResponse, APIMessage::None})
+                    );
                     return;
                 }
 
@@ -78,16 +102,20 @@ namespace GDL::API {
                     countries.push_back(gdlCountry);
                 }
                 
-                GDL::Cache::Leaderboards::setCountries(type, std::move(countries));
-                CountryLeaderboardLoadedEvent(type).send(Ok(GDL::Cache::Leaderboards::getCountry(type)));
+                GDL::Cache::Leaderboards::setCountryLeaderboard(type, std::move(countries));
+                CountryLeaderboardLoadedEvent(type).send(
+                    Ok(GDL::Cache::Leaderboards::getCountryLeaderboard(type))
+                );
             }
         );
     }
 
-    void getMainCountryLeaderboard(std::string country) {
-        auto cachedCountryUsers = GDL::Cache::Leaderboards::getCountryUsers(country);
+    void getMainCountryLeaderboard(const std::string& country) {
+        auto cachedCountryUsers = GDL::Cache::Leaderboards::getMainCountryLeaderboard(country);
         if (cachedCountryUsers) {
-            MainCountryLeaderboardLoadedEvent(country).send(Ok(cachedCountryUsers));
+            MainCountryLeaderboardLoadedEvent(country).send(
+                Ok(cachedCountryUsers)
+            );
             return;
         }
 
@@ -96,13 +124,17 @@ namespace GDL::API {
             matjson::makeObject({ {"country", country} }),
             matjson::Value::object(),
             [country](matjson::Value data, APIError error) {
-                if (data.size() == 0 && error) {
-                    MainCountryLeaderboardLoadedEvent(country).send(Err(error));
+                if (error) {
+                    MainCountryLeaderboardLoadedEvent(country).send(
+                        Err(error)
+                    );
                     return;
                 }
                 else if (!data.contains("users") || !data["users"].isArray() || data["users"].size() == 0) {
                     log::error("The main country leaderboard data is incomplete or invalid.");
-                    MainCountryLeaderboardLoadedEvent(country).send(Err(APIError{APIErrorType::InvalidEndpointResponse, APIMessage::None}));
+                    MainCountryLeaderboardLoadedEvent(country).send(
+                        Err(APIError{APIErrorType::InvalidEndpointResponse, APIMessage::None})
+                    );
                     return;
                 }
 
@@ -117,16 +149,20 @@ namespace GDL::API {
                     countryUsers.push_back(gdlCountryUser);
                 }
                 
-                GDL::Cache::Leaderboards::setCountryUsers(country, std::move(countryUsers));
-                MainCountryLeaderboardLoadedEvent(country).send(Ok(GDL::Cache::Leaderboards::getCountryUsers(country)));
+                GDL::Cache::Leaderboards::setMainCountryLeaderboard(country, std::move(countryUsers));
+                MainCountryLeaderboardLoadedEvent(country).send(
+                    Ok(GDL::Cache::Leaderboards::getMainCountryLeaderboard(country))
+                );
             }
         );
     }
 
-    void getAdvancedCountryLeaderboard(std::string country) {
-        auto cachedCountryAdvanced = GDL::Cache::Leaderboards::getCountryAdvanced(country);
+    void getAdvancedCountryLeaderboard(const std::string& country) {
+        auto cachedCountryAdvanced = GDL::Cache::Leaderboards::getAdvancedCountryLeaderboard(country);
         if (cachedCountryAdvanced) {
-            AdvancedCountryLeaderboardLoadedEvent(country).send(Ok(cachedCountryAdvanced));
+            AdvancedCountryLeaderboardLoadedEvent(country).send(
+                Ok(cachedCountryAdvanced)
+            );
             return;
         }
 
@@ -135,17 +171,21 @@ namespace GDL::API {
             matjson::makeObject({ {"country", country} }),
             matjson::Value::object(),
             [country](matjson::Value data, APIError error) {
-                if (data.size() == 0 && error) {
-                    UserLeaderboardLoadedEvent().send(Err(error));
+                if (error) {
+                    UserLeaderboardLoadedEvent().send(
+                        Err(error)
+                    );
                     return;
                 }
                 else if (!data.contains("levels") || !data["levels"].isObject() || data["levels"].size() == 0) {
                     log::error("The advanced country leaderboard data is incomplete or invalid.");
-                    UserLeaderboardLoadedEvent().send(Err(APIError{APIErrorType::InvalidEndpointResponse, APIMessage::None}));
+                    UserLeaderboardLoadedEvent().send(
+                        Err(APIError{APIErrorType::InvalidEndpointResponse, APIMessage::None})
+                    );
                     return;
                 }
                 
-                auto gdlCountryAdvanced = GDLCountryAdvanced{};
+                GDLCountryAdvanced gdlCountryAdvanced;
 
                 int hardestID = data["levels"]["hardest"]["id"].asInt().unwrapOrDefault();
                 std::string hardestName = data["levels"]["hardest"]["name"].asString().unwrapOrDefault();
@@ -175,13 +215,14 @@ namespace GDL::API {
                 parseList(data["levels"]["unbounded"], gdlCountryAdvanced.unboundedList);
                 parseList(data["levels"]["progress"], gdlCountryAdvanced.progressList, true);
                 parseList(data["levels"]["verified"], gdlCountryAdvanced.verifiedList);
-                parseList(data["levels"]["uncompleted"], gdlCountryAdvanced.uncompletedList);
 
                 int userCount = data["user_count"].asInt().unwrapOrDefault();
                 gdlCountryAdvanced.userCount = userCount;
                 
-                GDL::Cache::Leaderboards::setCountryAdvanced(country, std::move(gdlCountryAdvanced));
-                AdvancedCountryLeaderboardLoadedEvent(country).send(Ok(GDL::Cache::Leaderboards::getCountryAdvanced(country)));
+                GDL::Cache::Leaderboards::setAdvancedCountryLeaderboard(country, std::move(gdlCountryAdvanced));
+                AdvancedCountryLeaderboardLoadedEvent(country).send(
+                    Ok(GDL::Cache::Leaderboards::getAdvancedCountryLeaderboard(country))
+                );
             }
         );
     }

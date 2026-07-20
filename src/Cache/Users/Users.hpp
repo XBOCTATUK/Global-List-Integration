@@ -5,11 +5,11 @@
 #include "../../Models/GDLUserRecords.hpp"
 
 namespace GDL::Cache::Users {
-    GDLUser* getUser(int userID);
+    const GDLUser* getUser(int userID);
     void setUser(GDLUser&& user);
     void clearUsers();
 
-    GDLUserRecords* getUserRecords(int userID);
+    const GDLUserRecords* getUserRecords(int userID);
     void setUserRecords(GDLUserRecords&& records);
     void clearRecords();
 
