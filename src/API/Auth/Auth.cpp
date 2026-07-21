@@ -1,4 +1,6 @@
 #include "Auth.hpp"
+#include "../API.hpp"
+#include "../../Utils/WedReq.hpp"
 
 namespace GDL::API::Auth {
     static std::string g_verificationToken;

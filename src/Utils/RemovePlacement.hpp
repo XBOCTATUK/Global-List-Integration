@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Geode/Geode.hpp>
+#include "../Cache/Levels/Levels.hpp"
 
 using namespace geode::prelude;
 

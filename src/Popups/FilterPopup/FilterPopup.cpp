@@ -1,6 +1,11 @@
 #include "FilterPopup.hpp"
-
-#include "./FilterPopup.hpp"
+#include "../LoadingPopup/LoadingPopup.hpp"
+#include "../RangePopup/RangePopup.hpp"
+#include "../../Filters/Filters.hpp"
+#include "../../Cache/GameLevels/GameLevels.hpp"
+#include "../../Cache/Users/Users.hpp"
+#include "../../Events/PopulateListEvent.hpp"
+#include "../../Events/CloseFiltersEvent.hpp"
 
 FilterPopup* FilterPopup::create() {
 	auto ret = new FilterPopup();

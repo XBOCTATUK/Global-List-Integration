@@ -1,7 +1,9 @@
 #include <Geode/modify/LevelInfoLayer.hpp>
 #include "../API/Levels/Levels.hpp"
+#include "../Cache/Levels/Levels.hpp"
 #include "../Utils/RemovePlacement.hpp"
 #include "../Settings/Settings.hpp"
+#include "../Events/LevelLoadedEvent.hpp"
 
 class $modify(MyLevelInfoLayer, LevelInfoLayer) {
     struct Fields {

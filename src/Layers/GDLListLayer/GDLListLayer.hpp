@@ -1,11 +1,7 @@
 #pragma once
 
-#include "../../API/Levels/Levels.hpp"
-#include "../../Filters/Filters.hpp"
 #include "../../Utils/CalculateCoverScale.hpp"
 #include "../../Settings/Settings.hpp"
-#include "../../Popups/FilterPopup/FilterPopup.hpp"
-#include "../../Events/PopulateListEvent.hpp"
 
 using namespace geode::prelude;
 
@@ -49,7 +45,7 @@ protected:
 	std::string m_query;
 	std::vector<int> m_searchResults;
 
-	bool init();
+	bool init() override;
 	void populateList();
 	std::vector<int> getSuitableLevels();
 	void search();

@@ -1,4 +1,15 @@
 #include "LoadingPopup.hpp"
+#include "../../Filters/Filters.hpp"
+#include "../../Cache/Levels/Levels.hpp"
+#include "../../Cache/Users/Users.hpp"
+#include "../../Cache/GameLevels/GameLevels.hpp"
+#include "../../API/Leaderboards/Leaderboards.hpp"
+#include "../../API/Users/Users.hpp"
+#include "../../Events/CloseFiltersEvent.hpp"
+#include "../../Events/PopulateListEvent.hpp"
+#include "../../Events/UserLoadedEvent.hpp"
+#include "../../Events/UserLeaderboardLoadedEvent.hpp"
+#include "../../Utils/Failure.hpp"
 
 LoadingPopup* LoadingPopup::create() {
 	auto ret = new LoadingPopup();

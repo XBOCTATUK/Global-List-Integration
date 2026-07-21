@@ -1,9 +1,7 @@
 #pragma once
 
-#include <vector>
-#include "../Cache.hpp"
 #include "../../Models/GDLLevel.hpp"
-#include "../../Models/GDLCountry.hpp"
+#include <vector>
 
 namespace GDL::Cache::Levels {
     const std::vector<int>& getDemonlist();

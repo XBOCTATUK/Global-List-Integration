@@ -2,7 +2,6 @@
 
 #include <Geode/Geode.hpp>
 #include <Geode/loader/Event.hpp>
-#include "../Models/GDLUser.hpp"
 #include "../Models/APIError.hpp"
 
 using namespace geode::prelude;

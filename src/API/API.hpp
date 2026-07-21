@@ -2,7 +2,6 @@
 
 #include <Geode/Geode.hpp>
 #include <Geode/utils/web.hpp>
-#include "../Cache/Cache.hpp"
 
 namespace GDL::API {
     inline const std::string BASE_URL = "https://api.demonlist.org";

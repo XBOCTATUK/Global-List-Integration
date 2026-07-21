@@ -1,16 +1,6 @@
 #pragma once
 
 #include <Geode/Geode.hpp>
-#include "../../Filters/Filters.hpp"
-#include "../../Cache/Levels/Levels.hpp"
-#include "../../Cache/GameLevels/GameLevels.hpp"
-#include "../../API/Leaderboards/Leaderboards.hpp"
-#include "../../API/Users/Users.hpp"
-#include "../../Events/CloseFiltersEvent.hpp"
-#include "../../Events/PopulateListEvent.hpp"
-#include "../../Events/UserLoadedEvent.hpp"
-#include "../../Events/UserLeaderboardLoadedEvent.hpp"
-#include "../../Utils/Failure.hpp"
 
 using namespace geode::prelude;
 
@@ -42,7 +32,7 @@ protected:
 	Slider* m_loadingProgress;
 	CCLabelBMFont* m_loadingLabel;
 
-	bool init();
+	bool init() override;
 	void startLoading();
 	void startNextStage();
 	void finishStage();

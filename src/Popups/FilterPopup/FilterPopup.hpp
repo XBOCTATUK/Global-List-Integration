@@ -1,16 +1,8 @@
 #pragma once
 
 #include <Geode/Geode.hpp>
-
-#include "../LoadingPopup/LoadingPopup.hpp"
-#include "../RangePopup/RangePopup.hpp"
-#include "../../Filters/Filters.hpp"
-#include "../../Cache/GameLevels/GameLevels.hpp"
 #include "../../UI/OptionBar/OptionBar.hpp"
 #include "../../UI/LabeledCheckbox/LabeledCheckbox.hpp"
-#include "../../Events/DemonlistLoadedEvent.hpp"
-#include "../../Events/PopulateListEvent.hpp"
-#include "../../Events/CloseFiltersEvent.hpp"
 
 using namespace geode::prelude;
 

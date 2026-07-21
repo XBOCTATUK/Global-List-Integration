@@ -1,10 +1,8 @@
 #pragma once
 
-#include "../Cache.hpp"
 #include "../../Models/GDLCountry.hpp"
 #include "../../Models/GDLCountryAdvanced.hpp"
 #include "../../Models/GDLCountryUser.hpp"
-#include "../../Models/GDLUser.hpp"
 #include "../../Models/UserLeaderboardKey.hpp"
 
 namespace GDL::Cache::Leaderboards {

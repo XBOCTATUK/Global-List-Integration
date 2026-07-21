@@ -1,4 +1,5 @@
 #include "Users.hpp"
+#include "../Cache.hpp"
 #include <unordered_map>
 
 namespace GDL::Cache::Users {

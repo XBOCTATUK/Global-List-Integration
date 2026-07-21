@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Geode/Geode.hpp>
-#include "../../Filters/Filters.hpp"
 
 using namespace geode::prelude;
 

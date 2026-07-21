@@ -2,7 +2,6 @@
 
 #include <Geode/Geode.hpp>
 #include <Geode/utils/web.hpp>
-#include "../API/API.hpp"
 #include "../Models/APIError.hpp"
 
 using namespace geode::prelude;

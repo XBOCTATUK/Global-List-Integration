@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 enum class APIErrorType {
     None, HTTPError, JSONError,
     InvalidAPIResponse, NoSearchResults, InvalidEndpointResponse

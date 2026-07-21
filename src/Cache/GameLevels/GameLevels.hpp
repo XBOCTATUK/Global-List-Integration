@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../Cache.hpp"
 #include "../../Models/GameLevel.hpp"
 
 namespace GDL::Cache::GameLevels {

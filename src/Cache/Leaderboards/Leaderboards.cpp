@@ -1,4 +1,5 @@
 #include "Leaderboards.hpp"
+#include "../Cache.hpp"
 #include <unordered_map>
 
 namespace GDL::Cache::Leaderboards {

@@ -1,4 +1,13 @@
 #include "GDLListLayer.hpp"
+#include "../../API/Levels/Levels.hpp"
+#include "../../Cache/Levels/Levels.hpp"
+#include "../../Cache/GameLevels/GameLevels.hpp"
+#include "../../Cache/Users/Users.hpp"
+#include "../../Filters/Filters.hpp"
+#include "../../Popups/FilterPopup/FilterPopup.hpp"
+#include "../../Events/PopulateListEvent.hpp"
+#include "../../Events/DemonlistLoadedEvent.hpp"
+#include "../../Models/APIError.hpp"
 #include <random>
 
 GDLListLayer* GDLListLayer::create() {
