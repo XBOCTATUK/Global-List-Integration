@@ -3,7 +3,6 @@
 #include "../../API/Levels/Levels.hpp"
 #include "../../Filters/Filters.hpp"
 #include "../../Utils/CalculateCoverScale.hpp"
-#include "../../Utils/IsLevelSuitable.hpp"
 #include "../../Settings/Settings.hpp"
 #include "../../Popups/FilterPopup/FilterPopup.hpp"
 #include "../../Events/PopulateListEvent.hpp"
@@ -52,6 +51,7 @@ protected:
 
 	bool init();
 	void populateList();
+	std::vector<int> getSuitableLevels();
 	void search();
 	void page(int page);
 	void setupPageInfo(gd::string, const char*) override;

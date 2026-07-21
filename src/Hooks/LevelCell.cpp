@@ -83,7 +83,7 @@ class $modify(MyLevelCell, LevelCell) {
 
             m_fields->m_listener = LevelLoadedEvent(level->m_levelID.value()).listen(
                 [this](Result<const GDLLevel*, APIError> result) {
-                    if (!this || !m_mainLayer) return;
+                    if (!m_mainLayer) return;
 
                     auto gdlLabel = static_cast<CCLabelBMFont*>(m_mainLayer->getChildByID("gdl-label"_spr));
                     auto gdlIcon = m_mainLayer->getChildByID("gdl-icon"_spr);

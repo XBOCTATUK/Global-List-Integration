@@ -73,8 +73,6 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer) {
 
             m_fields->m_listener = LevelLoadedEvent(level->m_levelID.value()).listen(
                 [this](Result<const GDLLevel*, APIError> result) {
-                    if (!this) return;
-
                     auto gdlLabel = static_cast<CCLabelBMFont*>(getChildByID("gdl-label"_spr));
                     auto gdlIcon = getChildByID("gdl-icon"_spr);
                     if (result.isOk()) {

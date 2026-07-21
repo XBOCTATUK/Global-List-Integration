@@ -257,22 +257,10 @@ void GDLListLayer::populateList() {
 	m_searchResults.clear();
 
 	if (m_query.empty() && GDL::Filters::getLevelFilters().isDefault()) {
-		for (size_t i = 0; i < m_gdlLevels.size(); i++) {
-			int levelID = m_gdlLevels[i];
-
-			m_searchResults.push_back(levelID);
-		}
+		m_searchResults = m_gdlLevels;
 	}
 	else {
-		for (size_t i = 0; i < m_gdlLevels.size(); i++) {
-			auto levelID = m_gdlLevels[i];
-			auto level = GDL::Cache::Levels::getLevel(levelID);
-
-			// I hope, I don't forget to rework Utils::isLevelSuitable, it's shit
-			if (Utils::isLevelSuitable(level) && level->contains(m_query)) {
-				m_searchResults.push_back(level->ingameID);
-			}
-		}
+		m_searchResults = getSuitableLevels();
 	}
 
 	if (m_searchResults.empty()) {
@@ -308,6 +296,83 @@ void GDLListLayer::populateList() {
 			glm->getOnlineLevels(searchObject);
 		}
 	}
+}
+
+std::vector<int> GDLListLayer::getSuitableLevels() {
+	auto& levelFilters = GDL::Filters::getLevelFilters();
+	auto user = GDL::Cache::Users::getUser(levelFilters.userID);
+
+	std::vector<int> suitableLevels;
+	suitableLevels.reserve(m_gdlLevels.size());
+
+	for (const auto& levelID : m_gdlLevels) {
+		auto level = GDL::Cache::Levels::getLevel(levelID);
+		if (!level) continue;
+
+		DifficultyFilter levelDiff = DifficultyFilter::None;
+        if (level->placement <= 75) levelDiff = DifficultyFilter::Top75;
+        else if (level->placement <= 150) levelDiff = DifficultyFilter::Top150;
+        else if (level->placement <= 300) levelDiff = DifficultyFilter::Top300;
+        else if (level->placement > 300) levelDiff = DifficultyFilter::Unbounded;
+        if (
+            levelFilters.diffFilter == DifficultyFilter::Custom &&
+            level->placement >= levelFilters.customDiffFilter[0] &&
+            level->placement <= levelFilters.customDiffFilter[1]
+        ) levelDiff = DifficultyFilter::Custom;
+
+		LengthFilter levelLength = LengthFilter::None;
+        if (level->length < 30) levelLength = LengthFilter::Short;
+        else if (level->length < 60) levelLength = LengthFilter::Medium;
+        else if (level->length < 120) levelLength = LengthFilter::Long;
+        else if (level->length >= 120) levelLength = LengthFilter::XL;
+        if (
+            levelFilters.lengthFilter == LengthFilter::Custom &&
+            level->length >= levelFilters.customLengthFilter[0] &&
+            level->length <= levelFilters.customLengthFilter[1]
+        ) levelLength = LengthFilter::Custom;
+
+		bool levelIsCompleted = false;
+        if (user) {
+            auto& completedList = user->getCompletedList();
+
+            levelIsCompleted = std::ranges::find_if(
+                completedList,
+                [internalID = level->id](const GDLBasicLevel& record) {
+                    return record.id == internalID;
+                }
+            ) != completedList.end();
+        }
+
+		auto gameLevel = GDL::Cache::GameLevels::getGameLevel(level->ingameID);
+        
+        bool byDifficulty = levelFilters.diffFilter == levelDiff || levelFilters.diffFilter == DifficultyFilter::None;
+        bool byLength = levelFilters.lengthFilter == levelLength || levelFilters.lengthFilter == LengthFilter::None;
+
+		bool byRate =
+        levelFilters.rated || levelFilters.unrated ?
+            gameLevel ?
+                levelFilters.rated ? gameLevel->rated : !gameLevel->rated
+            : false
+        : true;
+
+        bool byPlayer = levelFilters.completedBy ? levelIsCompleted : true;
+
+        bool byCreator =
+        levelFilters.createdBy ?
+            gameLevel ?
+                gameLevel->creatorName == levelFilters.holder
+            : false
+        : true;
+
+		if (
+			byDifficulty && byLength && byRate && byPlayer && byCreator &&
+			level->contains(m_query)
+		) {
+			suitableLevels.push_back(levelID);
+		}
+	}
+
+	return suitableLevels;
 }
 
 void GDLListLayer::search() {
