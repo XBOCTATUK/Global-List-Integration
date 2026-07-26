@@ -37,6 +37,7 @@
 		"sprites": [
 			"resources/BGs/*.png",
 			"resources/icons/*.png",
+			"resources/bagdes/*.png",
 			"resources/flags_png/*.png"
 		]
 	},
