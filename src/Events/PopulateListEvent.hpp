@@ -1,11 +1,6 @@
 #pragma once
 
-#include <Geode/Geode.hpp>
-#include <Geode/loader/Event.hpp>
-
-using namespace geode::prelude;
-
-class PopulateListEvent : public Event<PopulateListEvent, bool()> {
+class PopulateListEvent : public geode::Event<PopulateListEvent, bool()> {
 public:
     using Event::Event;
 };

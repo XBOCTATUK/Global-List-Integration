@@ -1,13 +1,9 @@
 #pragma once
 
-#include <Geode/Geode.hpp>
-#include <Geode/loader/Event.hpp>
 #include "../Models/GDLLevel.hpp"
 #include "../Models/APIError.hpp"
 
-using namespace geode::prelude;
-
-class LevelLoadedEvent : public Event<LevelLoadedEvent, bool(Result<const GDLLevel*, APIError>), int> {
+class LevelLoadedEvent : public geode::Event<LevelLoadedEvent, bool(geode::Result<const GDLLevel*, APIError>), int> {
 public:
     using Event::Event;
 };

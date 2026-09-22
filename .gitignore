@@ -1,6 +1,7 @@
 /out
 /build
-/resources/flags
+/resources/flags_png
+/resources/flags_svg
 _src_old
 .vs
 .vscode

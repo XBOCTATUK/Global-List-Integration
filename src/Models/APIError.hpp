@@ -18,7 +18,7 @@ struct APIError {
         return type != APIErrorType::None || message != APIMessage::Success;
     }
 
-    constexpr std::string_view typeAsString() {
+    constexpr std::string typeAsString() {
         switch (type) {
             case APIErrorType::None: return "None";
             case APIErrorType::HTTPError: return "HTTP Error";
@@ -31,7 +31,7 @@ struct APIError {
         return "Unknown API Error Type";
     }
 
-    constexpr std::string_view messageAsString() {
+    constexpr std::string messageAsString() {
         switch (message) {
             case APIMessage::None: return "None";
             case APIMessage::Unknown: return "Unknown";

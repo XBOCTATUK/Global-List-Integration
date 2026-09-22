@@ -1,5 +1,7 @@
 #include "Settings.hpp"
 
+using namespace geode::prelude;
+
 namespace Settings {
     static bool g_loadPlacementOnlyOnDemonlist = Mod::get()->getSettingValue<bool>("load-only-on-demonlist");
     static bool g_shouldLoadPlacement = false;

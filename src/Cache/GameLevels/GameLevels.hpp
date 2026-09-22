@@ -10,4 +10,4 @@ namespace GDL::Cache::GameLevels {
     void updateCachedAt();
 
     void clear();
-};
+}

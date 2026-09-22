@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string>
 #include <Geode/utils/hash.hpp>
 
 struct UserLeaderboardKey {

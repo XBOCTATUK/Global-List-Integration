@@ -12,4 +12,4 @@ namespace GDL::Cache {
     inline bool isExpired(std::chrono::steady_clock::time_point cachedAt, std::chrono::seconds ttl) {
         return std::chrono::steady_clock::now() - cachedAt > ttl;
     }
-};
+}

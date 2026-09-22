@@ -5,9 +5,11 @@
 #include "../Settings/Settings.hpp"
 #include "../Events/LevelLoadedEvent.hpp"
 
+using namespace geode::prelude;
+
 class $modify(MyLevelInfoLayer, LevelInfoLayer) {
     struct Fields {
-        ListenerHandle m_listener;
+        ListenerHandle m_levelLoadListener;
         std::unordered_map<CCNode*, float> m_origPositions;
     };
 
@@ -60,7 +62,7 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer) {
                 ? m_orbsIcon->getPositionY() - (downloadsIcon->getPositionY() - m_likesIcon->getPositionY())
                 : lengthIcon->getPositionY() - (m_likesIcon->getPositionY() - lengthIcon->getPositionY());
 
-            auto gdlIcon = CCSprite::create("global-list.png"_spr);
+            auto gdlIcon = CCSprite::create("globalListIcon.png"_spr);
             gdlIcon->setScale(23.0f / gdlIcon->getContentWidth());
             gdlIcon->setPosition({ gdlIconX, gdlIconY });
             gdlIcon->setID("gdl-icon"_spr);
@@ -73,7 +75,7 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer) {
             gdlLabel->setID("gdl-label"_spr);
             addChild(gdlLabel);
 
-            m_fields->m_listener = LevelLoadedEvent(level->m_levelID.value()).listen(
+            m_fields->m_levelLoadListener = LevelLoadedEvent(level->m_levelID.value()).listen(
                 [this](Result<const GDLLevel*, APIError> result) {
                     auto gdlLabel = static_cast<CCLabelBMFont*>(getChildByID("gdl-label"_spr));
                     auto gdlIcon = getChildByID("gdl-icon"_spr);

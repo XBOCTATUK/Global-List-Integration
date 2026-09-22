@@ -1,20 +1,16 @@
 #pragma once
 
-#include <Geode/Geode.hpp>
-
-using namespace geode::prelude;
-
 enum class LoadingStage {
     UserInfo, Levels
 };
 
-class LoadingPopup : public Popup, LevelManagerDelegate {
+class LoadingPopup : public geode::Popup, LevelManagerDelegate {
 public:
 	static LoadingPopup* create();
 
 protected:
-	ListenerHandle m_userLeaderboardLoadedListener;
-	ListenerHandle m_userLoadedListener;
+	geode::ListenerHandle m_userLeaderboardLoadListener;
+	geode::ListenerHandle m_userLoadListener;
 
 	std::vector<int> m_requiredLevels;
 
@@ -30,7 +26,7 @@ protected:
 	size_t m_currentBatch;
 
 	Slider* m_loadingProgress;
-	CCLabelBMFont* m_loadingLabel;
+	cocos2d::CCLabelBMFont* m_loadingLabel;
 
 	bool init() override;
 	void startLoading();

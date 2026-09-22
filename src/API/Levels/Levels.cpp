@@ -5,6 +5,8 @@
 #include "../../Events/DemonlistLoadedEvent.hpp"
 #include "../../Events/LevelLoadedEvent.hpp"
 
+using namespace geode::prelude;
+
 namespace GDL::API::Levels {
     void getDemonlist() {
         auto& cachedDemonlist = GDL::Cache::Levels::getDemonlist();
@@ -128,4 +130,4 @@ namespace GDL::API::Levels {
             }
         );
     }
-};
+}

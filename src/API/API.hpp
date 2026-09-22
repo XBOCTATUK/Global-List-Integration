@@ -1,8 +1,5 @@
 #pragma once
 
-#include <Geode/Geode.hpp>
-#include <Geode/utils/web.hpp>
-
 namespace GDL::API {
     inline const std::string BASE_URL = "https://api.demonlist.org";
 
@@ -19,4 +16,4 @@ namespace GDL::API {
     inline const std::string COUNTRY_LEADERBOARD_EP = BASE_URL + "/leaderboard/country/list";
     inline const std::string MAIN_COUNTRY_LEADERBOARD_EP = BASE_URL + "/leaderboard/country/main/get";
     inline const std::string ADVANCED_COUNTRY_LEADERBOARD_EP = BASE_URL + "/leaderboard/country/advanced/get";
-};
+}

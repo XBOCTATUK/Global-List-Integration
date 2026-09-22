@@ -1,5 +1,5 @@
 {
-	"geode": "5.8.2",
+	"geode": "5.9.0",
 	"gd": {
 		"win": "2.2081",
 		"android": "2.2081",
@@ -31,14 +31,31 @@
 			"name": "Increase levels per page",
 			"default": false,
 			"description": "Increases the number of levels on one page in the demonlist from 10 to 25."
+		},
+		"leaderboards": {
+			"type": "title",
+			"name": "Leaderboards"
+		},
+		"increase-cells-per-page": {
+			"type": "bool",
+			"name": "Increase cells per page",
+			"default": false,
+			"description": "Increases the number of cells on one page in the leaderboards from 25 to 50."
+		},
+		"compact-cells": {
+			"type": "bool",
+			"name": "Compact cells",
+			"default": false,
+			"description": "Makes cells and their contents smaller."
 		}
 	},
 	"resources": {
 		"sprites": [
 			"resources/BGs/*.png",
 			"resources/icons/*.png",
-			"resources/bagdes/*.png",
-			"resources/flags_png/*.png"
+			"resources/badges/*.png",
+			"resources/flags/*.png",
+			"resources/other/*.png"
 		]
 	},
 	"dependencies": {

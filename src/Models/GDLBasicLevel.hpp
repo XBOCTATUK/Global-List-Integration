@@ -1,8 +1,5 @@
 #pragma once
 
-#include <string>
-#include <optional>
-
 struct GDLBasicLevel {
     int id;
     std::string name;

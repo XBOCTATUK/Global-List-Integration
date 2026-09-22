@@ -107,4 +107,4 @@ namespace GDL::Cache::Leaderboards {
         clearMainCountryLeaderboard();
         clearAdvancedCountryLeaderboard();
     }
-};
+}

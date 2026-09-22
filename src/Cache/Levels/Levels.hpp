@@ -14,4 +14,4 @@ namespace GDL::Cache::Levels {
     void setLevelWOPlacement(int levelID);
 
     void clear();
-};
+}

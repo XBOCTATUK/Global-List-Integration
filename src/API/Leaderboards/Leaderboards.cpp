@@ -7,6 +7,9 @@
 #include "../../Events/CountryLeaderboardLoadedEvent.hpp"
 #include "../../Events/MainCountryLeaderboardLoadedEvent.hpp"
 #include "../../Events/AdvancedCountryLeaderboardLoadedEvent.hpp"
+#include "Geode/utils/general.hpp"
+
+using namespace geode::prelude;
 
 namespace GDL::API::Leaderboards {
     void getUserLeaderboard(int page, const std::string& search, const std::string& country) {
@@ -51,11 +54,15 @@ namespace GDL::API::Leaderboards {
                     int id = user["id"].asInt().unwrapOrDefault();
                     std::string username = user["username"].asString().unwrapOrDefault();
                     int placement = user["placement"].asInt().unwrapOrDefault();
-                    double points = user["points"].asDouble().unwrapOrDefault();
+                    auto pointsStr = user["points"].asString().unwrapOrDefault();
+                    auto points = numFromString<double>(pointsStr);
                     std::string country = user["country"].asString().unwrapOrDefault();
                     std::string badge = user["badge"].asString().unwrapOrDefault();
 
-                    auto gdlUser = GDLUser{id, username, placement, points, country, badge};
+                    auto gdlUser = GDLUser{
+                        id, username, placement,
+                        points.isOk() ? points.unwrap() : 0.0, country, badge
+                    };
 
                     GDL::Cache::Users::setUser(std::move(gdlUser));
                     userIDs.push_back(id);
@@ -104,9 +111,12 @@ namespace GDL::API::Leaderboards {
                 for (const auto& country : data["countries"]) {
                     std::string title = country["title"].asString().unwrapOrDefault();
                     int placement = country["placement"].asInt().unwrapOrDefault();
-                    double points = country["points"].asDouble().unwrapOrDefault();
+                    auto pointsStr = country["points"].asString().unwrapOrDefault();
+                    auto points = numFromString<double>(pointsStr);
 
-                    auto gdlCountry = GDLCountry{title, placement, points};
+                    auto gdlCountry = GDLCountry{
+                        title, placement, points.isOk() ? points.unwrap() : 0.0
+                    };
                     countries.push_back(gdlCountry);
                 }
                 
@@ -151,9 +161,12 @@ namespace GDL::API::Leaderboards {
                 for (const auto& user : data["users"]) {
                     int id = user["id"].asInt().unwrapOrDefault();
                     std::string username = user["username"].asString().unwrapOrDefault();
-                    double points = user["points"].asDouble().unwrapOrDefault();
+                    auto pointsStr = user["points"].asString().unwrapOrDefault();
+                    auto points = numFromString<double>(pointsStr);
 
-                    auto gdlCountryUser = GDLCountryUser{id, username, points};
+                    auto gdlCountryUser = GDLCountryUser{
+                        id, username, points.isOk() ? points.unwrap() : 0.0
+                    };
                     countryUsers.push_back(gdlCountryUser);
                 }
                 
@@ -234,4 +247,4 @@ namespace GDL::API::Leaderboards {
             }
         );
     }
-};
+}

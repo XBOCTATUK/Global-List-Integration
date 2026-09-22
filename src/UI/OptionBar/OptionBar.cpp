@@ -1,10 +1,12 @@
 #include "OptionBar.hpp"
 
+using namespace geode::prelude;
+
 namespace TailyUI {
     OptionBar* OptionBar::create(
         const char* icon, float labelScale, 
         const std::initializer_list<std::string>& values,
-        Function<void(std::string, bool)> choiceCallback,
+        Function<void(const std::string&, bool)> choiceCallback,
         Function<void()> optionsCallback
     ) {
     	auto ret = new OptionBar();
@@ -19,7 +21,7 @@ namespace TailyUI {
     bool OptionBar::init(
         const char* icon, float labelScale, 
         const std::initializer_list<std::string>& values,
-        Function<void(std::string, bool)> choiceCallback,
+        Function<void(const std::string&, bool)> choiceCallback,
         Function<void()> optionsCallback
     ) {
         if (!CCNode::init()) return false;
@@ -54,32 +56,34 @@ namespace TailyUI {
         m_menu->addChild(m_icon);
 
         for (auto& value : values) {
-            auto choiceLabel = CCLabelBMFont::create(value.c_str(), "bigFont.fnt");
+            auto choiceLabel = CCLabelBMFont::create(value.data(), "bigFont.fnt");
             choiceLabel->setScale(labelScale);
             choiceLabel->setColor({ 125, 125, 125 });
 
-            auto choiceBtn = CCMenuItemExt::createSpriteExtra(choiceLabel, [this](CCMenuItemSpriteExtra* self) {
-                if (m_selectedBtn) {
-                    auto label = static_cast<CCLabelBMFont*>(m_selectedBtn->getNormalImage());
-                    label->setColor({ 125, 125, 125 });
+            auto choiceBtn = CCMenuItemExt::createSpriteExtra(
+                choiceLabel, [this](CCMenuItemSpriteExtra* self) {
+                    if (m_selectedBtn) {
+                        auto label = static_cast<CCLabelBMFont*>(m_selectedBtn->getNormalImage());
+                        label->setColor({ 125, 125, 125 });
 
-                    if (m_selectedBtn == self) {
-                        m_selectedBtn = nullptr;
-                        m_choiceCallback(label->getString(), false);
-                        return;
+                        if (m_selectedBtn == self) {
+                            m_selectedBtn = nullptr;
+                            m_choiceCallback(label->getString(), false);
+                            return;
+                        }
+                    }
+                    
+                    auto normalSpr = self->getNormalImage();
+                    auto label = static_cast<CCLabelBMFont*>(normalSpr);
+
+                    label->setColor({ 255, 255, 255 });
+                    m_selectedBtn = self;
+
+                    if (m_choiceCallback) {
+                        m_choiceCallback(label->getString(), true);
                     }
                 }
-                
-                auto normalSpr = self->getNormalImage();
-                auto label = static_cast<CCLabelBMFont*>(normalSpr);
-
-                label->setColor({ 255, 255, 255 });
-                m_selectedBtn = self;
-
-                if (m_choiceCallback) {
-                    m_choiceCallback(label->getString(), true);
-                }
-            });
+            );
 
             m_menu->addChild(choiceBtn);
             m_choices[value] = choiceBtn;
@@ -87,11 +91,13 @@ namespace TailyUI {
 
         auto optionsSpr = CCSprite::createWithSpriteFrameName("GJ_optionsBtn_001.png");
         optionsSpr->setScale(23.0f / optionsSpr->getContentHeight());
-        auto optionBtn = CCMenuItemExt::createSpriteExtra(optionsSpr, [this](auto) {
-            if (m_optionsCallback) {
-                m_optionsCallback();
+        auto optionBtn = CCMenuItemExt::createSpriteExtra(
+            optionsSpr, [this](auto) {
+                if (m_optionsCallback) {
+                    m_optionsCallback();
+                }
             }
-        });
+        );
         m_menu->addChild(optionBtn);
 
         m_menu->updateLayout();
@@ -99,7 +105,7 @@ namespace TailyUI {
         return true;
     }
 
-    void OptionBar::activateChoice(std::string choiceName) {
+    void OptionBar::activateChoice(const std::string& choiceName) {
         if (choiceName == "") return;
 
         auto it = m_choices.find(choiceName);
@@ -108,11 +114,11 @@ namespace TailyUI {
         m_choices[choiceName]->activate();
     }
 
-    void OptionBar::setChoiceCallback(Function<void(std::string, bool)> callback) {
+    void OptionBar::setChoiceCallback(Function<void(const std::string&, bool)> callback) {
         m_choiceCallback = std::move(callback);
     }
 
     void OptionBar::setOptionsCallback(Function<void()> callback) {
         m_optionsCallback = std::move(callback);
     }
-};
+}

@@ -23,4 +23,4 @@ namespace GDL::Cache::Leaderboards {
     void clearAdvancedCountryLeaderboard();
 
     void clearAll();
-};
+}

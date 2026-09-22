@@ -1,40 +1,37 @@
 #pragma once
 
-#include <Geode/Geode.hpp>
 #include <initializer_list>
 #include <unordered_map>
 
-using namespace geode::prelude;
-
 namespace TailyUI {
-    class OptionBar : public CCNode {
+    class OptionBar : public cocos2d::CCNode {
     public:
         static OptionBar* create(
             const char* icon, float labelScale, 
             const std::initializer_list<std::string>& values,
-            Function<void(std::string, bool)> choiceCallback,
-            Function<void()> optionsCallback
+            geode::Function<void(const std::string&, bool)> choiceCallback,
+            geode::Function<void()> optionsCallback
         );
 
-        void activateChoice(std::string choiceName);
-        void setChoiceCallback(Function<void(std::string, bool)> callback);
-        void setOptionsCallback(Function<void()> callback);
+        void activateChoice(const std::string& choiceName);
+        void setChoiceCallback(geode::Function<void(const std::string&, bool)> callback);
+        void setOptionsCallback(geode::Function<void()> callback);
 
     protected:
-        CCSprite* m_icon;
-        CCMenu* m_menu;
+        cocos2d::CCSprite* m_icon;
+        cocos2d::CCMenu* m_menu;
 
         std::unordered_map<std::string, CCMenuItemSpriteExtra*> m_choices;
         CCMenuItemSpriteExtra* m_selectedBtn;
 
-        Function<void(std::string, bool)> m_choiceCallback = nullptr;
-        Function<void()> m_optionsCallback = nullptr;
+        geode::Function<void(const std::string&, bool)> m_choiceCallback = nullptr;
+        geode::Function<void()> m_optionsCallback = nullptr;
 
         bool init(
             const char* icon, float labelScale, 
             const std::initializer_list<std::string>& values,
-            Function<void(std::string, bool)> choiceCallback,
-            Function<void()> optionsCallback
+            geode::Function<void(const std::string&, bool)> choiceCallback,
+            geode::Function<void()> optionsCallback
         );
     };
-};
+}

@@ -1,13 +1,9 @@
 #pragma once
 
-#include <Geode/Geode.hpp>
-#include <Geode/loader/Event.hpp>
 #include "../Models/GDLUser.hpp"
 #include "../Models/APIError.hpp"
 
-using namespace geode::prelude;
-
-class UserLoadedEvent : public Event<UserLoadedEvent, bool(Result<const GDLUser*, APIError>), int> {
+class UserLoadedEvent : public geode::Event<UserLoadedEvent, bool(geode::Result<const GDLUser*, APIError>), int> {
 public:
     using Event::Event;
 };

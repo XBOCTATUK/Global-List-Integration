@@ -9,7 +9,9 @@
 #include "../../Events/PopulateListEvent.hpp"
 #include "../../Events/UserLoadedEvent.hpp"
 #include "../../Events/UserLeaderboardLoadedEvent.hpp"
-#include "../../Utils/Failure.hpp"
+#include "../../Utils/Alert.hpp"
+
+using namespace geode::prelude;
 
 LoadingPopup* LoadingPopup::create() {
 	auto ret = new LoadingPopup();
@@ -47,34 +49,34 @@ bool LoadingPopup::init() {
 	m_mainLayer->addChild(m_loadingLabel);
 
 	auto cancelSpr = ButtonSprite::create("Cancel", 0.8f);
-	auto cancelBtn = CCMenuItemExt::createSpriteExtra(cancelSpr, [this](auto) {
-		m_userLeaderboardLoadedListener.destroy();
-		m_userLoadedListener.destroy();
+	auto cancelBtn = CCMenuItemExt::createSpriteExtra(
+		cancelSpr, [this](auto) {
+			m_userLeaderboardLoadListener.destroy();
+			m_userLoadListener.destroy();
 
-		m_loading = false;
-		onClose(nullptr);
-	});
+			m_loading = false;
+			onClose(nullptr);
+		}
+	);
 	cancelBtn->setPosition({ 100.0f, 24.0f });
 	cancelBtn->m_baseScale = cancelBtn->getScale();
 	cancelBtn->setID("cancel-button");
 	m_buttonMenu->addChild(cancelBtn);
-	
-	auto& displayFilters = GDL::Filters::getDisplayFilters();
 
-	m_userLeaderboardLoadedListener = UserLeaderboardLoadedEvent().listen(
-		[this, &displayFilters](Result<const std::vector<int>*, APIError> result) {
+	m_userLeaderboardLoadListener = UserLeaderboardLoadedEvent().listen(
+		[this](Result<const std::vector<int>*, APIError> result) {
 			if (result.isOk()) {
 				auto users = result.unwrap();
 
-				auto username = string::toLower(displayFilters.username);
+				auto username = string::toLower(GDL::Filters::getUsername(false));
 				for (const auto& userID : *users) {
 					auto user = GDL::Cache::Users::getUser(userID);
 
 					if (string::toLower(user->username) == username) {
 						GDL::Filters::setUserID(user->id);
 
-						m_userLoadedListener.destroy();
-						m_userLoadedListener = UserLoadedEvent(user->id).listen(
+						m_userLoadListener.destroy();
+						m_userLoadListener = UserLoadedEvent(user->id).listen(
 							[this](Result<const GDLUser*, APIError> result) {
 								if (result.isOk()) {
 									m_completedSteps++;
@@ -83,7 +85,7 @@ bool LoadingPopup::init() {
 								}
 								else {
 									auto error = result.err().value();
-									Utils::failure(
+									Utils::alert(
 										"User records load failed",
 										fmt::format(
 											"Failed to load user records data.\nError: {}.\nMessage: {}.\nTry again later.",
@@ -106,7 +108,7 @@ bool LoadingPopup::init() {
 			}
 			else {
 				auto error = result.err().value();
-				Utils::failure(
+				Utils::alert(
 					"User load failed",
 					fmt::format(
 						"Failed to load user data.\nError: {}.\nMessage: {}.\nTry again later.",
@@ -140,13 +142,12 @@ void LoadingPopup::startLoading() {
 		m_requiredLevels.push_back(levelID);
 	}
 
-	auto& displayFilters = GDL::Filters::getDisplayFilters();
-	if (displayFilters.completedBy && !displayFilters.username.empty()) {
+	if (GDL::Filters::getCompletedBy(false) && !GDL::Filters::getUsername(false).empty()) {
 		m_stages.push_back(LoadingStage::UserInfo);
 		m_totalSteps++;
 	}
 	
-	if (displayFilters.isDataRequired() && !m_requiredLevels.empty()) {
+	if (GDL::Filters::isLevelDataRequired() && !m_requiredLevels.empty()) {
 		GDL::Cache::GameLevels::clear();
 
 		m_stages.push_back(LoadingStage::Levels);
@@ -179,8 +180,7 @@ void LoadingPopup::finishStage() {
 void LoadingPopup::startUserLoading() {
 	updateProgress();
 	
-    auto& displayFilters = GDL::Filters::getDisplayFilters();
-    GDL::API::Leaderboards::getUserLeaderboard(1, displayFilters.username);
+    GDL::API::Leaderboards::getUserLeaderboard(1, GDL::Filters::getUsername(false));
 }
 
 void LoadingPopup::startLevelsLoading() {
@@ -225,12 +225,10 @@ void LoadingPopup::afterLoading() {
 
 void LoadingPopup::updateProgress() {
     if (m_totalSteps == 0) return;
-
-	auto& displayFilters = GDL::Filters::getDisplayFilters();
 	
 	if (m_stages[m_currentStage] == LoadingStage::UserInfo) {
 		m_loadingLabel->setString(
-			fmt::format("Loading user '{}'", displayFilters.username).c_str()
+			fmt::format("Loading user '{}'", GDL::Filters::getUsername(false)).c_str()
 		);
 	}
 	else if (m_stages[m_currentStage] == LoadingStage::Levels) {
@@ -269,7 +267,7 @@ void LoadingPopup::loadLevelsFinished(CCArray* levels, char const* key) {
 }
 
 void LoadingPopup::loadLevelsFailed(char const* key) {
-	Utils::failure("Loading failed", "Something wrong. Try again later.");
+	Utils::alert("Loading failed", "Something wrong. Try again later.");
 
 	m_loading = false;
 	onClose(nullptr);

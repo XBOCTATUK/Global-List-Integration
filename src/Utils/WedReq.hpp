@@ -1,12 +1,8 @@
 #pragma once
 
-#include <Geode/Geode.hpp>
-#include <Geode/utils/web.hpp>
 #include "../Models/APIError.hpp"
 
-using namespace geode::prelude;
-
-inline std::string toParam(matjson::Value const& value) {
+inline std::string toParam(const matjson::Value& value) {
     if (value.isString()) return value.asString().unwrap();
     if (value.isNumber()) return value.dump();
     if (value.isBool()) return value.asBool().unwrap() ? "true" : "false";
@@ -14,7 +10,7 @@ inline std::string toParam(matjson::Value const& value) {
     return value.dump();
 }
 
-inline APIMessage getAPIMessage(std::string msg) {
+inline APIMessage getAPIMessage(const std::string& msg) {
     if (msg == "too_many_requests") return APIMessage::TooManyRequests;
     if (msg == "unauthorized") return APIMessage::Unauthorized;
     if (msg == "invalid_login_or_password") return APIMessage::InvalidLoginOrPassword;
@@ -29,11 +25,11 @@ inline APIMessage getAPIMessage(std::string msg) {
 
 namespace Utils {
     template <typename Callback>
-    arc::TaskHandle<void> WebReq(std::string const& url, matjson::Value const& params, matjson::Value const& bodyJSON, Callback&& cb) {
-        web::WebRequest req;
+    arc::TaskHandle<void> WebReq(const std::string& url, const matjson::Value& params, const matjson::Value& bodyJSON, Callback&& cb) {
+        geode::utils::web::WebRequest req;
 
         if (params.isObject() && params.size() != 0) {
-            for (auto const& [key, value] : params) {
+            for (const auto& [key, value] : params) {
                 auto param = toParam(value);
                 if (param.empty()) continue;
 
@@ -44,32 +40,33 @@ namespace Utils {
             req.bodyJSON(bodyJSON);
         }
 
-        return async::spawn(
+        return geode::async::spawn(
             req.get(url),
-            [cb = std::forward<Callback>(cb), url](web::WebResponse res) {
+            [cb = std::forward<Callback>(cb), url](geode::utils::web::WebResponse res) {
                 if (!res.ok()) {
-                    if (res.code() == -1) {
-                        log::error("Failed to load data from endpoint '{}'. HTTP Error, connection failed.", url);
+                    geode::log::error("{} | {} | {} | {} | {} | {}", res.error(), res.code(), res.cancelled(), res.badClient(), res.badServer(), res.errorMessage());
+                    if (res.error()) {
+                        geode::log::error("Failed to load data from endpoint '{}'. HTTP Error, connection failed.", url);
                         cb(matjson::Value::object(), {APIErrorType::HTTPError, APIMessage::None});
                         return;
                     }
                     else {
                         auto wrappedJSON = res.json();
                         if (wrappedJSON.isErr()) {
-                            log::error("Failed to load data from endpoint '{}'. JSON Error, failed to parse json", url);
+                            geode::log::error("Failed to load data from endpoint '{}'. JSON Error, failed to parse json", url);
                             cb(matjson::Value::object(), {APIErrorType::JSONError, APIMessage::None});
                             return;
                         }
 
                         auto json = wrappedJSON.unwrap();
                         if (!json.contains("message") || !json["message"].isString()) {
-                            log::error("Failed to load data from endpoint '{}'. Unknown Error, failed to receive error message.", url);
+                            geode::log::error("Failed to load data from endpoint '{}'. Unknown Error, failed to receive error message.", url);
                             cb(matjson::Value::object(), {APIErrorType::InvalidAPIResponse, APIMessage::None});
                             return;
                         }
 
                         auto message = json["message"].asString().unwrapOrDefault();
-                        log::error("Failed to load data from endpoint '{}'. API Error, message: {}.", url, message);
+                        geode::log::error("Failed to load data from endpoint '{}'. API Error, message: {}.", url, message);
                         cb(matjson::Value::object(), {APIErrorType::HTTPError, getAPIMessage(message)});
                         return;
                     }
@@ -77,14 +74,14 @@ namespace Utils {
 
                 auto wrappedJSON = res.json();
                 if (wrappedJSON.isErr()) {
-                    log::error("Failed to parse data from endpoint '{}'.", url);
+                    geode::log::error("Failed to parse data from endpoint '{}'.", url);
                     cb(matjson::Value::object(), {APIErrorType::JSONError, APIMessage::None});
                     return;
                 }
 
                 auto json = wrappedJSON.unwrap();
                 if (!json.contains("data") || !json["data"].isObject()) {
-                    log::error("The server returned an invalid response while loading data from endpoint '{}'.", url);
+                    geode::log::error("The server returned an invalid response while loading data from endpoint '{}'.", url);
                     cb(matjson::Value::object(), {APIErrorType::InvalidAPIResponse, APIMessage::None});
                     return;
                 }

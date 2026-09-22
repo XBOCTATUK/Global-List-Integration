@@ -7,4 +7,4 @@ namespace GDL::API::Leaderboards {
     void getCountryLeaderboard(CountriesLeaderboardType type);
     void getMainCountryLeaderboard(const std::string& country);
     void getAdvancedCountryLeaderboard(const std::string& country);
-};
+}

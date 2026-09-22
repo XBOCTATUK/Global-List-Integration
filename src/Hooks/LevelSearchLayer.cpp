@@ -1,4 +1,3 @@
-#include <Geode/Geode.hpp>
 #include <Geode/modify/LevelSearchLayer.hpp>
 #include "../Layers/GDLListLayer/GDLListLayer.hpp"
 
@@ -11,7 +10,7 @@ class $modify(MyLevelSearchLayer, LevelSearchLayer) {
         auto filterMenu = getChildByID("other-filter-menu");
         if (!filterMenu) return true;
 
-        auto spr = CircleButtonSprite::createWithSprite("global-list.png"_spr, 0.9f, CircleBaseColor::Green, CircleBaseSize::Small);
+        auto spr = CircleButtonSprite::createWithSprite("globalListIcon.png"_spr, 0.9f, CircleBaseColor::Green, CircleBaseSize::Small);
         auto btn = CCMenuItemSpriteExtra::create(spr, this, menu_selector(MyLevelSearchLayer::onBtn));
         btn->setID("global-list-button"_spr);
         

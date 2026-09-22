@@ -1,9 +1,5 @@
 #pragma once
 
-#include <string>
-#include <optional>
-#include <algorithm>
-
 struct GDLLevel {
     int id;
     int ingameID;
@@ -31,7 +27,7 @@ struct GDLLevel {
     }
 
     bool contains(const std::string& query) const {
-		std::string lowerName = name;
+        std::string lowerName = name;
         std::string lowerQuery = query;
 
         std::transform(
@@ -43,9 +39,9 @@ struct GDLLevel {
             lowerQuery.begin(), lowerQuery.end(), lowerQuery.begin(),
             [](unsigned char c) { return std::tolower(c); }
         );
-		
-		return 
+        
+        return 
             lowerName.find(lowerQuery) != std::string::npos ||
             std::to_string(ingameID) == lowerQuery;
-	}
+    }
 };

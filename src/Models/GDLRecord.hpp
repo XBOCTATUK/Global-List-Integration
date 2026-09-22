@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 struct GDLRecord {
     int id;
     int percent;

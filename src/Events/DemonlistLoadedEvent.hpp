@@ -1,12 +1,8 @@
 #pragma once
 
-#include <Geode/Geode.hpp>
-#include <Geode/loader/Event.hpp>
 #include "../Models/APIError.hpp"
 
-using namespace geode::prelude;
-
-class DemonlistLoadedEvent : public Event<DemonlistLoadedEvent, bool(Result<const std::vector<int>&, APIError>)> {
+class DemonlistLoadedEvent : public geode::Event<DemonlistLoadedEvent, bool(geode::Result<const std::vector<int>&, APIError>)> {
 public:
     using Event::Event;
 };

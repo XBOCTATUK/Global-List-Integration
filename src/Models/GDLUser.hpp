@@ -1,8 +1,5 @@
 #pragma once
 
-#include <string>
-#include <vector>
-#include <optional>
 #include "GDLBasicLevel.hpp"
 
 using optGDLBasicLevels = std::optional<std::vector<GDLBasicLevel>>;

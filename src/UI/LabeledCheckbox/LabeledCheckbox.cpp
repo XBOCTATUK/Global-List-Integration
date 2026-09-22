@@ -1,5 +1,7 @@
 #include "LabeledCheckbox.hpp"
 
+using namespace geode::prelude;
+
 namespace TailyUI {
     LabeledCheckbox* LabeledCheckbox::create(
         const char* name, float height, const char* info,
@@ -61,4 +63,4 @@ namespace TailyUI {
     void LabeledCheckbox::setTogglerCallback(Function<void(bool)> togglerCallback) {
         m_togglerCallback = std::move(togglerCallback);
     }
-};
+}

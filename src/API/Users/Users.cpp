@@ -5,6 +5,8 @@
 #include "../../Events/UserLoadedEvent.hpp"
 #include "../../Events/UserRecordsLoadedEvent.hpp"
 
+using namespace geode::prelude;
+
 namespace GDL::API::Users {
     void getUser(int userID, bool isFullInfoRequire) {
         auto cachedUser = GDL::Cache::Users::getUser(userID);
@@ -143,4 +145,4 @@ namespace GDL::API::Users {
             }
         );
     }
-};
+}

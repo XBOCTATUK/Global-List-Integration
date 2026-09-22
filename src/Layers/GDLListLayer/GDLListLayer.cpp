@@ -4,11 +4,13 @@
 #include "../../Cache/GameLevels/GameLevels.hpp"
 #include "../../Cache/Users/Users.hpp"
 #include "../../Filters/Filters.hpp"
-#include "../../Popups/FilterPopup/FilterPopup.hpp"
 #include "../../Events/PopulateListEvent.hpp"
 #include "../../Events/DemonlistLoadedEvent.hpp"
 #include "../../Models/APIError.hpp"
+#include "../../Utils/CalculateCoverScale.hpp"
 #include <random>
+
+using namespace geode::prelude;
 
 GDLListLayer* GDLListLayer::create() {
 	auto ret = new GDLListLayer();
@@ -29,6 +31,71 @@ CCScene* GDLListLayer::scene() {
 
 constexpr const char* GLOBAL_LIST_INFO =
 "The <cg>most complete</c> and <cf>trusted</c> ranking of the <cr>hardest</c> Geometry Dash demons, maintained by a <cy>dedicated community</c>.";
+
+// void printDemonlistFilters(bool applied) {
+//     auto length = GDL::Filters::getLength(applied);
+//     auto lengthStr =
+//         length == LengthFilter::None ? "None" :
+//         length == LengthFilter::Short ? "Short" :
+//         length == LengthFilter::Medium ? "Medium" :
+//         length == LengthFilter::Long ? "Long" :
+//         length == LengthFilter::XL ? "XL" :
+//         length == LengthFilter::Custom ? "Custom" :
+//         "Unknown";
+
+//     auto diff = GDL::Filters::getDifficulty(applied);
+//     auto diffStr =
+//         diff == DifficultyFilter::None ? "None" :
+//         diff == DifficultyFilter::Top75 ? "Top 75" :
+//         diff == DifficultyFilter::Top150 ? "Top 150" :
+//         diff == DifficultyFilter::Top300 ? "Top 300" :
+//         diff == DifficultyFilter::Unbounded ? "Unbounded" :
+//         diff == DifficultyFilter::Custom ? "Custom" :
+//         "Unknown";
+
+//     log::info(
+//         "Length: {}", lengthStr
+//     );
+
+//     log::info(
+//         "Custom length: from {} to {}",
+//         GDL::Filters::getCustomMinLength(applied),
+//         GDL::Filters::getCustomMaxLength(applied)
+//     );
+
+//     log::info(
+//         "Difficulty: {}", diffStr
+//     );
+
+//     log::info(
+//         "Custom difficulty: from {} to {}",
+//         GDL::Filters::getCustomMinDifficulty(applied),
+//         GDL::Filters::getCustomMaxDifficulty(applied)
+//     );
+
+//     log::info(
+//         "Rated: {}", GDL::Filters::getRated(applied)
+//     );
+//     log::info(
+//         "Unrated: {}", GDL::Filters::getUnrated(applied)
+//     );
+
+//     log::info(
+//         "Completed By: {}", GDL::Filters::getCompletedBy(applied)
+//     );
+
+//     log::info(
+//         "Username: {}", GDL::Filters::getUsername(applied)
+//     );
+
+//     log::info(
+//         "Created By: {}", GDL::Filters::getCreatedBy(applied)
+//     );
+
+//     log::info(
+//         "Creator Name: {}", GDL::Filters::getCreatorName(applied)
+//     );
+// }
 
 //        Do you think I'll remove this comment after two major code refactorings? NOPE, HERE IT IS:
 //
@@ -61,7 +128,7 @@ bool GDLListLayer::init() {
 	m_levelList = GJListLayer::create(
 		nullptr,
 		"Global Demonlist",
-		{ 0, 0, 0, 180 },
+		{ 191, 114, 62, 255 },
 		356.0f, 220.0f, 0);
 	m_levelList->setPosition(winSize / 2.0f - m_levelList->getContentSize() / 2.0f);
 	m_levelList->setColor({ 194, 114, 62 });
@@ -75,53 +142,13 @@ bool GDLListLayer::init() {
 	m_errorMessage->setID("error-message");
 	m_levelList->addChild(m_errorMessage, 5);
 
-	m_searchBarMenu = CCNode::create();
-	m_searchBarMenu->setContentSize({ 356.0f, 30.0f });
-	m_searchBarMenu->setPosition({ 0.0f, m_levelList->getContentHeight() - m_searchBarMenu->getContentHeight() });
-	m_searchBarMenu->setID("search-bar-menu");
-	m_levelList->addChild(m_searchBarMenu);
-
-	auto searchBarBG = CCLayerColor::create({ 194, 114, 62, 255 }, 356.0f, 30.0f);
-	searchBarBG->setID("search-bar-backgrownd");
-	m_searchBarMenu->addChild(searchBarBG);
-
-	auto searchBarContainer = CCMenu::create();
-	searchBarContainer->setLayout(
-		RowLayout::create()
-		->setGap(5.0f)
-		->setAutoScale(false)
-		->setCrossAxisOverflow(false)
+	m_searchBar = TailyUI::SearchBar::create(
+		"Search levels...", TailyUI::SearchBarType::WithFilters,
+		[this](auto) { search(); }
 	);
-	searchBarContainer->setContentSize(m_searchBarMenu->getContentSize());
-	searchBarContainer->setAnchorPoint({ 0.0f, 0.0f });
-	searchBarContainer->setPosition({ 0.0f, 0.0f });
-	searchBarContainer->setID("search-bar-container");
-	m_searchBarMenu->addChild(searchBarContainer);
-
-	m_searchBar = TextInput::create(367.0f, "Search levels...");
-	m_searchBar->setMaxCharCount(32);
-	m_searchBar->setTextAlign(TextInputAlign::Left);
-	m_searchBar->getInputNode()->setLabelPlaceholderScale(0.70f);
-	m_searchBar->getInputNode()->setMaxLabelScale(0.70f);
-	m_searchBar->setScale(0.75f);
+	m_searchBar->setPosition({ 0.0f, m_levelList->getContentHeight() - m_searchBar->getContentHeight() });
 	m_searchBar->setID("search-bar");
-	searchBarContainer->addChild(m_searchBar);
-
-	auto searchBtn = CCMenuItemExt::createSpriteExtraWithFrameName("gj_findBtn_001.png", 0.7f, [this](auto) { search(); });
-	searchBtn->setID("search-button");
-	searchBarContainer->addChild(searchBtn);
-
-	auto filterBtn = CCMenuItemExt::createSpriteExtraWithFilename("GJ_button_01.png", 0.54f, [this](auto) {
-		FilterPopup::create()->show();
-	});
-	auto filterIcon = CCSprite::createWithSpriteFrameName("GJ_filterIcon_001.png");
-	filterIcon->setPosition(filterBtn->getContentSize() / 2.0f);
-	filterIcon->setScale(0.54f);
-	filterBtn->addChild(filterIcon);
-	filterBtn->setID("filter-button");
-	searchBarContainer->addChild(filterBtn);
-
-	searchBarContainer->updateLayout();
+	m_levelList->addChild(m_searchBar, 8);
 
 	auto btnsMenu = CCMenu::create();
 	btnsMenu->setPosition({ 0.0f, 0.0f });
@@ -129,20 +156,26 @@ bool GDLListLayer::init() {
 	addChild(btnsMenu, 2);
 
 	auto backSpr = CCSprite::createWithSpriteFrameName("GJ_arrow_01_001.png");
-	m_backBtn = CCMenuItemExt::createSpriteExtra(backSpr, [this](auto) { onBack(); });
+	m_backBtn = CCMenuItemExt::createSpriteExtra(
+		backSpr, [this](auto) { onBack(); }
+	);
 	m_backBtn->setPosition({ 24.0f, winSize.height - 23.0f });
 	m_backBtn->setID("back-button");
 	btnsMenu->addChild(m_backBtn);
 
 	auto leftSpr = CCSprite::createWithSpriteFrameName("GJ_arrow_03_001.png");
-	m_leftBtn = CCMenuItemExt::createSpriteExtra(leftSpr, [this](auto) { page(m_page - 1); });
+	m_leftBtn = CCMenuItemExt::createSpriteExtra(
+		leftSpr, [this](auto) { page(m_page - 1); }
+	);
 	m_leftBtn->setPosition({ 24.0f, winSize.height / 2.0f });
 	m_leftBtn->setID("prev-page-button");
 	btnsMenu->addChild(m_leftBtn);
 
 	auto rightSpr = CCSprite::createWithSpriteFrameName("GJ_arrow_03_001.png");
 	rightSpr->setFlipX(true);
-	m_rightBtn = CCMenuItemExt::createSpriteExtra(rightSpr, [this](auto) { page(m_page + 1); });
+	m_rightBtn = CCMenuItemExt::createSpriteExtra(
+		rightSpr, [this](auto) { page(m_page + 1); }
+	);
 	m_rightBtn->setPosition({ winSize.width - 24.0f, winSize.height / 2.0f });
 	m_rightBtn->setID("next-page-button");
 	btnsMenu->addChild(m_rightBtn);
@@ -153,14 +186,16 @@ bool GDLListLayer::init() {
 	btnsMenu->addChild(m_infoBtn);
 
 	auto refreshSpr = CCSprite::createWithSpriteFrameName("GJ_updateBtn_001.png");
-	auto refreshBtn = CCMenuItemExt::createSpriteExtra(refreshSpr, [this](auto) {
-		m_page = 1;
-		m_searchBar->setString("");
-		GDL::Filters::clearFilters();
+	auto refreshBtn = CCMenuItemExt::createSpriteExtra(
+		refreshSpr, [this](auto) {
+			m_page = 1;
+			m_searchBar->getSearchInput()->setString("");
+			GDL::Filters::clearDemonlistFilters();
 
-		showLoading();
-		PopulateListEvent().send();
-	});
+			showLoading();
+			PopulateListEvent().send();
+		}
+	);
 	refreshBtn->setPosition({ winSize.width - refreshSpr->getContentWidth() / 2.0f - 4.0f, refreshSpr->getContentHeight() / 2.0f + 4.0f });
 	refreshBtn->setID("refresh-button");
 	btnsMenu->addChild(refreshBtn);
@@ -171,17 +206,21 @@ bool GDLListLayer::init() {
 	m_pageLabel->setScale(0.8f);
 	m_pageLabel->setPosition(pageSpr->getContentSize() / 2.0f);
 	pageSpr->addChild(m_pageLabel);
-	m_pageBtn = CCMenuItemExt::createSpriteExtra(pageSpr, [this](auto) {
-		auto popup = SetIDPopup::create(m_page, 1, calculateMaxPage(), "Go to Page", "Go", true, 1, 60.0f, false, false);
-		popup->m_delegate = this;
-		popup->show();
-	});
+	m_pageBtn = CCMenuItemExt::createSpriteExtra(
+		pageSpr, [this](auto) {
+			auto popup = SetIDPopup::create(m_page, 1, calculateMaxPage(), "Go to Page", "Go", true, 1, 60.0f, false, false);
+			popup->m_delegate = this;
+			popup->show();
+		}
+	);
 	m_pageBtn->setID("page-button");
 
-	m_randomBtn = CCMenuItemExt::createSpriteExtraWithFilename("BI_randomBtn_001.png"_spr, 0.9f, [this](auto) {
-		static std::mt19937 mt(std::random_device{}());
-		page(std::uniform_int_distribution<int>(0, (m_searchResults.size() - 1) / m_lvlsPerPage)(mt));
-	});
+	m_randomBtn = CCMenuItemExt::createSpriteExtraWithFilename(
+		"randomBtnSpr.png"_spr, 0.9f, [this](auto) {
+			static std::mt19937 mt(std::random_device{}());
+			page(std::uniform_int_distribution<int>(0, (m_searchResults.size() - 1) / m_lvlsPerPage)(mt));
+		}
+	);
 	m_randomBtn->setID("random-button");
 	
 	m_pageMenu = CCMenu::createWithItem(m_pageBtn);
@@ -203,7 +242,9 @@ bool GDLListLayer::init() {
 	otherLastArrow->setFlipX(true);
 	lastArrow->addChild(otherLastArrow);
 	lastArrow->setScale(0.4f);
-	m_lastBtn = CCMenuItemExt::createSpriteExtra(lastArrow, [this](auto) { page(calculateMaxPage()); });
+	m_lastBtn = CCMenuItemExt::createSpriteExtra(
+		lastArrow, [this](auto) { page(calculateMaxPage()); }
+	);
 	m_lastBtn->setID("last-button");
 	m_pageMenu->addChild(m_lastBtn);
 
@@ -214,9 +255,11 @@ bool GDLListLayer::init() {
 	otherFirstArrow->setPosition(firstArrow->getContentSize() / 2.0f - ccp( 20.0f, 0.0f ));
 	firstArrow->addChild(otherFirstArrow);
 	firstArrow->setScale(0.4f);
-	m_firstBtn = CCMenuItemExt::createSpriteExtra(firstArrow, [this](auto) { page(1); });
+	m_firstBtn = CCMenuItemExt::createSpriteExtra(
+		firstArrow, [this](auto) { page(1); }
+	);
 	m_firstBtn->setID("first-button");
-	m_firstBtn->setPosition({ 17.5f, m_pageMenu->getPositionY() - m_pageMenu->getContentHeight() + m_lastBtn->getPositionY() });
+	m_firstBtn->setPosition({ 17.625f, m_pageMenu->getPositionY() - m_pageMenu->getContentHeight() + m_lastBtn->getPositionY() });
 	btnsMenu->addChild(m_firstBtn);
 
 	m_loadingSpinner = LoadingSpinner::create(65.0f);
@@ -262,10 +305,10 @@ bool GDLListLayer::init() {
 }
 
 void GDLListLayer::populateList() {
-	GDL::Filters::applyFilters();
+	GDL::Filters::applyDemonlistFilters();
 	m_searchResults.clear();
 
-	if (m_query.empty() && GDL::Filters::getLevelFilters().isDefault()) {
+	if (m_query.empty() && GDL::Filters::isDemonlistFiltersDefault()) {
 		m_searchResults = m_gdlLevels;
 	}
 	else {
@@ -294,7 +337,7 @@ void GDLListLayer::populateList() {
 		auto searchObject = GJSearchObject::create(SearchType::Type26);
 		searchObject->m_searchQuery = searchQuery;
 
-		std::string_view key = searchObject->getKey();
+		std::string key = searchObject->getKey();
 		if (auto storedLevels = glm->getStoredOnlineLevels(
 			key.substr(std::max<ptrdiff_t>(0, key.size() - 256)).data()
 		)) {
@@ -308,8 +351,9 @@ void GDLListLayer::populateList() {
 }
 
 std::vector<int> GDLListLayer::getSuitableLevels() {
-	auto& levelFilters = GDL::Filters::getLevelFilters();
-	auto user = GDL::Cache::Users::getUser(levelFilters.userID);
+	// printDemonlistFilters(true);
+	
+	auto user = GDL::Cache::Users::getUser(GDL::Filters::getUserID(true));
 
 	std::vector<int> suitableLevels;
 	suitableLevels.reserve(m_gdlLevels.size());
@@ -324,9 +368,9 @@ std::vector<int> GDLListLayer::getSuitableLevels() {
         else if (level->placement <= 300) levelDiff = DifficultyFilter::Top300;
         else if (level->placement > 300) levelDiff = DifficultyFilter::Unbounded;
         if (
-            levelFilters.diffFilter == DifficultyFilter::Custom &&
-            level->placement >= levelFilters.customDiffFilter[0] &&
-            level->placement <= levelFilters.customDiffFilter[1]
+            GDL::Filters::getDifficulty(true) == DifficultyFilter::Custom &&
+            level->placement >= GDL::Filters::getCustomMinDifficulty(true) &&
+            level->placement <= GDL::Filters::getCustomMaxDifficulty(true)
         ) levelDiff = DifficultyFilter::Custom;
 
 		LengthFilter levelLength = LengthFilter::None;
@@ -335,9 +379,9 @@ std::vector<int> GDLListLayer::getSuitableLevels() {
         else if (level->length < 120) levelLength = LengthFilter::Long;
         else if (level->length >= 120) levelLength = LengthFilter::XL;
         if (
-            levelFilters.lengthFilter == LengthFilter::Custom &&
-            level->length >= levelFilters.customLengthFilter[0] &&
-            level->length <= levelFilters.customLengthFilter[1]
+            GDL::Filters::getLength(true) == LengthFilter::Custom &&
+            level->length >= GDL::Filters::getCustomMinLength(true) &&
+            level->length <= GDL::Filters::getCustomMaxLength(true)
         ) levelLength = LengthFilter::Custom;
 
 		bool levelIsCompleted = false;
@@ -354,22 +398,22 @@ std::vector<int> GDLListLayer::getSuitableLevels() {
 
 		auto gameLevel = GDL::Cache::GameLevels::getGameLevel(level->ingameID);
         
-        bool byDifficulty = levelFilters.diffFilter == levelDiff || levelFilters.diffFilter == DifficultyFilter::None;
-        bool byLength = levelFilters.lengthFilter == levelLength || levelFilters.lengthFilter == LengthFilter::None;
+        bool byDifficulty = GDL::Filters::getDifficulty(true) == levelDiff || GDL::Filters::getDifficulty(true) == DifficultyFilter::None;
+        bool byLength = GDL::Filters::getLength(true) == levelLength || GDL::Filters::getLength(true) == LengthFilter::None;
 
 		bool byRate =
-        levelFilters.rated || levelFilters.unrated ?
+        GDL::Filters::getRated(true) || GDL::Filters::getUnrated(true) ?
             gameLevel ?
-                levelFilters.rated ? gameLevel->rated : !gameLevel->rated
+                GDL::Filters::getRated(true) ? gameLevel->rated : !gameLevel->rated
             : false
         : true;
 
-        bool byPlayer = levelFilters.completedBy ? levelIsCompleted : true;
+        bool byPlayer = GDL::Filters::getCompletedBy(true) ? levelIsCompleted : true;
 
         bool byCreator =
-        levelFilters.createdBy ?
+        GDL::Filters::getCreatedBy(true) ?
             gameLevel ?
-                gameLevel->creatorName == levelFilters.holder
+                gameLevel->creatorName == GDL::Filters::getCreatorName(true)
             : false
         : true;
 
@@ -385,7 +429,7 @@ std::vector<int> GDLListLayer::getSuitableLevels() {
 }
 
 void GDLListLayer::search() {
-	auto query = m_searchBar->getString();
+	auto query = m_searchBar->getSearchInput()->getString();
 	if (m_query != query) {
 		showLoading();
 
@@ -406,7 +450,7 @@ void GDLListLayer::loadLevelsFinished(CCArray* levels, const char*, int) {
 	m_levelList->addChild(listView, 6, 9);
 	m_levelList->m_listView = listView;
 
-	m_searchBarMenu->setVisible(true);
+	m_searchBar->setVisible(true);
 	m_levelsCountLabel->setVisible(true);
 	m_loadingSpinner->setVisible(false);
 
@@ -455,13 +499,17 @@ void GDLListLayer::showLoading() {
 	m_loadingSpinner->setVisible(true);
 
 	if (auto listView = m_levelList->m_listView) listView->setVisible(false);
-	m_searchBarMenu->setVisible(false);
+	m_searchBar->setVisible(false);
 	m_levelsCountLabel->setVisible(false);
 	m_leftBtn->setVisible(false);
 	m_rightBtn->setVisible(false);
 	m_firstBtn->setVisible(false);
 	m_lastBtn->setVisible(false);
 	m_pageMenu->setVisible(false);
+}
+
+int GDLListLayer::calculateMaxPage() {
+	return std::max(1, (static_cast<int>(m_searchResults.size()) + m_lvlsPerPage - 1) / m_lvlsPerPage);
 }
 
 void GDLListLayer::keyDown(enumKeyCodes key, double d) {
@@ -483,11 +531,6 @@ void GDLListLayer::keyDown(enumKeyCodes key, double d) {
 	}
 }
 
-void GDLListLayer::onBack() {
-	Settings::setShouldLoadPlacement(false);
-	CCDirector::get()->popSceneWithTransition(0.5f, kPopTransitionFade);
-}
-
 void GDLListLayer::keyBackClicked() {
 	onBack();
 }
@@ -499,11 +542,12 @@ void GDLListLayer::onExit() {
 	}
 
 	// Better Fuck Priority fix
-	if (m_searchBar) m_searchBar->defocus();
+	if (m_searchBar) m_searchBar->getSearchInput()->defocus();
 
 	CCLayer::onExit();
 }
 
-int GDLListLayer::calculateMaxPage() {
-	return std::max(1, (static_cast<int>(m_searchResults.size()) + m_lvlsPerPage - 1) / m_lvlsPerPage);
+void GDLListLayer::onBack() {
+	Settings::setShouldLoadPlacement(false);
+	CCDirector::get()->popSceneWithTransition(0.5f, kPopTransitionFade);
 }

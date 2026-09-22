@@ -60,4 +60,4 @@ namespace GDL::Cache::Levels {
         levelList.clear();
         levelsWOPlacement.clear();
     }
-};
+}

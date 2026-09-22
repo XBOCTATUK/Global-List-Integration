@@ -2,6 +2,8 @@
 #include "../API.hpp"
 #include "../../Utils/WedReq.hpp"
 
+using namespace geode::prelude;
+
 namespace GDL::API::Auth {
     static std::string g_verificationToken;
 

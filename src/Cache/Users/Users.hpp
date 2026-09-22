@@ -5,6 +5,7 @@
 
 namespace GDL::Cache::Users {
     const GDLUser* getUser(int userID);
+    int getUserIDByUsername(std::string username);
     void setUser(GDLUser&& user);
     void clearUsers();
 
@@ -13,4 +14,4 @@ namespace GDL::Cache::Users {
     void clearRecords();
 
     void clearAll();
-};
+}

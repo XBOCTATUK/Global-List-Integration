@@ -1,36 +1,34 @@
 #pragma once
 
-#include "../../Utils/CalculateCoverScale.hpp"
 #include "../../Settings/Settings.hpp"
+#include "../../UI/SearchBar/SearchBar.hpp"
 
-using namespace geode::prelude;
-
-class GDLListLayer : public CCLayer, SetIDPopupDelegate, LevelManagerDelegate {
+class GDLListLayer : public cocos2d::CCLayer, SetIDPopupDelegate, LevelManagerDelegate {
 public:
 	static GDLListLayer* create();
-	static CCScene* scene();
+	static cocos2d::CCScene* scene();
 
-	void onBack();
-	void keyDown(enumKeyCodes, double delta) override;
+	void keyDown(cocos2d::enumKeyCodes, double delta) override;
 	void keyBackClicked() override;
     virtual void onExit() override;
+	
+	void onBack();
 
 protected:
-	ListenerHandle m_demonlistLoadListener;
-	ListenerHandle m_populateListListener;
+	geode::ListenerHandle m_demonlistLoadListener;
+	geode::ListenerHandle m_populateListListener;
 	std::vector<int> m_gdlLevels;
 
 	GJListLayer* m_levelList;
-	CCLabelBMFont* m_errorMessage;
-	LoadingSpinner* m_loadingSpinner;
+	cocos2d::CCLabelBMFont* m_errorMessage;
+	geode::LoadingSpinner* m_loadingSpinner;
 
-	CCNode* m_searchBarMenu;
-	TextInput* m_searchBar;
+	TailyUI::SearchBar* m_searchBar;
 
-	CCLabelBMFont* m_levelsCountLabel;
-	CCLabelBMFont* m_pageLabel;
+	cocos2d::CCLabelBMFont* m_levelsCountLabel;
+	cocos2d::CCLabelBMFont* m_pageLabel;
     
-	CCMenu* m_pageMenu;
+	cocos2d::CCMenu* m_pageMenu;
 	InfoAlertButton* m_infoBtn;
 	CCMenuItemSpriteExtra* m_backBtn;
 	CCMenuItemSpriteExtra* m_pageBtn;
@@ -52,7 +50,7 @@ protected:
 	void page(int page);
 	void setupPageInfo(gd::string, const char*) override;
 	void showLoading();
-	void loadLevelsFinished(CCArray* levels, const char* key, int) override;
+	void loadLevelsFinished(cocos2d::CCArray* levels, const char* key, int) override;
 	virtual void loadLevelsFailed(char const* key) override;
 	void setIDPopupClosed(SetIDPopup*, int) override;
 	

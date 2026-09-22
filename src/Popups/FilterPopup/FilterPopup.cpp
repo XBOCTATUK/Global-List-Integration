@@ -1,11 +1,13 @@
 #include "FilterPopup.hpp"
 #include "../LoadingPopup/LoadingPopup.hpp"
-#include "../RangePopup/RangePopup.hpp"
 #include "../../Filters/Filters.hpp"
 #include "../../Cache/GameLevels/GameLevels.hpp"
 #include "../../Cache/Users/Users.hpp"
 #include "../../Events/PopulateListEvent.hpp"
 #include "../../Events/CloseFiltersEvent.hpp"
+#include "../../UI/RangePopup/RangePopup.hpp"
+
+using namespace geode::prelude;
 
 FilterPopup* FilterPopup::create() {
 	auto ret = new FilterPopup();
@@ -36,8 +38,6 @@ bool FilterPopup::init() {
     setZOrder(100);
     setTitle("Search filters");
 
-    auto& displayFilters = GDL::Filters::getDisplayFilters();
-
     m_filterContainer = CCNode::create();
     m_filterContainer->setLayout(
         ColumnLayout::create()
@@ -52,7 +52,7 @@ bool FilterPopup::init() {
 
     m_diffFilterBar = TailyUI::OptionBar::create(
         "GJ_demonIcon_001.png", 0.36f, {"Top 75", "Top 150", "Top 300", "Unbounded", "Custom"},
-        [this](std::string choice, bool enable) {
+        [this](const std::string& choice, bool enable) {
             DifficultyFilter diffFilter;
             
             if (choice == "Top 75") diffFilter = DifficultyFilter::Top75;
@@ -61,28 +61,28 @@ bool FilterPopup::init() {
             if (choice == "Unbounded") diffFilter = DifficultyFilter::Unbounded;
             if (choice == "Custom") diffFilter = DifficultyFilter::Custom;
 
-            GDL::Filters::setDifficultyFilter(enable ? diffFilter : DifficultyFilter::None);
+            GDL::Filters::setDifficulty(enable ? diffFilter : DifficultyFilter::None);
         },
         []() {
-            auto rangePopup = RangePopup::create(
+            auto rangePopup = TailyUI::RangePopup::create(
                 "Custom difficulty range", 1, 9999,
                 [](int from, int to) {
-                    GDL::Filters::setCustomDifficultyFilter(from, to);
+                    GDL::Filters::setCustomDifficulty(from, to);
                 }
             );
             rangePopup->show();
         }
     );
     m_diffFilterBar->activateChoice(
-        displayFilters.diffFilter == DifficultyFilter::Top75 ?
+        GDL::Filters::getDifficulty(false) == DifficultyFilter::Top75 ?
         "Top 75"
-        : displayFilters.diffFilter == DifficultyFilter::Top150 ?
+        : GDL::Filters::getDifficulty(false) == DifficultyFilter::Top150 ?
         "Top 150"
-        : displayFilters.diffFilter == DifficultyFilter::Top300 ?
+        : GDL::Filters::getDifficulty(false) == DifficultyFilter::Top300 ?
         "Top 300"
-        : displayFilters.diffFilter == DifficultyFilter::Unbounded ?
+        : GDL::Filters::getDifficulty(false) == DifficultyFilter::Unbounded ?
         "Unbounded"
-        : displayFilters.diffFilter == DifficultyFilter::Custom ?
+        : GDL::Filters::getDifficulty(false) == DifficultyFilter::Custom ?
         "Custom"
         : ""
     );
@@ -91,7 +91,7 @@ bool FilterPopup::init() {
 
     m_lengthFilterBar = TailyUI::OptionBar::create(
         "GJ_timeIcon_001.png", 0.42f, {"Short", "Medium", "Long", "XL", "Custom"},
-        [this](std::string choice, bool enable) {
+        [this](const std::string& choice, bool enable) {
             LengthFilter lengthFilter;
             
             if (choice == "Short") lengthFilter = LengthFilter::Short;
@@ -100,28 +100,28 @@ bool FilterPopup::init() {
             if (choice == "XL") lengthFilter = LengthFilter::XL;
             if (choice == "Custom") lengthFilter = LengthFilter::Custom;
 
-            GDL::Filters::setLengthFilter(enable ? lengthFilter : LengthFilter::None);
+            GDL::Filters::setLength(enable ? lengthFilter : LengthFilter::None);
         },
         []() {
-            auto rangePopup = RangePopup::create(
+            auto rangePopup = TailyUI::RangePopup::create(
                 "Custom length range", 1, 9999,
                 [](int from, int to) {
-                    GDL::Filters::setCustomDifficultyFilter(from, to);
+                    GDL::Filters::setCustomDifficulty(from, to);
                 }
             );
             rangePopup->show();
         }
     );
     m_lengthFilterBar->activateChoice(
-        displayFilters.lengthFilter == LengthFilter::Short ?
+        GDL::Filters::getLength(false) == LengthFilter::Short ?
         "Short"
-        : displayFilters.lengthFilter == LengthFilter::Medium ?
+        : GDL::Filters::getLength(false) == LengthFilter::Medium ?
         "Medium"
-        : displayFilters.lengthFilter == LengthFilter::Long ?
+        : GDL::Filters::getLength(false) == LengthFilter::Long ?
         "Long"
-        : displayFilters.lengthFilter == LengthFilter::XL ?
+        : GDL::Filters::getLength(false) == LengthFilter::XL ?
         "XL"
-        : displayFilters.lengthFilter == LengthFilter::Custom ?
+        : GDL::Filters::getLength(false) == LengthFilter::Custom ?
         "Custom"
         : ""
     );
@@ -170,26 +170,28 @@ bool FilterPopup::init() {
     m_ratedToggler = TailyUI::LabeledCheckbox::create(
         "Rated", 24.0f, "If enabled, the Demonlist will display only rated levels.",
         [this](bool enable) {
-            GDL::Filters::setRateFilter(enable, false);
+            GDL::Filters::setRated(enable);
             if (enable) {
+                GDL::Filters::setUnrated(false);
                 m_unratedToggler->setToggled(false);
             }
         }
     );
-    m_ratedToggler->setToggled(displayFilters.rated);
+    m_ratedToggler->setToggled(GDL::Filters::getRated(false));
     m_ratedToggler->setID("rated-toggler");
     rateTogglerMenu->addChild(m_ratedToggler);
 
     m_unratedToggler = TailyUI::LabeledCheckbox::create(
         "Unrated", 24.0f, "If enabled, the Demonlist will display only unrated levels.",
         [this](bool enable) {
-            GDL::Filters::setRateFilter(false, enable);
+            GDL::Filters::setUnrated(enable);
             if (enable) {
+                GDL::Filters::setRated(false);
                 m_ratedToggler->setToggled(false);
             }
         }
     );
-    m_unratedToggler->setToggled(displayFilters.unrated);
+    m_unratedToggler->setToggled(GDL::Filters::getUnrated(false));
     m_unratedToggler->setID("unrated-toggler");
     rateTogglerMenu->addChild(m_unratedToggler);
 
@@ -216,7 +218,7 @@ bool FilterPopup::init() {
             GDL::Filters::setCompletedBy(enable);
         }
     );
-    m_completedToggler->setToggled(displayFilters.completedBy);
+    m_completedToggler->setToggled(GDL::Filters::getCompletedBy(false));
     m_completedToggler->setID("completed-by-toggler"); // Toggler became the top 1 player
     userTogglerMenu->addChild(m_completedToggler);
 
@@ -226,7 +228,7 @@ bool FilterPopup::init() {
             GDL::Filters::setCreatedBy(enable);
         }
     );
-    m_createdByToggler->setToggled(displayFilters.createdBy);
+    m_createdByToggler->setToggled(GDL::Filters::getCreatedBy(false));
     m_createdByToggler->setID("created-by-toggler"); // Toggler became the top 1 creator
     userTogglerMenu->addChild(m_createdByToggler);
 
@@ -251,7 +253,7 @@ bool FilterPopup::init() {
 	m_usernameInput->setScale(0.8f);
 	m_usernameInput->setMaxCharCount(32);
 	m_usernameInput->setString(Mod::get()->getSavedValue<std::string>("username", ""));
-	m_usernameInput->setCallback([this](const std::string& text) {
+	m_usernameInput->setCallback([this](std::string text) {
 		Mod::get()->setSavedValue<std::string>("username", text);
 	});
     m_usernameInput->setID("username-input");
@@ -261,7 +263,7 @@ bool FilterPopup::init() {
 	m_creatorNameInput->setScale(0.8f);
 	m_creatorNameInput->setMaxCharCount(32);
 	m_creatorNameInput->setString(Mod::get()->getSavedValue<std::string>("creatorName", ""));
-	m_creatorNameInput->setCallback([this](const std::string& text) {
+	m_creatorNameInput->setCallback([this](std::string text) {
 		Mod::get()->setSavedValue<std::string>("creatorName", text);
 	});
     m_creatorNameInput->setID("creator-name-input");
@@ -274,38 +276,39 @@ bool FilterPopup::init() {
     inputMenu->updateLayout();
     
     auto applySpr = ButtonSprite::create("Apply", 0.8f);
-	auto applyBtn = CCMenuItemExt::createSpriteExtra(applySpr, [this](auto) {
-		auto& displayFilters = GDL::Filters::getDisplayFilters();
+    auto applyBtn = CCMenuItemExt::createSpriteExtra(
+        applySpr, [this](auto) {
+            GDL::Filters::setUsername(m_usernameInput->getString());
+            GDL::Filters::setCreatorName(m_creatorNameInput->getString());
 
-        GDL::Filters::setUsername(m_usernameInput->getString());
-        GDL::Filters::setCreatorName(m_creatorNameInput->getString());
+            int cachedUserID = GDL::Cache::Users::getUserIDByUsername(GDL::Filters::getUsername(false));
+            
+            bool isOutOfDate = GDL::Cache::GameLevels::isOutToDate();
+            auto cachedUser = GDL::Cache::Users::getUser(cachedUserID);
 
-		auto isOutOfDate = GDL::Cache::GameLevels::isOutToDate();
-        auto cachedUser = GDL::Cache::Users::getUser(displayFilters.userID);
+            bool needLevelData = GDL::Filters::isLevelDataRequired() && isOutOfDate;
+            bool needUserData = GDL::Filters::getCompletedBy(false) && !cachedUser;
 
-		if (
-            !(displayFilters.isDataRequired() && isOutOfDate) &&
-            !(displayFilters.completedBy && !cachedUser)
-        ) {
-			PopulateListEvent().send();
-			
-			onClose(nullptr);
-			return;
-		}
-		
-		if (!Mod::get()->getSavedValue<bool>("showWarning", true)) {
-			LoadingPopup::create()->show();
-		}
-		else {
-			createQuickPopup("Warning", filterWarning, "Oh, no", "I confirm", [](auto, bool confirmBtn) {
-				if (confirmBtn) {
-					Mod::get()->setSavedValue<bool>("showWarning", false);
-					LoadingPopup::create()->show();
-				}
-			});
-		}
-
-	});
+            if (!needLevelData && !needUserData) {
+                PopulateListEvent().send();
+                
+                onClose(nullptr);
+                return;
+            }
+            
+            if (!Mod::get()->getSavedValue<bool>("showWarning", true)) {
+                LoadingPopup::create()->show();
+            }
+            else {
+                createQuickPopup("Warning", filterWarning, "Oh, no", "I confirm", [](auto, bool confirmBtn) {
+                    if (confirmBtn) {
+                        Mod::get()->setSavedValue<bool>("showWarning", false);
+                        LoadingPopup::create()->show();
+                    }
+                });
+            }
+        }
+    );
 	applyBtn->setPosition({ m_buttonMenu->getContentWidth() / 2.0f, 28.0f });
     applyBtn->setID("apply-button");
 	m_buttonMenu->addChild(applyBtn);

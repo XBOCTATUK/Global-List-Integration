@@ -5,9 +5,11 @@
 #include "../Settings/Settings.hpp"
 #include "../Events/LevelLoadedEvent.hpp"
 
+using namespace geode::prelude;
+
 class $modify(MyLevelCell, LevelCell) {
     struct Fields {
-        ListenerHandle m_listener;
+        ListenerHandle m_levelLoadistener;
         std::unordered_map<CCNode*, float> m_origPositions;
     };
 
@@ -44,7 +46,7 @@ class $modify(MyLevelCell, LevelCell) {
             )
             + (m_compactView ? 9.2f : 13.8f) / 2.0f;
 
-            auto gdlIcon = CCSprite::create("global-list.png"_spr);
+            auto gdlIcon = CCSprite::create("globalListIcon.png"_spr);
             gdlIcon->setScale((m_compactView ? 9.2f : 13.8f) / gdlIcon->getContentWidth());
             gdlIcon->setPosition({ gdlIconX, m_compactView ? 8.5f : 14.0f });
             gdlIcon->setID("gdl-icon"_spr);
@@ -83,7 +85,7 @@ class $modify(MyLevelCell, LevelCell) {
                 if (orbsLabel) orbsLabel->setPositionX(orbsLabel->getPositionX() - gap * 3.0f);
             }
 
-            m_fields->m_listener = LevelLoadedEvent(level->m_levelID.value()).listen(
+            m_fields->m_levelLoadistener = LevelLoadedEvent(level->m_levelID.value()).listen(
                 [this](Result<const GDLLevel*, APIError> result) {
                     if (!m_mainLayer) return;
 
