@@ -1,7 +1,6 @@
 #include "Leaderboards.hpp"
 #include "../Cache.hpp"
 #include <unordered_map>
-#include <Geode/Geode.hpp>
 
 namespace GDL::Cache::Leaderboards {
     constexpr auto USER_LEADERBOARD_TTL = std::chrono::minutes{30};
@@ -16,14 +15,8 @@ namespace GDL::Cache::Leaderboards {
 
     const std::vector<int>* getUserLeaderboard(UserLeaderboardKey key) {
         auto it = userQueryCache.find(key);
-        geode::log::info(
-            "{} | {}",
-            it == userQueryCache.end(), isExpired(it->second.cachedAt, USER_LEADERBOARD_TTL)
-        );
-        
         if (
-            it == userQueryCache.end() ||
-            isExpired(it->second.cachedAt, USER_LEADERBOARD_TTL)
+            it == userQueryCache.end()
         ) return nullptr;
 
         return &it->second.value;
