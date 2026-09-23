@@ -70,12 +70,12 @@ namespace GDL::API::Leaderboards {
                 }
                 
                 GDL::Cache::Leaderboards::setUserLeaderboard(key, std::move(userIDs));
-                auto cachedUsers = GDL::Cache::Leaderboards::getUserLeaderboard(key);
 
                 log::info("Check crash");
                 async::spawn(
                     arc::sleep(asp::Duration::fromSecs(1)),
-                    [cachedUsers] {
+                    [key] {
+                        auto cachedUsers = GDL::Cache::Leaderboards::getUserLeaderboard(key);
                         log::info("{}", !!cachedUsers);
 
                         async::spawn(
