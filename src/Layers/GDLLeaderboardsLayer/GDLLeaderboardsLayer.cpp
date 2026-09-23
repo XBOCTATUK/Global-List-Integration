@@ -219,17 +219,17 @@ bool GDLLeaderboardsLayer::init() {
 		}
 	};
 
-	m_userLeaderboardLoadListener = UserLeaderboardLoadedEvent().listen(
-		userLeaderboardCallback
-	);
+	// m_userLeaderboardLoadListener = UserLeaderboardLoadedEvent().listen(
+	// 	userLeaderboardCallback
+	// );
 
-	m_countryMainLeaderboardLoadListener = CountryLeaderboardLoadedEvent(CountriesLeaderboardType::Main).listen(
-		countryLeaderboardCallback
-	);
+	// m_countryMainLeaderboardLoadListener = CountryLeaderboardLoadedEvent(CountriesLeaderboardType::Main).listen(
+	// 	countryLeaderboardCallback
+	// );
 
-	m_countryAdvancedLeaderboardLoadListener = CountryLeaderboardLoadedEvent(CountriesLeaderboardType::Advanced).listen(
-		countryLeaderboardCallback
-	);
+	// m_countryAdvancedLeaderboardLoadListener = CountryLeaderboardLoadedEvent(CountriesLeaderboardType::Advanced).listen(
+	// 	countryLeaderboardCallback
+	// );
 
 	showLoading();
 	GDL::API::Leaderboards::getUserLeaderboard();
@@ -239,7 +239,7 @@ bool GDLLeaderboardsLayer::init() {
 
 void GDLLeaderboardsLayer::onTabButton(cocos2d::CCObject* sender) {
 	m_searchBar->getDropdownList()->setOpen(false);
-	
+
 	if (sender->getTag() == static_cast<int>(LeaderboardsType::Players) && m_type != LeaderboardsType::Players) {
 		m_countriesTabBtn->toggle(false);
 		m_type = LeaderboardsType::Players;
