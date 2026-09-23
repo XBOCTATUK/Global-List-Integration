@@ -176,35 +176,16 @@ bool GDLLeaderboardsLayer::init() {
 	auto userLeaderboardCallback =
 	[this](geode::Result<const std::vector<int>*, APIError> result) {
 		if (result.isOk()) {
-			populateUserLeaderboard(result.unwrap());
-			showLoading(false);
-		}
-		else {
-			m_loadingSpinner->setVisible(false);
-
-			auto error = result.err().value();
-			auto errorStr = fmt::format("Failed to load demonlist.\nError: {}", error.typeAsString());
-			if (error.message != APIMessage::None) {
-				errorStr += fmt::format(", Message: {}", error.messageAsString());
-			}
-			
-			m_errorMessage->setString(errorStr.c_str());
-		}
-	};
-	
-	auto countryLeaderboardCallback =
-	[this](geode::Result<const std::vector<GDLCountry>*, APIError> result) {
-		if (result.isOk()) {
 			log::info("Ok result start");
 
-			populateCountryLeaderboard(result.unwrap());
+			populateUserLeaderboard(result.unwrap());
 			showLoading(false);
 
 			log::info("Ok result done");
 		}
 		else {
 			log::info("Err result start");
-			
+
 			m_loadingSpinner->setVisible(false);
 
 			auto error = result.err().value();
@@ -216,6 +197,25 @@ bool GDLLeaderboardsLayer::init() {
 			m_errorMessage->setString(errorStr.c_str());
 
 			log::info("Err result done");
+		}
+	};
+	
+	auto countryLeaderboardCallback =
+	[this](geode::Result<const std::vector<GDLCountry>*, APIError> result) {
+		if (result.isOk()) {
+			populateCountryLeaderboard(result.unwrap());
+			showLoading(false);
+		}
+		else {
+			m_loadingSpinner->setVisible(false);
+
+			auto error = result.err().value();
+			auto errorStr = fmt::format("Failed to load demonlist.\nError: {}", error.typeAsString());
+			if (error.message != APIMessage::None) {
+				errorStr += fmt::format(", Message: {}", error.messageAsString());
+			}
+			
+			m_errorMessage->setString(errorStr.c_str());
 		}
 	};
 
