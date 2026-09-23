@@ -1,4 +1,6 @@
 #include "GDLLeaderboardCell.hpp"
+#include "../../Popups/UserInfoPopup/UserInfoPopup.hpp"
+#include "../../Popups/CountryInfoPopup/CountryInfoPopup.hpp"
 #include "../../Utils/BadgeUtils.hpp"
 #include "../../Utils/FlagUtils.hpp"
 #include "../../Utils/Alert.hpp"
@@ -51,7 +53,7 @@ bool GDLLeaderboardCell::init(const GDLUser& userData) {
 
     m_nameBtn = CCMenuItemExt::createSpriteExtra(
         nameLabel, [this](auto) {
-            
+            UserInfoPopup::create(m_userData)->show();
         }
     );
     m_nameBtn->setPosition({ m_placementLabel->getPositionX() + m_placementLabel->getScaledContentWidth() + m_nameBtn->getContentWidth() / 2.0f + 10.0f, getContentHeight() / 2.0f });
@@ -136,7 +138,7 @@ bool GDLLeaderboardCell::init(const GDLCountry& countryData) {
 
     m_nameBtn = CCMenuItemExt::createSpriteExtra(
         nameLabel, [this](auto) {
-            
+            CountryInfoPopup::create(m_countryData)->show();
         }
     );
     m_nameBtn->setPosition({ m_flagSpr->getPositionX() + m_flagSpr->getScaledContentWidth() / 2.0f + m_nameBtn->getContentWidth() / 2.0f + 10.0f, getContentHeight() / 2.0f });

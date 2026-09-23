@@ -44,7 +44,6 @@ namespace Utils {
             req.get(url),
             [cb = std::forward<Callback>(cb), url](geode::utils::web::WebResponse res) {
                 if (!res.ok()) {
-                    geode::log::error("{} | {} | {} | {} | {} | {}", res.error(), res.code(), res.cancelled(), res.badClient(), res.badServer(), res.errorMessage());
                     if (res.error()) {
                         geode::log::error("Failed to load data from endpoint '{}'. HTTP Error, connection failed.", url);
                         cb(matjson::Value::object(), {APIErrorType::HTTPError, APIMessage::None});
