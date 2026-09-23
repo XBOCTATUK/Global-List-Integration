@@ -16,7 +16,8 @@ namespace GDL::Cache::Leaderboards {
     const std::vector<int>* getUserLeaderboard(UserLeaderboardKey key) {
         auto it = userQueryCache.find(key);
         if (
-            it == userQueryCache.end()
+            it == userQueryCache.end() ||
+            isExpired(it->second.cachedAt, USER_LEADERBOARD_TTL)
         ) return nullptr;
 
         return &it->second.value;

@@ -13,7 +13,7 @@ struct UserLeaderboardKey {
 template<>
 struct std::hash<UserLeaderboardKey> {
     size_t operator()(const UserLeaderboardKey& key) const noexcept {
-        size_t seed;
+        size_t seed = 0;
         geode::hashCombine(seed, key.page);
         geode::hashCombine(seed, key.search);
         geode::hashCombine(seed, key.country);
