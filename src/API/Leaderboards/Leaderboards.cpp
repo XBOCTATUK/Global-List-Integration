@@ -70,9 +70,9 @@ namespace GDL::API::Leaderboards {
                 
                 GDL::Cache::Leaderboards::setUserLeaderboard(key, std::move(userIDs));
                 auto cachedUsers = GDL::Cache::Leaderboards::getUserLeaderboard(key);
-                // UserLeaderboardLoadedEvent().send(
-                //     Ok(*cachedUsers)
-                // );
+                UserLeaderboardLoadedEvent().send(
+                    Ok(*cachedUsers)
+                );
             }
         );
     }
