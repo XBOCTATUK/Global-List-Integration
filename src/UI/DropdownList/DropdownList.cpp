@@ -34,6 +34,7 @@ namespace TailyUI {
 
         setContentSize({ width, 30.0f });
         setAnchorPoint({ 0.5f, 0.5f });
+        
 
         m_values.reserve(values.size());
         m_maxVisibleRows = maxVisibleRows;
@@ -86,6 +87,7 @@ namespace TailyUI {
         m_scrollLayer->m_peekLimitTop = 15.0f;
         m_scrollLayer->m_peekLimitBottom = 15.0f;
         m_scrollLayer->setMouseEnabled(false);
+        m_scrollLayer->setTouchPriority(-256);
         m_clippingNode->addChild(m_scrollLayer);
 
         auto content = m_scrollLayer->m_contentLayer;
@@ -272,7 +274,7 @@ namespace TailyUI {
     void DropdownList::onEnter() {
         CCNode::onEnter();
 
-        CCDirector::get()->getTouchDispatcher()->addTargetedDelegate(this, -128, true);
+        CCDirector::get()->getTouchDispatcher()->addTargetedDelegate(this, -256, true);
         scheduleUpdate();
     }
 
