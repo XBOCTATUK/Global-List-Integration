@@ -8,6 +8,7 @@
 #include "../../Events/MainCountryLeaderboardLoadedEvent.hpp"
 #include "../../Events/AdvancedCountryLeaderboardLoadedEvent.hpp"
 #include "Geode/utils/general.hpp"
+#include <arc/time/Sleep.hpp>
 
 using namespace geode::prelude;
 
@@ -70,8 +71,21 @@ namespace GDL::API::Leaderboards {
                 
                 GDL::Cache::Leaderboards::setUserLeaderboard(key, std::move(userIDs));
                 auto cachedUsers = GDL::Cache::Leaderboards::getUserLeaderboard(key);
-                log::info("{}", !!cachedUsers);
-                log::info("first: {}", cachedUsers->at(0));
+
+                log::info("Check crash");
+                async::spawn(
+                    arc::sleep(asp::Duration::fromSecs(1)),
+                    [cachedUsers] {
+                        log::info("{}", !!cachedUsers);
+
+                        async::spawn(
+                            arc::sleep(asp::Duration::fromSecs(1)),
+                            [cachedUsers] {
+                                log::info("first: {}", cachedUsers->at(0));
+                            }
+                        );
+                    }
+                );
                 // UserLeaderboardLoadedEvent().send(
                 //     Ok(*cachedUsers)
                 // );

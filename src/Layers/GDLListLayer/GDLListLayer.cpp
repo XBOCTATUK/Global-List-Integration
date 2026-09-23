@@ -293,7 +293,7 @@ bool GDLListLayer::init() {
 	);
 
 	m_populateListListener = PopulateListEvent().listen(
-		[this]() {
+		[this] {
 			populateList();
 		}
 	);

@@ -63,7 +63,7 @@ bool FilterPopup::init() {
 
             GDL::Filters::setDifficulty(enable ? diffFilter : DifficultyFilter::None);
         },
-        []() {
+        [] {
             auto rangePopup = TailyUI::RangePopup::create(
                 "Custom difficulty range", 1, 9999,
                 [](int from, int to) {
@@ -102,7 +102,7 @@ bool FilterPopup::init() {
 
             GDL::Filters::setLength(enable ? lengthFilter : LengthFilter::None);
         },
-        []() {
+        [] {
             auto rangePopup = TailyUI::RangePopup::create(
                 "Custom length range", 1, 9999,
                 [](int from, int to) {
@@ -314,7 +314,7 @@ bool FilterPopup::init() {
 	m_buttonMenu->addChild(applyBtn);
 
     m_closeListener = CloseFiltersEvent().listen(
-		[this]() { Popup::onClose(nullptr); }
+		[this] { Popup::onClose(nullptr); }
 	);
 
     return true;
