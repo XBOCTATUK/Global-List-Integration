@@ -17,7 +17,7 @@ namespace GDL::API::Leaderboards {
         auto cachedUsers = GDL::Cache::Leaderboards::getUserLeaderboard(key);
         if (cachedUsers) {
             UserLeaderboardLoadedEvent().send(
-                Ok(cachedUsers)
+                Ok(*cachedUsers)
             );
             return;
         }
@@ -70,7 +70,7 @@ namespace GDL::API::Leaderboards {
                 
                 GDL::Cache::Leaderboards::setUserLeaderboard(key, std::move(userIDs));
                 UserLeaderboardLoadedEvent().send(
-                    Ok(GDL::Cache::Leaderboards::getUserLeaderboard(key))
+                    Ok(*GDL::Cache::Leaderboards::getUserLeaderboard(key))
                 );
             }
         );
@@ -80,7 +80,7 @@ namespace GDL::API::Leaderboards {
         auto cachedCountry = GDL::Cache::Leaderboards::getCountryLeaderboard(type);
         if (cachedCountry) {
             CountryLeaderboardLoadedEvent(type).send(
-                Ok(cachedCountry)
+                Ok(*cachedCountry)
             );
             return;
         }
@@ -122,7 +122,7 @@ namespace GDL::API::Leaderboards {
                 
                 GDL::Cache::Leaderboards::setCountryLeaderboard(type, std::move(countries));
                 CountryLeaderboardLoadedEvent(type).send(
-                    Ok(GDL::Cache::Leaderboards::getCountryLeaderboard(type))
+                    Ok(*GDL::Cache::Leaderboards::getCountryLeaderboard(type))
                 );
             }
         );
@@ -132,7 +132,7 @@ namespace GDL::API::Leaderboards {
         auto cachedCountryUsers = GDL::Cache::Leaderboards::getMainCountryLeaderboard(country);
         if (cachedCountryUsers) {
             MainCountryLeaderboardLoadedEvent(country).send(
-                Ok(cachedCountryUsers)
+                Ok(*cachedCountryUsers)
             );
             return;
         }
@@ -172,7 +172,7 @@ namespace GDL::API::Leaderboards {
                 
                 GDL::Cache::Leaderboards::setMainCountryLeaderboard(country, std::move(countryUsers));
                 MainCountryLeaderboardLoadedEvent(country).send(
-                    Ok(GDL::Cache::Leaderboards::getMainCountryLeaderboard(country))
+                    Ok(*GDL::Cache::Leaderboards::getMainCountryLeaderboard(country))
                 );
             }
         );
@@ -182,7 +182,7 @@ namespace GDL::API::Leaderboards {
         auto cachedCountryAdvanced = GDL::Cache::Leaderboards::getAdvancedCountryLeaderboard(country);
         if (cachedCountryAdvanced) {
             AdvancedCountryLeaderboardLoadedEvent(country).send(
-                Ok(cachedCountryAdvanced)
+                Ok(*cachedCountryAdvanced)
             );
             return;
         }
@@ -242,7 +242,7 @@ namespace GDL::API::Leaderboards {
                 
                 GDL::Cache::Leaderboards::setAdvancedCountryLeaderboard(country, std::move(gdlCountryAdvanced));
                 AdvancedCountryLeaderboardLoadedEvent(country).send(
-                    Ok(GDL::Cache::Leaderboards::getAdvancedCountryLeaderboard(country))
+                    Ok(*GDL::Cache::Leaderboards::getAdvancedCountryLeaderboard(country))
                 );
             }
         );

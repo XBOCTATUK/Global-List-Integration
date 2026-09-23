@@ -72,7 +72,7 @@ namespace GDL::API::Levels {
         auto cachedLevel = GDL::Cache::Levels::getLevel(levelID);
         if (cachedLevel && (isFullInfoRequire ? cachedLevel->isFull() : true)) {
             LevelLoadedEvent(levelID).send(
-                Ok(cachedLevel)
+                Ok(*cachedLevel)
             );
             return;
         }
@@ -125,7 +125,7 @@ namespace GDL::API::Levels {
                 
                 GDL::Cache::Levels::setLevel(std::move(gdlLevel));
                 LevelLoadedEvent(levelID).send(
-                    Ok(GDL::Cache::Levels::getLevel(levelID))
+                    Ok(*GDL::Cache::Levels::getLevel(levelID))
                 );
             }
         );

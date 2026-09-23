@@ -140,10 +140,12 @@ namespace TailyUI {
         for (const auto& value : m_values) {
             addValue(value);
         }
+        content->updateLayout();
 
         setSelectedIndex(0);
-
-        content->updateLayout();
+        
+        m_maxScrollHeight = std::min(30.0f * m_maxVisibleRows + 15.0f, 30.0f * values.size());
+        m_scrollLayer->setContentHeight(m_maxScrollHeight);
         m_scrollLayer->scrollToTop();
     }
 

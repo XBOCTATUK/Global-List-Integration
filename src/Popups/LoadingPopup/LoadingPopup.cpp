@@ -64,12 +64,12 @@ bool LoadingPopup::init() {
 	m_buttonMenu->addChild(cancelBtn);
 
 	m_userLeaderboardLoadListener = UserLeaderboardLoadedEvent().listen(
-		[this](Result<const std::vector<int>*, APIError> result) {
+		[this](Result<std::vector<int>, APIError> result) {
 			if (result.isOk()) {
 				auto users = result.unwrap();
 
 				auto username = string::toLower(GDL::Filters::getUsername(false));
-				for (const auto& userID : *users) {
+				for (const auto& userID : users) {
 					auto user = GDL::Cache::Users::getUser(userID);
 
 					if (string::toLower(user->username) == username) {
@@ -77,7 +77,7 @@ bool LoadingPopup::init() {
 
 						m_userLoadListener.destroy();
 						m_userLoadListener = UserLoadedEvent(user->id).listen(
-							[this](Result<const GDLUser*, APIError> result) {
+							[this](Result<GDLUser, APIError> result) {
 								if (result.isOk()) {
 									m_completedSteps++;
 									updateProgress();

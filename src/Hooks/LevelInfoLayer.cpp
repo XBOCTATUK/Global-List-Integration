@@ -76,13 +76,13 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer) {
             addChild(gdlLabel);
 
             m_fields->m_levelLoadListener = LevelLoadedEvent(level->m_levelID.value()).listen(
-                [this](Result<const GDLLevel*, APIError> result) {
+                [this](Result<GDLLevel, APIError> result) {
                     auto gdlLabel = static_cast<CCLabelBMFont*>(getChildByID("gdl-label"_spr));
                     auto gdlIcon = getChildByID("gdl-icon"_spr);
                     if (result.isOk()) {
                         if (gdlLabel && gdlIcon) {
                             auto GDLLevel = result.unwrap();
-                            gdlLabel->setString(fmt::format("#{}", GDLLevel->placement).c_str());
+                            gdlLabel->setString(fmt::format("#{}", GDLLevel.placement).c_str());
                         }
                     }
                     else if (gdlLabel && gdlIcon) {

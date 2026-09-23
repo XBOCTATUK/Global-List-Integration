@@ -23,7 +23,8 @@ inline const std::vector<std::string> allCountries = {
     "Somalia", "El-Salvador", "Syria", "Togo", "Thailand", "Turkmenistan",
     "Tunisia", "Turkey", "Trinidad-and-Tobago", "Taiwan", "Ukraine", "United-States",
     "Uruguay", "Uzbekistan", "Saint-Vincent-and-the-Grenadines", "Venezuela", "Vietnam",
-    "Kosovo", "Yemen", "South-Africa", "Unknown"
+    "Kosovo", "Yemen", "South-Africa", "Zambia", "Tajikistan", "San-Marino",
+    "Bahamas", "Unknown"
 };
 
 inline std::vector<std::string> allCountryNames;

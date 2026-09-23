@@ -27,6 +27,7 @@ protected:
 
 	LeaderboardsType m_type = LeaderboardsType::Players;
 	int m_playersLastPage = 1;
+	int m_playersMaxPage = INT_MAX;
 	std::string m_playersLastSearchQuery = "";
 	std::string m_countriesLastSearchQuery = "";
 	size_t m_lastCountryIndex = SIZE_MAX;
@@ -52,8 +53,8 @@ protected:
 
     bool init() override;
 	void onTabButton(cocos2d::CCObject* sender);
-	void populateUserLeaderboard(const std::vector<int>* userIDs);
-	void populateCountryLeaderboard(const std::vector<GDLCountry>* countries);
+	void populateUserLeaderboard(const std::vector<int>& userIDs);
+	void populateCountryLeaderboard(const std::vector<GDLCountry>& countries);
 	void search();
 	void page(int page);
 	void showLoading(bool show = true);

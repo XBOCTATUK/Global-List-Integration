@@ -86,7 +86,7 @@ class $modify(MyLevelCell, LevelCell) {
             }
 
             m_fields->m_levelLoadistener = LevelLoadedEvent(level->m_levelID.value()).listen(
-                [this](Result<const GDLLevel*, APIError> result) {
+                [this](Result<GDLLevel, APIError> result) {
                     if (!m_mainLayer) return;
 
                     auto gdlLabel = static_cast<CCLabelBMFont*>(m_mainLayer->getChildByID("gdl-label"_spr));
@@ -94,7 +94,7 @@ class $modify(MyLevelCell, LevelCell) {
                     if (result.isOk()) {
                         if (gdlLabel && gdlIcon) {
                             auto GDLLevel = result.unwrap();
-                            gdlLabel->setString(fmt::format("#{}", GDLLevel->placement).c_str());
+                            gdlLabel->setString(fmt::format("#{}", GDLLevel.placement).c_str());
                         }
                     }
                     else if (gdlLabel && gdlIcon) {

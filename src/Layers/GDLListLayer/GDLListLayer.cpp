@@ -273,7 +273,7 @@ bool GDLListLayer::init() {
 	showLoading();
 
 	m_demonlistLoadListener = DemonlistLoadedEvent().listen(
-		[this](Result<const std::vector<int>&, APIError> result) {
+		[this](Result<std::vector<int>, APIError> result) {
 			if (result.isOk()) {
 				m_gdlLevels = result.unwrap();
 				populateList();

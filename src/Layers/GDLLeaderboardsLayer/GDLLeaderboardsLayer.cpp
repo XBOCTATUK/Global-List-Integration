@@ -174,7 +174,7 @@ bool GDLLeaderboardsLayer::init() {
 	setKeyboardEnabled(true);
 
 	auto userLeaderboardCallback =
-	[this](geode::Result<const std::vector<int>*, APIError> result) {
+	[this](geode::Result<std::vector<int>, APIError> result) {
 		if (result.isOk()) {
 			log::info("Ok result start");
 
@@ -201,7 +201,7 @@ bool GDLLeaderboardsLayer::init() {
 	};
 	
 	auto countryLeaderboardCallback =
-	[this](geode::Result<const std::vector<GDLCountry>*, APIError> result) {
+	[this](geode::Result<std::vector<GDLCountry>, APIError> result) {
 		if (result.isOk()) {
 			populateCountryLeaderboard(result.unwrap());
 			showLoading(false);
@@ -238,6 +238,8 @@ bool GDLLeaderboardsLayer::init() {
 }
 
 void GDLLeaderboardsLayer::onTabButton(cocos2d::CCObject* sender) {
+	m_searchBar->getDropdownList()->setOpen(false);
+	
 	if (sender->getTag() == static_cast<int>(LeaderboardsType::Players) && m_type != LeaderboardsType::Players) {
 		m_countriesTabBtn->toggle(false);
 		m_type = LeaderboardsType::Players;
@@ -278,10 +280,20 @@ void GDLLeaderboardsLayer::onTabButton(cocos2d::CCObject* sender) {
 	}
 }
 
-void GDLLeaderboardsLayer::populateUserLeaderboard(const std::vector<int>* userIDs) {
+void GDLLeaderboardsLayer::populateUserLeaderboard(const std::vector<int>& userIDs) {
 	m_listNode->getScrollLayer()->m_contentLayer->removeAllChildrenWithCleanup(true);
+	if (userIDs.empty()) {
+		if (m_playersLastPage > 1) {
+			page(m_playersLastPage - 1);
+		}
+		return;
+	}
+	else if (userIDs.size() < m_cellsPerPage) {
+		m_playersMaxPage = m_playersLastPage;
+		m_rightBtn->setVisible(false);
+	}
 
-	for (const int& userID : *userIDs) {
+	for (const int& userID : userIDs) {
 		auto user = GDL::Cache::Users::getUser(userID);
 		if (!user) continue;
 
@@ -292,11 +304,11 @@ void GDLLeaderboardsLayer::populateUserLeaderboard(const std::vector<int>* userI
 	m_listNode->getScrollLayer()->scrollToTop();
 }
 
-void GDLLeaderboardsLayer::populateCountryLeaderboard(const std::vector<GDLCountry>* countries) {
+void GDLLeaderboardsLayer::populateCountryLeaderboard(const std::vector<GDLCountry>& countries) {
 	m_listNode->getScrollLayer()->m_contentLayer->removeAllChildrenWithCleanup(true);
 	auto searchQuery = m_searchBar->getSearchInput()->getString();
 
-	for (const auto& country : *countries) {
+	for (const auto& country : countries) {
 		if (
 			!searchQuery.empty() &&
 			!country.title.contains(searchQuery)
@@ -336,15 +348,26 @@ void GDLLeaderboardsLayer::search() {
 }
 
 void GDLLeaderboardsLayer::page(int page) {
+	if (m_type == LeaderboardsType::Countries) return;
 
+	m_playersLastPage = page < 1 ? 1 : page > m_playersMaxPage ? m_playersMaxPage : page;
+	search();
 }
 
 void GDLLeaderboardsLayer::showLoading(bool show) {
 	m_errorMessage->setVisible(false);
 	m_listNode->getScrollLayer()->setVisible(!show);
 	m_searchBar->setVisible(!show);
-	m_leftBtn->setVisible(m_type == LeaderboardsType::Players ? !show : false);
-	m_rightBtn->setVisible(m_type == LeaderboardsType::Players ? !show : false);
+	m_leftBtn->setVisible(
+		m_type == LeaderboardsType::Players ?
+			!show && m_playersLastPage > 1 :
+			false
+	);
+	m_rightBtn->setVisible(
+		m_type == LeaderboardsType::Players ?
+			!show && m_playersLastPage < m_playersMaxPage :
+			false
+	);
 	m_refreshBtn->setVisible(!show);
 
 	m_loadingSpinner->setVisible(show);

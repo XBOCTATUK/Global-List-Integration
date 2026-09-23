@@ -12,7 +12,7 @@ namespace GDL::API::Users {
         auto cachedUser = GDL::Cache::Users::getUser(userID);
         if (cachedUser && (isFullInfoRequire ? cachedUser->isFull() : true)) {
             UserLoadedEvent(userID).send(
-                Ok(cachedUser)
+                Ok(*cachedUser)
             );
             return;
         }
@@ -82,7 +82,7 @@ namespace GDL::API::Users {
                 
                 GDL::Cache::Users::setUser(std::move(gdlUser));
                 UserLoadedEvent(userID).send(
-                    Ok(GDL::Cache::Users::getUser(userID))
+                    Ok(*GDL::Cache::Users::getUser(userID))
                 );
             }
         );
@@ -92,7 +92,7 @@ namespace GDL::API::Users {
         auto cachedUserRecords = GDL::Cache::Users::getUserRecords(userID);
         if (cachedUserRecords) {
             UserRecordsLoadedEvent(userID).send(
-                Ok(cachedUserRecords)
+                Ok(*cachedUserRecords)
             );
             return;
         }
@@ -140,7 +140,7 @@ namespace GDL::API::Users {
                 
                 GDL::Cache::Users::setUserRecords(std::move(userRecords));
                 UserRecordsLoadedEvent(userID).send(
-                    Ok(GDL::Cache::Users::getUserRecords(userID))
+                    Ok(*GDL::Cache::Users::getUserRecords(userID))
                 );
             }
         );
