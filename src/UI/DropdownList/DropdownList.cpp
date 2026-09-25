@@ -29,12 +29,11 @@ namespace TailyUI {
         size_t maxVisibleRows,
         SelectionCallback callback
     ) {
-        if (!CCNode::create()) return false;
+        if (!CCNode::init()) return false;
         if (values.empty() || width < 50.0f) return false;
 
         setContentSize({ width, 30.0f });
         setAnchorPoint({ 0.5f, 0.5f });
-        
 
         m_values.reserve(values.size());
         m_maxVisibleRows = maxVisibleRows;

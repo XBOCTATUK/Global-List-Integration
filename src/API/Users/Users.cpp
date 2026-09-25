@@ -38,7 +38,8 @@ namespace GDL::API::Users {
 
                 std::string username = data["username"].asString().unwrapOrDefault();
                 int placement = data["placement"].asInt().unwrapOrDefault();
-                double points = data["points"].asDouble().unwrapOrDefault();
+                auto pointsStr = data["points"].asString().unwrapOrDefault();
+                auto points = numFromString<double>(pointsStr);
                 std::string country = data["country"].asString().unwrapOrDefault();
                 std::string badge = data["badge"].asString().unwrapOrDefault();
                 bool isBanned = data["is_banned"].asBool().unwrapOrDefault();
@@ -51,11 +52,11 @@ namespace GDL::API::Users {
                 auto hardest = GDLBasicLevel{hardestID, hardestName, hardestPlacement, hardestVideoURL};
 
                 auto gdlUser = GDLUser{
-                    userID, username, placement, points,
+                    userID, username, placement, points.isOk() ? points.unwrap() : 0.0,
                     country, badge, isBanned, hardest
                 };
 
-                auto parseList = [](matjson::Value& levelData, optGDLBasicLevels& list, bool withPercent = false) {
+                auto parseList = [](matjson::Value& levelData, OptGDLBasicLevels& list, bool withPercent = false) {
                     for (const auto& level : levelData) {
                         int id = level["id"].asInt().unwrapOrDefault();
                         std::string name = level["name"].asString().unwrapOrDefault();

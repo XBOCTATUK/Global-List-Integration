@@ -176,16 +176,10 @@ bool GDLLeaderboardsLayer::init() {
 	auto userLeaderboardCallback =
 	[this](geode::Result<std::vector<int>, APIError> result) {
 		if (result.isOk()) {
-			log::info("Ok result start");
-
 			populateUserLeaderboard(result.unwrap());
 			showLoading(false);
-
-			log::info("Ok result done");
 		}
 		else {
-			log::info("Err result start");
-
 			m_loadingSpinner->setVisible(false);
 
 			auto error = result.err().value();
@@ -195,8 +189,6 @@ bool GDLLeaderboardsLayer::init() {
 			}
 			
 			m_errorMessage->setString(errorStr.c_str());
-
-			log::info("Err result done");
 		}
 	};
 	

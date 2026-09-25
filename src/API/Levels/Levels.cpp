@@ -43,7 +43,8 @@ namespace GDL::API::Levels {
                     int ingameID = level["ingame_id"].asInt().unwrapOrDefault();
                     int placement = level["placement"].asInt().unwrapOrDefault();
                     std::string name = level["name"].asString().unwrapOrDefault();
-                    double points = level["points"].asDouble().unwrapOrDefault();
+                    auto pointsStr = level["points"].asString().unwrapOrDefault();
+                    auto points = numFromString<double>(pointsStr);
                     int listPercent = level["list_percent"].asInt().unwrapOrDefault();
                     int length = level["length"].asInt().unwrapOrDefault();
                     std::string holder = level["holder"].asString().unwrapOrDefault();
@@ -53,7 +54,7 @@ namespace GDL::API::Levels {
                     std::string dateCreated = level["date_created"].asString().unwrapOrDefault();
 
                     auto gdlLevel = GDLLevel{
-                        id, ingameID, placement, name, points,
+                        id, ingameID, placement, name, points.isOk() ? points.unwrap() : 0.0,
                         listPercent, length, holder, verifier,
                         verifierID, verificationURL, dateCreated
                     };
@@ -100,7 +101,8 @@ namespace GDL::API::Levels {
                 int ingameID = data["ingame_id"].asInt().unwrapOrDefault();
                 int placement = data["placement"].asInt().unwrapOrDefault();
                 std::string name = data["name"].asString().unwrapOrDefault();
-                double points = data["points"].asDouble().unwrapOrDefault();
+                auto pointsStr = data["points"].asString().unwrapOrDefault();
+                auto points = numFromString<double>(pointsStr);
                 int listPercent = data["list_percent"].asInt().unwrapOrDefault();
                 int length = data["length"].asInt().unwrapOrDefault();
                 int objects = data["objects"].asInt().unwrapOrDefault();
@@ -117,7 +119,7 @@ namespace GDL::API::Levels {
                 std::string dateCreated = data["date_created"].asString().unwrapOrDefault();
 
                 auto gdlLevel = GDLLevel{
-                    id, ingameID, placement, name, points, listPercent,
+                    id, ingameID, placement, name, points.isOk() ? points.unwrap() : 0.0, listPercent,
                     length, holder, verifier, verifierID, verificationURL,
                     dateCreated, objects, description, creator,
                     songURL, gameVersion, isCopyable, password

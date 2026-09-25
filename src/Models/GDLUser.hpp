@@ -2,7 +2,7 @@
 
 #include "GDLBasicLevel.hpp"
 
-using optGDLBasicLevels = std::optional<std::vector<GDLBasicLevel>>;
+using OptGDLBasicLevels = std::optional<std::vector<GDLBasicLevel>>;
 struct GDLUser {
     int id;
     std::string username;
@@ -13,14 +13,14 @@ struct GDLUser {
 
     std::optional<bool> isBanned;
     std::optional<GDLBasicLevel> hardest;
-    optGDLBasicLevels mainList;
-    optGDLBasicLevels extendedList;
-    optGDLBasicLevels advancedList;
-    optGDLBasicLevels unboundedList;
-    optGDLBasicLevels progressList;
-    optGDLBasicLevels verifiedList;
+    OptGDLBasicLevels mainList;
+    OptGDLBasicLevels extendedList;
+    OptGDLBasicLevels advancedList;
+    OptGDLBasicLevels unboundedList;
+    OptGDLBasicLevels progressList;
+    OptGDLBasicLevels verifiedList;
 
-    mutable optGDLBasicLevels completedList;
+    mutable OptGDLBasicLevels completedList;
 
     bool isFull() const {
         return isBanned.has_value();
@@ -30,7 +30,7 @@ struct GDLUser {
         if (!completedList) {
             completedList.emplace();
 
-            auto append = [this](const optGDLBasicLevels& list) {
+            auto append = [this](const OptGDLBasicLevels& list) {
                 if (!list.has_value()) return;
 
                 completedList->insert(completedList->end(), list->begin(), list->end());
