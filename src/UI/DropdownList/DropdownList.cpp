@@ -350,6 +350,7 @@ namespace TailyUI {
                 ),
                 true
             );
+            setOpen(false);
         }
 
         m_touchMoved = false;

@@ -17,9 +17,9 @@ GDLLeaderboardCell* GDLLeaderboardCell::create(const GDLUser& userData) {
 	return nullptr;
 }
 
-GDLLeaderboardCell* GDLLeaderboardCell::create(const GDLCountry& countryData) {
+GDLLeaderboardCell* GDLLeaderboardCell::create(const GDLCountry& countryData, CountriesLeaderboardType type) {
 	auto ret = new GDLLeaderboardCell();
-	if (ret->init(countryData)) {
+	if (ret->init(countryData, type)) {
 		ret->autorelease();
 		return ret;
 	}
@@ -53,7 +53,7 @@ bool GDLLeaderboardCell::init(const GDLUser& userData) {
 
     m_nameBtn = CCMenuItemExt::createSpriteExtra(
         nameLabel, [this](auto) {
-            UserInfoPopup::create(m_userData)->show();
+            UserInfoPopup::create(m_userData.id)->show();
         }
     );
     m_nameBtn->setPosition({ m_placementLabel->getPositionX() + m_placementLabel->getScaledContentWidth() + m_nameBtn->getContentWidth() / 2.0f + 10.0f, getContentHeight() / 2.0f });
@@ -105,10 +105,11 @@ bool GDLLeaderboardCell::init(const GDLUser& userData) {
     return true;
 }
 
-bool GDLLeaderboardCell::init(const GDLCountry& countryData) {
+bool GDLLeaderboardCell::init(const GDLCountry& countryData, CountriesLeaderboardType type) {
     if (!CCNode::init()) return false;
 
     m_countryData = countryData;
+    m_type = type;
     bool compactCellsEnabled = Mod::get()->getSettingValue<bool>("compact-cells");
 
     setContentSize({356.0f, (compactCellsEnabled ? 30.0f : 40.0f)});
@@ -138,7 +139,7 @@ bool GDLLeaderboardCell::init(const GDLCountry& countryData) {
 
     m_nameBtn = CCMenuItemExt::createSpriteExtra(
         nameLabel, [this](auto) {
-            CountryInfoPopup::create(m_countryData)->show();
+            CountryInfoPopup::create(m_countryData, m_type)->show();
         }
     );
     m_nameBtn->setPosition({ m_flagSpr->getPositionX() + m_flagSpr->getScaledContentWidth() / 2.0f + m_nameBtn->getContentWidth() / 2.0f + 10.0f, getContentHeight() / 2.0f });

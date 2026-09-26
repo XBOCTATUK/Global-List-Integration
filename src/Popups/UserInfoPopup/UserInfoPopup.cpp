@@ -9,9 +9,9 @@
 
 using namespace geode::prelude;
 
-UserInfoPopup* UserInfoPopup::create(const GDLUser& userData) {
+UserInfoPopup* UserInfoPopup::create(int userID) {
 	auto ret = new UserInfoPopup();
-	if (ret && ret->init(userData)) {
+	if (ret && ret->init(userID)) {
 		ret->autorelease();
 		return ret;
 	}
@@ -19,12 +19,12 @@ UserInfoPopup* UserInfoPopup::create(const GDLUser& userData) {
 	return nullptr;
 }
 
-bool UserInfoPopup::init(const GDLUser& userData) {
+bool UserInfoPopup::init(int userID) {
     if (!Popup::init(450.0f, 280.0f)) return false;
 
-	m_userData = userData;
+	m_userID = userID;
 
-	m_userLoadListener = UserLoadedEvent(m_userData.id).listen(
+	m_userLoadListener = UserLoadedEvent(m_userID).listen(
 		[this](Result<GDLUser, APIError> result) {
 			if (result.isOk()) {
 				drawUI();
@@ -32,13 +32,13 @@ bool UserInfoPopup::init(const GDLUser& userData) {
 		}
 	);
 
-	GDL::API::Users::getUser(m_userData.id);
+	GDL::API::Users::getUser(m_userID);
 
     return true;
 }
 
 void UserInfoPopup::drawUI() {
-	auto fullUserData = GDL::Cache::Users::getUser(m_userData.id);
+	auto fullUserData = GDL::Cache::Users::getUser(m_userID);
 	if (!fullUserData || !fullUserData->isFull()) return;
 
 	auto scrollBG = NineSlice::create("square02b_001.png");
@@ -76,6 +76,10 @@ void UserInfoPopup::drawUI() {
 		{}
 	);
 
+	auto scrollbar = Scrollbar::create(scrollLayer);
+	scrollbar->setPosition({ scrollLayer->getPositionX() + scrollLayer->getContentWidth() / 2.0f + 6.0f, scrollLayer->getPositionY() });
+	m_mainLayer->addChild(scrollbar);
+
 	auto content = scrollLayer->m_contentLayer;
 
 	auto basicInfoNode = CCNode::create();
@@ -107,7 +111,7 @@ void UserInfoPopup::drawUI() {
 	);
 	m_usernameLabel->setScale(0.65f);
 	m_usernameLabel->setAnchorPoint({ 0.0f, 0.5f });
-	m_basicInfoMenu->addChildAtPosition(
+	basicInfoNode->addChildAtPosition(
 		m_usernameLabel,
 		Anchor::Left,
 		{ 10.0f, 0.0f }
@@ -224,6 +228,16 @@ void UserInfoPopup::drawUI() {
 			m_mainLayer->getContentWidth() - 60.0f
 		);
 		content->addChild(unboundedLevelsNode);
+	}
+
+	if (fullUserData->progressList.has_value() && !fullUserData->progressList->empty()) {
+		auto progressLevelsNode = TailyUI::createUserLevelsNode(
+			fullUserData->progressList,
+			"Progress",
+			"progress-icon.png"_spr,
+			m_mainLayer->getContentWidth() - 60.0f
+		);
+		content->addChild(progressLevelsNode);
 	}
 
 	if (fullUserData->verifiedList.has_value() && !fullUserData->verifiedList->empty()) {

@@ -96,7 +96,9 @@ bool GDLLeaderboardsLayer::init() {
 		TabBaseColor::Unselected, TabBaseColor::UnselectedDark, "Players",
 		this, menu_selector(GDLLeaderboardsLayer::onTabButton)
 	);
-	m_playersTabBtn->setPosition({ 200.0f, 300.0f });
+	m_playersTabBtn->setPosition(
+		m_listNode->getPosition() + ccp(-(m_listNode->getContentWidth() / 4.0f), m_listNode->getContentHeight() / 2.0f + 30.0f)
+	);
 	m_playersTabBtn->setTag(static_cast<int>(LeaderboardsType::Players));
 	m_playersTabBtn->toggle(true);
 	btnsMenu->addChild(m_playersTabBtn);
@@ -105,7 +107,9 @@ bool GDLLeaderboardsLayer::init() {
 		TabBaseColor::Unselected, TabBaseColor::UnselectedDark, "Countries",
 		this, menu_selector(GDLLeaderboardsLayer::onTabButton)
 	);
-	m_countriesTabBtn->setPosition({ winSize.width - 200.0f, 300.0f });
+	m_countriesTabBtn->setPosition(
+		m_listNode->getPosition() + ccp(m_listNode->getContentWidth() / 4.0f, m_listNode->getContentHeight() / 2.0f + 30.0f)
+	);
 	m_countriesTabBtn->setTag(static_cast<int>(LeaderboardsType::Countries));
 	btnsMenu->addChild(m_countriesTabBtn);
 
@@ -306,8 +310,11 @@ void GDLLeaderboardsLayer::populateCountryLeaderboard(const std::vector<GDLCount
 			!country.title.contains(searchQuery)
 		) continue;
 
-		auto userCell = GDLLeaderboardCell::create(country);
-		m_listNode->addCell(userCell);
+		auto dropdown = m_searchBar->getDropdownList();
+		auto type = static_cast<CountriesLeaderboardType>(dropdown->getSelectedIndex());
+
+		auto countryCell = GDLLeaderboardCell::create(country, type);
+		m_listNode->addCell(countryCell);
 	}
 
 	m_listNode->getScrollLayer()->scrollToTop();

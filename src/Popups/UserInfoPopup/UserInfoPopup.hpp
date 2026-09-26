@@ -2,10 +2,10 @@
 
 class UserInfoPopup : public geode::Popup {
 public:
-	static UserInfoPopup* create(const GDLUser& userData);
+	static UserInfoPopup* create(int userID);
 
 protected:
-	GDLUser m_userData;
+	int m_userID;
 	geode::ListenerHandle m_userLoadListener;
 
 	cocos2d::CCMenu* m_basicInfoMenu;
@@ -13,8 +13,6 @@ protected:
 	CCMenuItemSpriteExtra* m_badgeBtn;
     CCMenuItemSpriteExtra* m_flagBtn;
 
-	
-
-	bool init(const GDLUser& userData);
+	bool init(int userID);
 	void drawUI();
 };

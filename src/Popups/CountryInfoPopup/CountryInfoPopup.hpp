@@ -2,9 +2,17 @@
 
 class CountryInfoPopup : public geode::Popup {
 public:
-	static CountryInfoPopup* create(const GDLCountry& countryUser);
+	static CountryInfoPopup* create(const GDLCountry& countryData, CountriesLeaderboardType type);
 
 protected:
+	GDLCountry m_countryData;
+	CountriesLeaderboardType m_type;
+	geode::ListenerHandle m_countryLoadListener;
 
-	bool init(const GDLCountry& countryUser);
+	geode::ScrollLayer* m_scrollLayer;
+
+	bool init(const GDLCountry& countryData, CountriesLeaderboardType type);
+	void drawBasicInfoUI();
+	void drawMainTypeUI();
+	void drawAdvancedTypeUI();
 };

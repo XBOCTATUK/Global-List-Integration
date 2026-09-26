@@ -239,6 +239,7 @@ namespace GDL::API::Leaderboards {
                 parseList(data["levels"]["unbounded"], gdlCountryAdvanced.unboundedList);
                 parseList(data["levels"]["progress"], gdlCountryAdvanced.progressList, true);
                 parseList(data["levels"]["verified"], gdlCountryAdvanced.verifiedList);
+                parseList(data["levels"]["uncompleted"], gdlCountryAdvanced.uncompletedList);
 
                 int userCount = data["user_count"].asInt().unwrapOrDefault();
                 gdlCountryAdvanced.userCount = userCount;
