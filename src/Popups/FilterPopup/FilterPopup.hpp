@@ -8,21 +8,21 @@ public:
 	static FilterPopup* create();
 
 protected:
-    CCNode* m_filterContainer;
+    CCNode* m_filterContainer = nullptr;
 
 	geode::ListenerHandle m_closeListener;
 
-    TailyUI::OptionBar* m_diffFilterBar;
-    TailyUI::OptionBar* m_lengthFilterBar;
-    CCNode* m_togglerContainer;
+    TailyUI::OptionBar* m_diffFilterBar = nullptr;
+    TailyUI::OptionBar* m_lengthFilterBar = nullptr;
+    CCNode* m_togglerContainer = nullptr;
 
-	TailyUI::LabeledCheckbox* m_ratedToggler;
-	TailyUI::LabeledCheckbox* m_unratedToggler;
-	TailyUI::LabeledCheckbox* m_completedToggler;
-	TailyUI::LabeledCheckbox* m_createdByToggler;
+	TailyUI::LabeledCheckbox* m_ratedToggler = nullptr;
+	TailyUI::LabeledCheckbox* m_unratedToggler = nullptr;
+	TailyUI::LabeledCheckbox* m_completedToggler = nullptr;
+	TailyUI::LabeledCheckbox* m_createdByToggler = nullptr;
 
-    geode::TextInput* m_usernameInput;
-    geode::TextInput* m_creatorNameInput;
+    geode::TextInput* m_usernameInput = nullptr;
+    geode::TextInput* m_creatorNameInput = nullptr;
 
 	bool init();
 };

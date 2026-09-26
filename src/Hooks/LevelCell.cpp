@@ -1,6 +1,5 @@
 #include <Geode/modify/LevelCell.hpp>
 #include "../API/Levels/Levels.hpp"
-#include "../Cache/Levels/Levels.hpp"
 #include "../Utils/RemovePlacement.hpp"
 #include "../Settings/Settings.hpp"
 #include "../Events/LevelLoadedEvent.hpp"
@@ -100,7 +99,10 @@ class $modify(MyLevelCell, LevelCell) {
                     else if (gdlLabel && gdlIcon) {
                         auto error = result.err().value();
                         if (error.message == APIMessage::LevelNotFound) {
-                            Utils::removePlacement(m_level->m_levelID, gdlLabel, gdlIcon, m_fields->m_origPositions, true);
+                            Utils::removePlacement(
+                                m_level->m_levelID, gdlLabel, gdlIcon,
+                                m_fields->m_origPositions, true
+                            );
                         }
                         else {
                             gdlLabel->setString("N/A");

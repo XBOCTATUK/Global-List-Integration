@@ -4,8 +4,8 @@
 #include "GDLBasicLevel.hpp"
 
 struct GDLCountryAdvanced {
-    int userCount;
-    GDLBasicLevel hardestLevel;
+    int userCount = 0;
+    GDLBasicLevel hardestLevel{};
     std::vector<GDLBasicLevel> mainList;
     std::vector<GDLBasicLevel> extendedList;
     std::vector<GDLBasicLevel> advancedList;

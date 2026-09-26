@@ -17,16 +17,16 @@ protected:
 	bool m_loading = false;
 	bool m_userInfoLoading = false;
 
-	size_t m_totalSteps;
-	size_t m_totalBatches;
-	size_t m_completedSteps;
+	size_t m_totalSteps = 0;
+	size_t m_totalBatches = 0;
+	size_t m_completedSteps = 0;
 
 	std::vector<LoadingStage> m_stages;
-	size_t m_currentStage;
-	size_t m_currentBatch;
+	size_t m_currentStage = 0;
+	size_t m_currentBatch = 0;
 
-	Slider* m_loadingProgress;
-	cocos2d::CCLabelBMFont* m_loadingLabel;
+	Slider* m_loadingProgress = nullptr;
+	cocos2d::CCLabelBMFont* m_loadingLabel = nullptr;
 
 	bool init() override;
 	void startLoading();

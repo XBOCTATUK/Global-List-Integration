@@ -14,15 +14,15 @@ namespace TailyUI {
 	protected:
 		geode::Function<void(int, int)> m_onApplyCallback = nullptr;
 
-		int m_minValue;
-		int m_maxValue;
+		int m_minValue = 0;
+		int m_maxValue = INT_MAX;
 
 		std::string m_previousFromValue;
 		std::string m_previousToValue;
 
-		cocos2d::CCMenu* m_menu;
-		geode::TextInput* m_fromTextInput;
-		geode::TextInput* m_toTextInput;
+		cocos2d::CCMenu* m_menu = nullptr;
+		geode::TextInput* m_fromTextInput = nullptr;
+		geode::TextInput* m_toTextInput = nullptr;
 
 		bool init(
 			const char* title, int minValue, int maxValue,

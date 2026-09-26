@@ -37,7 +37,9 @@ namespace TailyUI {
 
         m_values.reserve(values.size());
         m_maxVisibleRows = maxVisibleRows;
-        m_maxScrollHeight = std::min(30.0f * m_maxVisibleRows + 15.0f, 30.0f * values.size());
+        m_maxScrollHeight = std::min(
+            30.0f * m_maxVisibleRows + 15.0f, 30.0f * values.size()
+        );
         m_callback = std::move(callback);
 
         m_bg = NineSlice::create("square02b_001.png");
@@ -60,7 +62,9 @@ namespace TailyUI {
         m_arrowSpr->setRotation(90.0f);
         m_arrowSpr->setScaleX(0.6f);
         m_arrowSpr->setScaleY(0.4f);
-        m_arrowSpr->setPosition({ getContentWidth() - getContentHeight() / 2.0f, getContentHeight() / 2.0f });
+        m_arrowSpr->setPosition({
+            getContentWidth() - getContentHeight() / 2.0f, getContentHeight() / 2.0f
+        });
         addChild(m_arrowSpr, 2);
 
         m_valueLabel = CCLabelBMFont::create("", "bigFont.fnt");
@@ -145,7 +149,9 @@ namespace TailyUI {
 
         setSelectedIndex(0);
         
-        m_maxScrollHeight = std::min(30.0f * m_maxVisibleRows + 15.0f, 30.0f * values.size());
+        m_maxScrollHeight = std::min(
+            30.0f * m_maxVisibleRows + 15.0f, 30.0f * values.size()
+        );
         m_scrollLayer->setContentHeight(m_maxScrollHeight);
         m_scrollLayer->scrollToTop();
     }
@@ -219,9 +225,14 @@ namespace TailyUI {
         auto content = m_scrollLayer->m_contentLayer;
 
         bool isParity = content->getChildrenCount() % 2 == 0;
-        auto bgColor = isParity ? ccColor4B{161, 88, 44, 255} : ccColor4B{194, 114, 62, 255};
+        auto bgColor =
+            isParity ?
+            ccColor4B{161, 88, 44, 255} :
+            ccColor4B{194, 114, 62, 255};
 
-        auto bg = CCLayerColor::create(bgColor, m_scrollLayer->getContentWidth(), 30.0f);
+        auto bg = CCLayerColor::create(
+            bgColor, m_scrollLayer->getContentWidth(), 30.0f
+        );
         bg->setAnchorPoint({ 0.0f, 0.0f });
         bg->setPosition({ 0.0f, 0.0f });
 
@@ -273,7 +284,9 @@ namespace TailyUI {
     void DropdownList::onEnter() {
         CCNode::onEnter();
 
-        CCDirector::get()->getTouchDispatcher()->addTargetedDelegate(this, -256, true);
+        CCDirector::get()->getTouchDispatcher()
+            ->addTargetedDelegate(this, -256, true);
+
         scheduleUpdate();
     }
 
@@ -289,15 +302,26 @@ namespace TailyUI {
 
         auto mousePos = getMousePos();
         auto mousePosOnNode = convertToNodeSpace(mousePos);
-        bool insideScroll = CCRect{{0.0f, -m_clippingNode->getContentHeight() - 2.0f}, m_clippingNode->getContentSize()}.containsPoint(mousePosOnNode);
+
+        bool insideScroll = CCRect{
+            {0.0f, -m_clippingNode->getContentHeight() - 2.0f},
+            m_clippingNode->getContentSize()
+        }.containsPoint(mousePosOnNode);
 
         m_scrollLayer->setMouseEnabled(insideScroll && m_state != State::Closed);
     }
 
     bool DropdownList::ccTouchBegan(CCTouch* touch, CCEvent* event) {
         auto point = convertTouchToNodeSpace(touch);
-        bool insideHeader = CCRect{{0.0f, 0.0f}, getContentSize()}.containsPoint(point);
-        bool insideScroll = CCRect{{0.0f, -m_clippingNode->getContentHeight() - 2.0f}, m_clippingNode->getContentSize()}.containsPoint(point);
+
+        bool insideHeader = CCRect{
+            {0.0f, 0.0f}, getContentSize()
+        }.containsPoint(point);
+
+        bool insideScroll = CCRect{
+            {0.0f, -m_clippingNode->getContentHeight() - 2.0f},
+            m_clippingNode->getContentSize()
+        }.containsPoint(point);
 
         m_touchStart = point;
         if (insideHeader) {
@@ -328,8 +352,15 @@ namespace TailyUI {
         if (isAnimating) return;
 
         CCPoint point = convertTouchToNodeSpace(touch);
-        bool insideHeader = CCRect{{0.0f, 0.0f}, getContentSize()}.containsPoint(point);
-        bool insideScroll = CCRect{{0.0f, -m_clippingNode->getContentHeight() - 2.0f}, m_clippingNode->getContentSize()}.containsPoint(point);
+
+        bool insideHeader = CCRect{
+            {0.0f, 0.0f}, getContentSize()
+        }.containsPoint(point);
+
+        bool insideScroll = CCRect{
+            {0.0f, -m_clippingNode->getContentHeight() - 2.0f},
+            m_clippingNode->getContentSize()
+        }.containsPoint(point);
 
         if (insideHeader && m_touchRegion == Region::Header && !m_touchMoved) {
             onClick(nullptr);

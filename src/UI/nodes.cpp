@@ -4,7 +4,10 @@
 using namespace geode::prelude;
 
 namespace TailyUI {
-    CCNode* createStatNode(const std::string& text, const std::string& subtext, const std::string& icon, float width) {
+    CCNode* createStatNode(
+        const std::string& text, const std::string& subtext,
+        const std::string& icon, float width
+    ) {
         auto node = CCNode::create();
         node->setContentSize({ width, 40.0f });
         node->setAnchorPoint({ 0.5f, 0.5f });
@@ -49,7 +52,7 @@ namespace TailyUI {
         );
 
         auto subtextLabel = CCLabelBMFont::create(subtext.c_str(), "chatFont.fnt");
-        subtextLabel->setScale(0.4f);
+        subtextLabel->setScale(0.5f);
         subtextLabel->setAnchorPoint({ 0.0f, 0.0f });
         node->addChildAtPosition(
             subtextLabel,
@@ -60,7 +63,10 @@ namespace TailyUI {
         return node;
     }
 
-    CCNode* createUserLevelsNode(const OptGDLBasicLevels& levels, const std::string& text, const std::string& icon, float width) {
+    CCNode* createUserLevelsNode(
+        const OptGDLBasicLevels& levels, const std::string& text,
+        const std::string& icon, float width
+    ) {
         auto node = CCNode::create();
         node->setContentWidth(width);
         node->setAnchorPoint({ 0.5f, 0.5f });
@@ -74,14 +80,14 @@ namespace TailyUI {
         iconSpr->setScale(12.0f / iconSpr->getContentWidth());
 
         auto textLabel = CCLabelBMFont::create(text.c_str(), "bigFont.fnt");
-        textLabel->setScale(0.3f);
+        textLabel->setScale(0.35f);
         textLabel->setAnchorPoint({ 0.0f, 0.5f });
 
         auto countLabel = CCLabelBMFont::create(
             fmt::format("{}", levels->size()).c_str(),
             "bigFont.fnt"
         );
-        countLabel->setScale(0.3f);
+        countLabel->setScale(0.35f);
         countLabel->setAnchorPoint({ 1.0f, 0.5f });
 
         auto levelsMenu = CCMenu::create();
@@ -154,14 +160,14 @@ namespace TailyUI {
         iconSpr->setScale(12.0f / iconSpr->getContentWidth());
 
         auto textLabel = CCLabelBMFont::create("Players", "bigFont.fnt");
-        textLabel->setScale(0.3f);
+        textLabel->setScale(0.35f);
         textLabel->setAnchorPoint({ 0.0f, 0.5f });
 
         auto countLabel = CCLabelBMFont::create(
             fmt::format("{}", users.size()).c_str(),
             "bigFont.fnt"
         );
-        countLabel->setScale(0.3f);
+        countLabel->setScale(0.35f);
         countLabel->setAnchorPoint({ 1.0f, 0.5f });
 
         auto listNode = CCNode::create();
@@ -224,7 +230,7 @@ namespace TailyUI {
         level.name;
 
         auto levelNameLabel = CCLabelBMFont::create(text.c_str(), "chatFont.fnt");
-        levelNameLabel->setScale(0.5f);
+        levelNameLabel->setScale(0.6f);
         levelNameLabel->setAnchorPoint({ 0.5f, 0.5f });
 
         auto node = CCNode::create();
@@ -298,7 +304,9 @@ namespace TailyUI {
                 UserInfoPopup::create(user.id)->show();
             }
         );
-        usernameBtn->setPosition(placementLabel->getPosition() + ccp(placementLabel->getScaledContentWidth() / 2.0f + usernameBtn->getContentWidth() / 2.0f + 10.0f, 0.0f));
+        usernameBtn->setPosition(
+            placementLabel->getPosition() + ccp(placementLabel->getScaledContentWidth() / 2.0f + usernameBtn->getContentWidth() / 2.0f + 10.0f, 0.0f)
+        );
         menu->addChild(usernameBtn);
 
         auto pointsLabel = CCLabelBMFont::create(

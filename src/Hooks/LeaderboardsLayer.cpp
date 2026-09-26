@@ -10,8 +10,14 @@ class $modify(MyLeaderboardsLayer, LeaderboardsLayer) {
         auto bottomRightMenu = getChildByID("bottom-right-menu");
         if (!bottomRightMenu) return true;
 
-        auto spr = CircleButtonSprite::createWithSprite("globalListIcon.png"_spr, 0.9f, CircleBaseColor::Green, CircleBaseSize::Small);
-        auto btn = CCMenuItemSpriteExtra::create(spr, this, menu_selector(MyLeaderboardsLayer::onBtn));
+        auto spr = CircleButtonSprite::createWithSprite(
+            "globalListIcon.png"_spr, 0.9f,
+            CircleBaseColor::Green, CircleBaseSize::Small
+        );
+        auto btn = CCMenuItemSpriteExtra::create(
+            spr, this,
+            menu_selector(MyLeaderboardsLayer::onBtn)
+        );
         btn->setID("global-list-button");
 
         bottomRightMenu->addChild(btn, -5);
@@ -21,6 +27,8 @@ class $modify(MyLeaderboardsLayer, LeaderboardsLayer) {
     }
 
     void onBtn(CCObject* sender) {
-        CCDirector::get()->pushScene(CCTransitionFade::create(0.5f, GDLLeaderboardsLayer::scene()));
+        CCDirector::get()->pushScene(
+            CCTransitionFade::create(0.5f, GDLLeaderboardsLayer::scene())
+        );
     }
 };

@@ -77,13 +77,18 @@ void UserInfoPopup::drawUI() {
 	);
 
 	auto scrollbar = Scrollbar::create(scrollLayer);
-	scrollbar->setPosition({ scrollLayer->getPositionX() + scrollLayer->getContentWidth() / 2.0f + 6.0f, scrollLayer->getPositionY() });
+	scrollbar->setPosition({
+		scrollLayer->getPositionX() + scrollLayer->getContentWidth() / 2.0f + 6.0f,
+		scrollLayer->getPositionY()
+	});
 	m_mainLayer->addChild(scrollbar);
 
 	auto content = scrollLayer->m_contentLayer;
 
 	auto basicInfoNode = CCNode::create();
-	basicInfoNode->setContentSize({ m_mainLayer->getContentWidth() - 60.0f, 30.0f });
+	basicInfoNode->setContentSize({
+		m_mainLayer->getContentWidth() - 60.0f, 30.0f
+	});
 	content->addChild(basicInfoNode);
 
 	auto basicInfoBG = NineSlice::create("square02b_001.png");
@@ -163,7 +168,9 @@ void UserInfoPopup::drawUI() {
 		->setAxisAlignment(AxisAlignment::Between)
 		->setAutoScale(false)
 	);
-	statsMenu->setContentSize({ m_mainLayer->getContentWidth() - 60.0f, 40.0f });
+	statsMenu->setContentSize({
+		m_mainLayer->getContentWidth() - 60.0f, 40.0f }
+	);
 	statsMenu->setAnchorPoint({ 0.5f, 0.5f });
 	content->addChild(statsMenu);
 

@@ -10,8 +10,14 @@ class $modify(MyLevelSearchLayer, LevelSearchLayer) {
         auto filterMenu = getChildByID("other-filter-menu");
         if (!filterMenu) return true;
 
-        auto spr = CircleButtonSprite::createWithSprite("globalListIcon.png"_spr, 0.9f, CircleBaseColor::Green, CircleBaseSize::Small);
-        auto btn = CCMenuItemSpriteExtra::create(spr, this, menu_selector(MyLevelSearchLayer::onBtn));
+        auto spr = CircleButtonSprite::createWithSprite(
+            "globalListIcon.png"_spr, 0.9f,
+            CircleBaseColor::Green, CircleBaseSize::Small
+        );
+        auto btn = CCMenuItemSpriteExtra::create(
+            spr, this,
+            menu_selector(MyLevelSearchLayer::onBtn)
+        );
         btn->setID("global-list-button"_spr);
         
         filterMenu->addChild(btn);

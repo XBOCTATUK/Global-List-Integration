@@ -7,8 +7,6 @@
 #include "../../Events/CountryLeaderboardLoadedEvent.hpp"
 #include "../../Events/MainCountryLeaderboardLoadedEvent.hpp"
 #include "../../Events/AdvancedCountryLeaderboardLoadedEvent.hpp"
-#include "Geode/utils/general.hpp"
-#include <arc/time/Sleep.hpp>
 
 using namespace geode::prelude;
 
@@ -209,7 +207,7 @@ namespace GDL::API::Leaderboards {
                     return;
                 }
                 
-                GDLCountryAdvanced gdlCountryAdvanced;
+                GDLCountryAdvanced gdlCountryAdvanced{};
 
                 int hardestID = data["levels"]["hardest"]["id"].asInt().unwrapOrDefault();
                 std::string hardestName = data["levels"]["hardest"]["name"].asString().unwrapOrDefault();

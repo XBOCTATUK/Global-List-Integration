@@ -5,11 +5,11 @@ public:
 	static CountryInfoPopup* create(const GDLCountry& countryData, CountriesLeaderboardType type);
 
 protected:
-	GDLCountry m_countryData;
-	CountriesLeaderboardType m_type;
+	GDLCountry m_countryData{};
+	CountriesLeaderboardType m_type = CountriesLeaderboardType::Main;
 	geode::ListenerHandle m_countryLoadListener;
 
-	geode::ScrollLayer* m_scrollLayer;
+	geode::ScrollLayer* m_scrollLayer = nullptr;
 
 	bool init(const GDLCountry& countryData, CountriesLeaderboardType type);
 	void drawBasicInfoUI();

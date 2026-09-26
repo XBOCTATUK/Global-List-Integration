@@ -217,8 +217,6 @@ void LoadingPopup::afterLoading() {
 	CloseFiltersEvent().send();
 	PopulateListEvent().send();
 
-	Notification::create("Level data loaded successfully.", NotificationIcon::Success, 2.0f)->show();
-
 	m_loading = false;
 	onClose(nullptr);
 }

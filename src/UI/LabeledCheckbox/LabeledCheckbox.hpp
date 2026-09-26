@@ -14,9 +14,9 @@ namespace TailyUI {
     protected:
         geode::Function<void(bool)> m_togglerCallback = nullptr;
 
-        CCMenuItemToggler* m_toggler;
-        cocos2d::CCLabelBMFont* m_label;
-        CCMenuItemSpriteExtra* m_infoBtn;
+        CCMenuItemToggler* m_toggler = nullptr;
+        cocos2d::CCLabelBMFont* m_label = nullptr;
+        CCMenuItemSpriteExtra* m_infoBtn = nullptr;
 
         bool init(
             const char* name, float height, const char* info,

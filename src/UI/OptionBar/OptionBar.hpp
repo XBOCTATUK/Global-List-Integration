@@ -18,11 +18,11 @@ namespace TailyUI {
         void setOptionsCallback(geode::Function<void()> callback);
 
     protected:
-        cocos2d::CCSprite* m_icon;
-        cocos2d::CCMenu* m_menu;
+        cocos2d::CCSprite* m_icon = nullptr;
+        cocos2d::CCMenu* m_menu = nullptr;
 
         std::unordered_map<std::string, CCMenuItemSpriteExtra*> m_choices;
-        CCMenuItemSpriteExtra* m_selectedBtn;
+        CCMenuItemSpriteExtra* m_selectedBtn = nullptr;
 
         geode::Function<void(const std::string&, bool)> m_choiceCallback = nullptr;
         geode::Function<void()> m_optionsCallback = nullptr;

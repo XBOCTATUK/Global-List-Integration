@@ -35,19 +35,19 @@ namespace TailyUI {
         size_t m_maxVisibleRows = 4;
         float m_maxScrollHeight = 0.0f;
         
-        geode::NineSlice* m_bg;
-        geode::NineSlice* m_border;
-        cocos2d::CCSprite* m_arrowSpr;
-        cocos2d::CCLabelBMFont* m_valueLabel;
+        geode::NineSlice* m_bg = nullptr;
+        geode::NineSlice* m_border = nullptr;
+        cocos2d::CCSprite* m_arrowSpr = nullptr;
+        cocos2d::CCLabelBMFont* m_valueLabel = nullptr;
         
-        cocos2d::CCClippingNode* m_clippingNode;
-        geode::ScrollLayer* m_scrollLayer;
+        cocos2d::CCClippingNode* m_clippingNode = nullptr;
+        geode::ScrollLayer* m_scrollLayer = nullptr;
         std::vector<cocos2d::CCLayerColor*> m_valueBGs;
         
         State m_state = State::Closed;
-        float m_elapsed;
+        float m_elapsed = 0.0f;
 
-        cocos2d::CCPoint m_touchStart = {};
+        cocos2d::CCPoint m_touchStart{};
         Region m_touchRegion = Region::None;
         bool m_touchMoved = false;
 

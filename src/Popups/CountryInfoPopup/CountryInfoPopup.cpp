@@ -90,13 +90,18 @@ void CountryInfoPopup::drawBasicInfoUI() {
 	);
 
 	auto scrollbar = Scrollbar::create(m_scrollLayer);
-	scrollbar->setPosition({ m_scrollLayer->getPositionX() + m_scrollLayer->getContentWidth() / 2.0f + 6.0f, m_scrollLayer->getPositionY() });
+	scrollbar->setPosition({
+		m_scrollLayer->getPositionX() + m_scrollLayer->getContentWidth() / 2.0f + 6.0f,
+		m_scrollLayer->getPositionY()
+	});
 	m_mainLayer->addChild(scrollbar);
 
 	auto content = m_scrollLayer->m_contentLayer;
 
 	auto basicInfoNode = CCNode::create();
-	basicInfoNode->setContentSize({ m_mainLayer->getContentWidth() - 60.0f, 30.0f });
+	basicInfoNode->setContentSize({
+		m_mainLayer->getContentWidth() - 60.0f, 30.0f
+	});
 	content->addChild(basicInfoNode);
 
 	auto basicInfoBG = NineSlice::create("square02b_001.png");
@@ -170,7 +175,9 @@ void CountryInfoPopup::drawAdvancedTypeUI() {
 		->setAxisAlignment(AxisAlignment::Between)
 		->setAutoScale(false)
 	);
-	statsMenu->setContentSize({ m_mainLayer->getContentWidth() - 60.0f, 40.0f });
+	statsMenu->setContentSize({
+		m_mainLayer->getContentWidth() - 60.0f, 40.0f
+	});
 	statsMenu->setAnchorPoint({ 0.5f, 0.5f });
 	content->addChild(statsMenu);
 

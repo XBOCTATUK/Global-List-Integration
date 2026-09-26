@@ -8,7 +8,10 @@
 using namespace geode::prelude;
 
 namespace TailyUI {
-    SearchBar* SearchBar::create(ZStringView placeholder, SearchBarType type, geode::Function<void(gd::string)> callback) {
+    SearchBar* SearchBar::create(
+		ZStringView placeholder, SearchBarType type,
+		geode::Function<void(gd::string)> callback
+	) {
     	auto ret = new SearchBar();
         if (ret && ret->init(placeholder, type, std::move(callback))) {
             ret->autorelease();
@@ -18,13 +21,19 @@ namespace TailyUI {
         return nullptr;
     }
 
-	bool SearchBar::init(ZStringView placeholder, SearchBarType type, geode::Function<void(gd::string)> searchCallback) {
+	bool SearchBar::init(
+		ZStringView placeholder, SearchBarType type,
+		geode::Function<void(gd::string)> searchCallback
+	) {
 		if (!CCNode::init()) return false;
 
 		setSearchCallback(std::move(searchCallback));
 		setContentSize({ 356.0f, 30.0f });
 
-		auto searchBarBG = CCLayerColor::create({ 194, 114, 62, 255 }, getContentWidth(), getContentHeight());
+		auto searchBarBG = CCLayerColor::create(
+			{ 194, 114, 62, 255 },
+			getContentWidth(), getContentHeight()
+		);
 		addChild(searchBarBG);
 
 		m_searchBarMenu = CCMenu::create();
@@ -174,7 +183,11 @@ namespace TailyUI {
 		auto size = getContentSize();
 		cocos2d::ccDrawColor4B(0, 0, 0, 0x4f);
 		glLineWidth(2.0f);
-		cocos2d::ccDrawLine({ 1.0f, 0.0f }, { size.width - 1.0f, 0.0f });
-		cocos2d::ccDrawLine({ 1.0f, size.height }, { size.width - 1.0f, size.height });
+		cocos2d::ccDrawLine(
+			{ 1.0f, 0.0f }, { size.width - 1.0f, 0.0f }
+		);
+		cocos2d::ccDrawLine(
+			{ 1.0f, size.height }, { size.width - 1.0f, size.height }
+		);
 	}
 }

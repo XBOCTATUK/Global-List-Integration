@@ -1,11 +1,11 @@
 #pragma once
 
 struct GDLRecord {
-    int id;
-    int percent;
+    int id = 0;
+    int percent = 0;
     std::string status;
     std::string videoURL;
-    int internalID;
+    int internalID = 0;
     std::string levelName;
-    int placement;
+    int placement = 0;
 };

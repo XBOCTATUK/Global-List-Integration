@@ -48,8 +48,12 @@ namespace TailyUI {
         setAnchorPoint({ 0.5f, 0.5f });
 
         if (info) {
-            m_infoBtn = InfoAlertButton::create(fmt::format("'{}' toggler", name), info, 0.5f);
-            m_infoBtn->setPosition(getContentSize() - ccp(-3.0f, m_infoBtn->getScaledContentHeight() / 2.0f));
+            m_infoBtn = InfoAlertButton::create(
+                fmt::format("'{}' toggler", name), info, 0.5f
+            );
+            m_infoBtn->setPosition(
+                getContentSize() - ccp(-3.0f, m_infoBtn->getScaledContentHeight() / 2.0f)
+            );
             addChild(m_infoBtn);
         }
 

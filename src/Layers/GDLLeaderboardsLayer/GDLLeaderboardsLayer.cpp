@@ -27,8 +27,8 @@ CCScene* GDLLeaderboardsLayer::scene() {
 	return ret;
 }
 
-constexpr const char* GLOBAL_LIST_INFO =
-"The <cg>most complete</c> and <cf>trusted</c> ranking of the <cr>hardest</c> Geometry Dash demons, maintained by a <cy>dedicated community</c>.";
+constexpr const char* LEADERBOARDS_INFO =
+"<cl>Compete</c> with other players worldwide and represent your <cy>country</c> in <cb>global rankings</c>!";
 
 bool GDLLeaderboardsLayer::init() {
 	if (!CCLayer::init()) return false;
@@ -37,13 +37,13 @@ bool GDLLeaderboardsLayer::init() {
 
     auto winSize = CCDirector::get()->getWinSize();
 
-	auto gdlBG = CCSprite::create("player-leaderboard-bg.png"_spr);
-	gdlBG->setAnchorPoint({ 0.5f, 0.5f });
-	gdlBG->setScale(Utils::calculateCoverScale(winSize, gdlBG->getContentSize()));
-	gdlBG->setPosition({ winSize.width / 2, winSize.height / 2 });
-	gdlBG->setZOrder(0);
-	gdlBG->setID("gdl-backgrownd");
-	addChild(gdlBG);
+	m_bg = CCSprite::create("player-leaderboard-bg.png"_spr);
+	m_bg->setAnchorPoint({ 0.5f, 0.5f });
+	m_bg->setScale(Utils::calculateCoverScale(winSize, m_bg->getContentSize()));
+	m_bg->setPosition({ winSize.width / 2, winSize.height / 2 });
+	m_bg->setZOrder(0);
+	m_bg->setID("gdl-backgrownd");
+	addChild(m_bg);
 
     m_listNode = cue::ListNode::create(
         {356.0f, 220.0f},
@@ -78,7 +78,9 @@ bool GDLLeaderboardsLayer::init() {
 			}
 		}
 	);
-	m_searchBar->setPosition({ 0.0f, m_listNode->getContentHeight() - m_searchBar->getContentHeight() });
+	m_searchBar->setPosition({
+		0.0f, m_listNode->getContentHeight() - m_searchBar->getContentHeight()
+	});
 	m_searchBar->setID("search-bar");
 	m_listNode->addChild(m_searchBar, 1);
 
@@ -138,7 +140,7 @@ bool GDLLeaderboardsLayer::init() {
 	m_rightBtn->setID("next-page-button");
 	btnsMenu->addChild(m_rightBtn);
 
-	m_infoBtn = InfoAlertButton::create("Global Demonlist", GLOBAL_LIST_INFO, 1.0f);
+	m_infoBtn = InfoAlertButton::create("Global List Ranking", LEADERBOARDS_INFO, 1.0f);
 	m_infoBtn->setPosition({ 30.0f, 30.0f });
 	m_infoBtn->setID("info-button");
 	btnsMenu->addChild(m_infoBtn);
@@ -164,7 +166,9 @@ bool GDLLeaderboardsLayer::init() {
 			m_searchBar->getDropdownList()->setSelectedIndex(0);
 		}
 	);
-	m_refreshBtn->setPosition({ winSize.width - refreshSpr->getContentWidth() / 2.0f - 4.0f, refreshSpr->getContentHeight() / 2.0f + 4.0f });
+	m_refreshBtn->setPosition({
+		winSize.width - refreshSpr->getContentWidth() / 2.0f - 4.0f, refreshSpr->getContentHeight() / 2.0f + 4.0f
+	});
 	m_refreshBtn->setID("refresh-button");
 	btnsMenu->addChild(m_refreshBtn);
 
@@ -237,6 +241,11 @@ void GDLLeaderboardsLayer::onTabButton(cocos2d::CCObject* sender) {
 	m_searchBar->getDropdownList()->setOpen(false);
 
 	if (sender->getTag() == static_cast<int>(LeaderboardsType::Players) && m_type != LeaderboardsType::Players) {
+		auto texture = CCTextureCache::sharedTextureCache()
+			->addImage("player-leaderboard-bg.png"_spr, false);
+
+		m_bg->setTexture(texture);
+
 		m_countriesTabBtn->toggle(false);
 		m_type = LeaderboardsType::Players;
 
@@ -255,6 +264,11 @@ void GDLLeaderboardsLayer::onTabButton(cocos2d::CCObject* sender) {
 		);
 	}
 	else if (sender->getTag() == static_cast<int>(LeaderboardsType::Countries) && m_type != LeaderboardsType::Countries) {
+		auto texture = CCTextureCache::sharedTextureCache()
+			->addImage("country-leaderboard-bg.png"_spr, false);
+
+		m_bg->setTexture(texture);
+
 		m_playersTabBtn->toggle(false);
 		m_type = LeaderboardsType::Countries;
 
@@ -397,7 +411,7 @@ void GDLLeaderboardsLayer::keyBackClicked() {
 
 void GDLLeaderboardsLayer::onExit() {
 	// Better Fuck Priority fix
-	if (m_searchBar) m_searchBar->m_searchInput->defocus();
+	if (m_searchBar) m_searchBar->getSearchInput()->defocus();
 
 	CCLayer::onExit();
 }

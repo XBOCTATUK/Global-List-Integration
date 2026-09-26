@@ -46,12 +46,15 @@ bool FilterPopup::init() {
     );
     m_filterContainer->setContentSize({ 365.0f, 168.0f });
     m_filterContainer->setAnchorPoint({ 0.5f, 1.0f });
-    m_filterContainer->setPosition({ m_mainLayer->getContentWidth() / 2.0f, m_mainLayer->getContentHeight() - 40.0f });
+    m_filterContainer->setPosition({
+        m_mainLayer->getContentWidth() / 2.0f, m_mainLayer->getContentHeight() - 40.0f
+    });
     m_filterContainer->setID("filter-container");
     m_mainLayer->addChild(m_filterContainer);
 
     m_diffFilterBar = TailyUI::OptionBar::create(
-        "GJ_demonIcon_001.png", 0.36f, {"Top 75", "Top 150", "Top 300", "Unbounded", "Custom"},
+        "GJ_demonIcon_001.png", 0.36f,
+        {"Top 75", "Top 150", "Top 300", "Unbounded", "Custom"},
         [this](const std::string& choice, bool enable) {
             DifficultyFilter diffFilter;
             
@@ -90,7 +93,8 @@ bool FilterPopup::init() {
     m_filterContainer->addChild(m_diffFilterBar);
 
     m_lengthFilterBar = TailyUI::OptionBar::create(
-        "GJ_timeIcon_001.png", 0.42f, {"Short", "Medium", "Long", "XL", "Custom"},
+        "GJ_timeIcon_001.png", 0.42f,
+        {"Short", "Medium", "Long", "XL", "Custom"},
         [this](const std::string& choice, bool enable) {
             LengthFilter lengthFilter;
             
@@ -130,7 +134,10 @@ bool FilterPopup::init() {
 
 
     m_togglerContainer = CCNode::create();
-    m_togglerContainer->setContentSize({ m_filterContainer->getContentWidth(), m_filterContainer->getContentHeight() - (m_diffFilterBar->getContentHeight() + 10.0f) * 2.0f });
+    m_togglerContainer->setContentSize({
+        m_filterContainer->getContentWidth(),
+        m_filterContainer->getContentHeight() - (m_diffFilterBar->getContentHeight() + 10.0f) * 2.0f
+    });
     m_togglerContainer->setZOrder(15);
     m_togglerContainer->setID("toggler-container");
     m_filterContainer->addChild(m_togglerContainer);
@@ -161,14 +168,19 @@ bool FilterPopup::init() {
         ->setGap(10.0f)
     );
     rateTogglerMenu->setAnchorPoint({ 0.5f, 1.0f });
-    rateTogglerMenu->setContentSize({togglerContainerContent->getContentWidth() / 3.0f, togglerContainerContent->getContentHeight()});
-    rateTogglerMenu->setPosition({togglerContainerContent->getContentWidth() / 6.0f, togglerContainerContent->getContentHeight()});
+    rateTogglerMenu->setContentSize({
+        togglerContainerContent->getContentWidth() / 3.0f, togglerContainerContent->getContentHeight()
+    });
+    rateTogglerMenu->setPosition({
+        togglerContainerContent->getContentWidth() / 6.0f, togglerContainerContent->getContentHeight()
+    });
     rateTogglerMenu->ignoreAnchorPointForPosition(false);
     rateTogglerMenu->setID("rate-toggler-menu");
     togglerContainerContent->addChild(rateTogglerMenu);
 
     m_ratedToggler = TailyUI::LabeledCheckbox::create(
-        "Rated", 24.0f, "If enabled, the Demonlist will display only rated levels.",
+        "Rated", 24.0f,
+        "If enabled, the Demonlist will display only rated levels.",
         [this](bool enable) {
             GDL::Filters::setRated(enable);
             if (enable) {
@@ -182,7 +194,8 @@ bool FilterPopup::init() {
     rateTogglerMenu->addChild(m_ratedToggler);
 
     m_unratedToggler = TailyUI::LabeledCheckbox::create(
-        "Unrated", 24.0f, "If enabled, the Demonlist will display only unrated levels.",
+        "Unrated", 24.0f,
+        "If enabled, the Demonlist will display only unrated levels.",
         [this](bool enable) {
             GDL::Filters::setUnrated(enable);
             if (enable) {
@@ -206,14 +219,19 @@ bool FilterPopup::init() {
         ->setGap(10.0f)
     );
     userTogglerMenu->setAnchorPoint({ 0.5f, 1.0f });
-    userTogglerMenu->setContentSize({togglerContainerContent->getContentWidth() / 3.0f, togglerContainerContent->getContentHeight()});
-    userTogglerMenu->setPosition({togglerContainerContent->getContentWidth() / 2.0f, togglerContainerContent->getContentHeight()});
+    userTogglerMenu->setContentSize({
+        togglerContainerContent->getContentWidth() / 3.0f, togglerContainerContent->getContentHeight()
+    });
+    userTogglerMenu->setPosition({
+        togglerContainerContent->getContentWidth() / 2.0f, togglerContainerContent->getContentHeight()
+    });
     userTogglerMenu->ignoreAnchorPointForPosition(false);
     userTogglerMenu->setID("user-toggler-menu");
     togglerContainerContent->addChild(userTogglerMenu);
 
     m_completedToggler = TailyUI::LabeledCheckbox::create(
-        "Completed By", 24.0f, "If enabled, the Demonlist will display only completions by the selected Global Demonlist user.",
+        "Completed By", 24.0f,
+        "If enabled, the Demonlist will display only completions by the selected Global Demonlist user.",
         [this](bool enable) {
             GDL::Filters::setCompletedBy(enable);
         }
@@ -223,7 +241,8 @@ bool FilterPopup::init() {
     userTogglerMenu->addChild(m_completedToggler);
 
     m_createdByToggler = TailyUI::LabeledCheckbox::create(
-        "Created By", 24.0f, "If enabled, the Demonlist will display only completions by the selected creator.",
+        "Created By", 24.0f,
+        "If enabled, the Demonlist will display only completions by the selected creator.",
         [this](bool enable) {
             GDL::Filters::setCreatedBy(enable);
         }
@@ -243,8 +262,12 @@ bool FilterPopup::init() {
         ->setGap(10.0f)
     );
     inputMenu->setAnchorPoint({ 0.5f, 1.0f });
-    inputMenu->setContentSize({togglerContainerContent->getContentWidth() / 3.0f, togglerContainerContent->getContentHeight()});
-    inputMenu->setPosition({togglerContainerContent->getContentWidth() / 6.0f * 5.0f, togglerContainerContent->getContentHeight()});
+    inputMenu->setContentSize({
+        togglerContainerContent->getContentWidth() / 3.0f, togglerContainerContent->getContentHeight()
+    });
+    inputMenu->setPosition({
+        togglerContainerContent->getContentWidth() / 6.0f * 5.0f, togglerContainerContent->getContentHeight()
+    });
     inputMenu->ignoreAnchorPointForPosition(false);
     inputMenu->setID("input-menu");
     togglerContainerContent->addChild(inputMenu);
@@ -281,7 +304,9 @@ bool FilterPopup::init() {
             GDL::Filters::setUsername(m_usernameInput->getString());
             GDL::Filters::setCreatorName(m_creatorNameInput->getString());
 
-            int cachedUserID = GDL::Cache::Users::getUserIDByUsername(GDL::Filters::getUsername(false));
+            int cachedUserID = GDL::Cache::Users::getUserIDByUsername(
+                GDL::Filters::getUsername(false)
+            );
             
             bool isOutOfDate = GDL::Cache::GameLevels::isOutToDate();
             auto cachedUser = GDL::Cache::Users::getUser(cachedUserID);
@@ -300,12 +325,14 @@ bool FilterPopup::init() {
                 LoadingPopup::create()->show();
             }
             else {
-                createQuickPopup("Warning", filterWarning, "Oh, no", "I confirm", [](auto, bool confirmBtn) {
-                    if (confirmBtn) {
-                        Mod::get()->setSavedValue<bool>("showWarning", false);
-                        LoadingPopup::create()->show();
+                createQuickPopup("Warning", filterWarning, "Oh, no", "I confirm",
+                    [](auto, bool confirmBtn) {
+                        if (confirmBtn) {
+                            Mod::get()->setSavedValue<bool>("showWarning", false);
+                            LoadingPopup::create()->show();
+                        }
                     }
-                });
+                );
             }
         }
     );

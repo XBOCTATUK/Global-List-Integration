@@ -28,26 +28,27 @@ protected:
 	LeaderboardsType m_type = LeaderboardsType::Players;
 	int m_playersLastPage = 1;
 	int m_playersMaxPage = INT_MAX;
-	std::string m_playersLastSearchQuery = "";
-	std::string m_countriesLastSearchQuery = "";
+	std::string m_playersLastSearchQuery;
+	std::string m_countriesLastSearchQuery;
 	size_t m_lastCountryIndex = SIZE_MAX;
 	size_t m_lastLeaderboardTypeIndex = SIZE_MAX;
 
-    cue::ListNode* m_listNode;
-	geode::TabButton* m_playersTabBtn;
-	geode::TabButton* m_countriesTabBtn;
-    cocos2d::CCLabelBMFont* m_errorMessage;
-	geode::LoadingSpinner* m_loadingSpinner;
+	cocos2d::CCSprite* m_bg = nullptr;
+    cue::ListNode* m_listNode = nullptr;
+	geode::TabButton* m_playersTabBtn = nullptr;
+	geode::TabButton* m_countriesTabBtn = nullptr;
+    cocos2d::CCLabelBMFont* m_errorMessage = nullptr;
+	geode::LoadingSpinner* m_loadingSpinner = nullptr;
 
-	TailyUI::SearchBar* m_searchBar;
+	TailyUI::SearchBar* m_searchBar = nullptr;
 
-    cocos2d::CCLabelBMFont* m_pageLabel;
+    cocos2d::CCLabelBMFont* m_pageLabel = nullptr;
     
-	InfoAlertButton* m_infoBtn;
-	CCMenuItemSpriteExtra* m_backBtn;
-	CCMenuItemSpriteExtra* m_leftBtn;
-	CCMenuItemSpriteExtra* m_rightBtn;
-	CCMenuItemSpriteExtra* m_refreshBtn;
+	InfoAlertButton* m_infoBtn = nullptr;
+	CCMenuItemSpriteExtra* m_backBtn = nullptr;
+	CCMenuItemSpriteExtra* m_leftBtn = nullptr;
+	CCMenuItemSpriteExtra* m_rightBtn = nullptr;
+	CCMenuItemSpriteExtra* m_refreshBtn = nullptr;
 
 	int m_cellsPerPage = Settings::increaseLevelsPerPage() ? 50 : 25;
 

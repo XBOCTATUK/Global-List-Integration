@@ -42,13 +42,19 @@ bool GDLLeaderboardCell::init(const GDLUser& userData) {
     rightMenu->setZOrder(1);
     addChild(rightMenu);
 
-    m_placementLabel = CCLabelBMFont::create(fmt::format("{}.", userData.placement).c_str(), "bigFont.fnt");
+    m_placementLabel = CCLabelBMFont::create(
+        fmt::format("{}.", userData.placement).c_str(),
+        "bigFont.fnt"
+    );
     m_placementLabel->setScale(0.5f);
     m_placementLabel->setPosition({ 15.0f, getContentHeight() / 2.0f });
     m_placementLabel->setAnchorPoint({ 0.0f, 0.5f });
     addChild(m_placementLabel);
 
-    auto nameLabel = CCLabelBMFont::create(userData.username.c_str(), "bigFont.fnt");
+    auto nameLabel = CCLabelBMFont::create(
+        userData.username.c_str(),
+        "bigFont.fnt"
+    );
     nameLabel->limitLabelWidth(125.0f, 0.5f, 0.3f);
 
     m_nameBtn = CCMenuItemExt::createSpriteExtra(
@@ -56,7 +62,10 @@ bool GDLLeaderboardCell::init(const GDLUser& userData) {
             UserInfoPopup::create(m_userData.id)->show();
         }
     );
-    m_nameBtn->setPosition({ m_placementLabel->getPositionX() + m_placementLabel->getScaledContentWidth() + m_nameBtn->getContentWidth() / 2.0f + 10.0f, getContentHeight() / 2.0f });
+    m_nameBtn->setPosition({
+        m_placementLabel->getPositionX() + m_placementLabel->getScaledContentWidth() + m_nameBtn->getContentWidth() / 2.0f + 10.0f,
+        getContentHeight() / 2.0f
+    });
     m_nameBtn->setAnchorPoint({ 0.5f, 0.5f });
     rightMenu->addChild(m_nameBtn);
 
@@ -90,14 +99,22 @@ bool GDLLeaderboardCell::init(const GDLUser& userData) {
         }
     );
     m_flagBtn->setAnchorPoint({ 0.5f, 0.5f });
-    m_flagBtn->setPosition({ m_badgeBtn->getPositionX() - m_badgeBtn->getContentWidth() / 2.0f - m_flagBtn->getContentWidth() / 2.0f - 10.0f, getContentHeight() / 2.0f });
+    m_flagBtn->setPosition({
+        m_badgeBtn->getPositionX() - m_badgeBtn->getContentWidth() / 2.0f - m_flagBtn->getContentWidth() / 2.0f - 10.0f,
+        getContentHeight() / 2.0f
+    });
     rightMenu->addChild(m_flagBtn);
 
-    m_pointsLabel = CCLabelBMFont::create(fmt::format("{:.2f}", userData.points).c_str(), "bigFont.fnt");
+    m_pointsLabel = CCLabelBMFont::create(
+        fmt::format("{:.2f}", userData.points).c_str(),
+        "bigFont.fnt"
+    );
     m_pointsLabel->setScale(0.5f);
     m_pointsLabel->setColor({ 0, 212, 255 });
     m_pointsLabel->setAnchorPoint({ 1.0f, 0.5f });
-    m_pointsLabel->setPosition({ m_flagBtn->getPositionX() - m_flagBtn->getContentWidth() / 2.0f - 10.0f, getContentHeight() / 2.0f });
+    m_pointsLabel->setPosition({
+        m_flagBtn->getPositionX() - m_flagBtn->getContentWidth() / 2.0f - 10.0f, getContentHeight() / 2.0f
+    });
     addChild(m_pointsLabel);
 
     rightMenu->updateLayout();
@@ -121,7 +138,10 @@ bool GDLLeaderboardCell::init(const GDLCountry& countryData, CountriesLeaderboar
     rightMenu->setZOrder(1);
     addChild(rightMenu);
 
-    m_placementLabel = CCLabelBMFont::create(fmt::format("{}.", countryData.placement).c_str(), "bigFont.fnt");
+    m_placementLabel = CCLabelBMFont::create(
+        fmt::format("{}.", countryData.placement).c_str(),
+        "bigFont.fnt"
+    );
     m_placementLabel->setScale(0.5f);
     m_placementLabel->setPosition({ 15.0f, getContentHeight() / 2.0f });
     m_placementLabel->setAnchorPoint({ 0.0f, 0.5f });
@@ -130,7 +150,10 @@ bool GDLLeaderboardCell::init(const GDLCountry& countryData, CountriesLeaderboar
     auto flagSprName = Utils::getCountrySpriteName(countryData.title);
     m_flagSpr = CCSprite::create(flagSprName.c_str());
     m_flagSpr->setScale((compactCellsEnabled ? 16.0f : 24.0f) / m_flagSpr->getContentHeight());
-    m_flagSpr->setPosition({ m_placementLabel->getPositionX() + m_placementLabel->getScaledContentWidth() + m_flagSpr->getScaledContentWidth() / 2.0f + 10.0f, getContentHeight() / 2.0f });
+    m_flagSpr->setPosition({
+        m_placementLabel->getPositionX() + m_placementLabel->getScaledContentWidth() + m_flagSpr->getScaledContentWidth() / 2.0f + 10.0f,
+        getContentHeight() / 2.0f
+    });
     addChild(m_flagSpr);
 
     auto countryName = string::replace(countryData.title, "-", " ");
@@ -142,11 +165,17 @@ bool GDLLeaderboardCell::init(const GDLCountry& countryData, CountriesLeaderboar
             CountryInfoPopup::create(m_countryData, m_type)->show();
         }
     );
-    m_nameBtn->setPosition({ m_flagSpr->getPositionX() + m_flagSpr->getScaledContentWidth() / 2.0f + m_nameBtn->getContentWidth() / 2.0f + 10.0f, getContentHeight() / 2.0f });
+    m_nameBtn->setPosition({
+        m_flagSpr->getPositionX() + m_flagSpr->getScaledContentWidth() / 2.0f + m_nameBtn->getContentWidth() / 2.0f + 10.0f,
+        getContentHeight() / 2.0f
+    });
     m_nameBtn->setAnchorPoint({ 0.5f, 0.5f });
     rightMenu->addChild(m_nameBtn);
 
-    m_pointsLabel = CCLabelBMFont::create(fmt::format("{:.2f}", countryData.points).c_str(), "bigFont.fnt");
+    m_pointsLabel = CCLabelBMFont::create(
+        fmt::format("{:.2f}", countryData.points).c_str(),
+        "bigFont.fnt"
+    );
     m_pointsLabel->setScale(0.5f);
     m_pointsLabel->setColor({ 0, 212, 255 });
     m_pointsLabel->setAnchorPoint({ 1.0f, 0.5f });

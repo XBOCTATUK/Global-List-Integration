@@ -3,7 +3,7 @@
 #include <Geode/utils/hash.hpp>
 
 struct UserLeaderboardKey {
-    int page;
+    int page = 0;
     std::string search;
     std::string country;
 

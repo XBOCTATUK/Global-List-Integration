@@ -3,6 +3,6 @@
 struct GameLevel {
     std::string name;
     std::string creatorName;
-    int levelID;
-    bool rated;
+    int levelID = 0;
+    bool rated = false;
 };

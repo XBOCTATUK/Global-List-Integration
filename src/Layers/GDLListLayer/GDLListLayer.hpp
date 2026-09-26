@@ -19,24 +19,24 @@ protected:
 	geode::ListenerHandle m_populateListListener;
 	std::vector<int> m_gdlLevels;
 
-	GJListLayer* m_levelList;
-	cocos2d::CCLabelBMFont* m_errorMessage;
-	geode::LoadingSpinner* m_loadingSpinner;
+	GJListLayer* m_levelList = nullptr;
+	cocos2d::CCLabelBMFont* m_errorMessage = nullptr;
+	geode::LoadingSpinner* m_loadingSpinner = nullptr;
 
-	TailyUI::SearchBar* m_searchBar;
+	TailyUI::SearchBar* m_searchBar = nullptr;
 
-	cocos2d::CCLabelBMFont* m_levelsCountLabel;
-	cocos2d::CCLabelBMFont* m_pageLabel;
+	cocos2d::CCLabelBMFont* m_levelsCountLabel = nullptr;
+	cocos2d::CCLabelBMFont* m_pageLabel = nullptr;
     
-	cocos2d::CCMenu* m_pageMenu;
-	InfoAlertButton* m_infoBtn;
-	CCMenuItemSpriteExtra* m_backBtn;
-	CCMenuItemSpriteExtra* m_pageBtn;
-	CCMenuItemSpriteExtra* m_leftBtn;
-	CCMenuItemSpriteExtra* m_rightBtn;
-	CCMenuItemSpriteExtra* m_randomBtn;
-	CCMenuItemSpriteExtra* m_firstBtn;
-	CCMenuItemSpriteExtra* m_lastBtn;
+	cocos2d::CCMenu* m_pageMenu = nullptr;
+	InfoAlertButton* m_infoBtn = nullptr;
+	CCMenuItemSpriteExtra* m_backBtn = nullptr;
+	CCMenuItemSpriteExtra* m_pageBtn = nullptr;
+	CCMenuItemSpriteExtra* m_leftBtn = nullptr;
+	CCMenuItemSpriteExtra* m_rightBtn = nullptr;
+	CCMenuItemSpriteExtra* m_randomBtn = nullptr;
+	CCMenuItemSpriteExtra* m_firstBtn = nullptr;
+	CCMenuItemSpriteExtra* m_lastBtn = nullptr;
     
 	int m_page = 1;
 	int m_lvlsPerPage = Settings::increaseLevelsPerPage() ? 25 : 10;
@@ -49,7 +49,7 @@ protected:
 	void search();
 	void page(int page);
 	void setupPageInfo(gd::string, const char*) override;
-	void showLoading();
+	void showLoading(bool show = true);
 	void loadLevelsFinished(cocos2d::CCArray* levels, const char* key, int) override;
 	virtual void loadLevelsFailed(char const* key) override;
 	void setIDPopupClosed(SetIDPopup*, int) override;

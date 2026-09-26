@@ -1,9 +1,9 @@
 #pragma once
 
 struct GDLBasicLevel {
-    int id;
+    int id = 0;
     std::string name;
-    int placement;
+    int placement = 0;
     std::string videoURL;
     std::optional<int> percent;
 };

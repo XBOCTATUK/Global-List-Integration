@@ -4,10 +4,10 @@
 
 using OptGDLBasicLevels = std::optional<std::vector<GDLBasicLevel>>;
 struct GDLUser {
-    int id;
+    int id = 0;
     std::string username;
-    int placement;
-    double points;
+    int placement = 0;
+    double points = 0;
     std::string country;
     std::string badge;
 
