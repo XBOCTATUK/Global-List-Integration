@@ -1,4 +1,5 @@
 #include "UserInfoPopup.hpp"
+#include "../../UI/nodes.hpp"
 #include "../../API/Users/Users.hpp"
 #include "../../Cache/Users/Users.hpp"
 #include "../../Events/UserLoadedEvent.hpp"
@@ -162,14 +163,14 @@ void UserInfoPopup::drawUI() {
 	statsMenu->setAnchorPoint({ 0.5f, 0.5f });
 	content->addChild(statsMenu);
 
-	auto rankNode = createStatNode(
+	auto rankNode = TailyUI::createStatNode(
 		fmt::format("#{}", fullUserData->placement).c_str(),
 		"Rank", "rank-icon.png"_spr,
 		(m_mainLayer->getContentWidth() - 60.0f - 5.0f) / 2.0f
 	);
 	statsMenu->addChild(rankNode);
 
-	auto scoreNode = createStatNode(
+	auto scoreNode = TailyUI::createStatNode(
 		fmt::format("{:.2f}", fullUserData->points).c_str(),
 		"Score", "score-icon.png"_spr,
 		(m_mainLayer->getContentWidth() - 60.0f - 5.0f) / 2.0f
@@ -178,7 +179,7 @@ void UserInfoPopup::drawUI() {
 
 	statsMenu->updateLayout();
 
-	auto hardestNode = createStatNode(
+	auto hardestNode = TailyUI::createStatNode(
 		fmt::format("#{} {}", fullUserData->hardest->placement, fullUserData->hardest->name).c_str(),
 		"Hardest", "hardest-icon.png"_spr,
 		m_mainLayer->getContentWidth() - 60.0f
@@ -186,46 +187,51 @@ void UserInfoPopup::drawUI() {
 	content->addChild(hardestNode);
 
 	if (fullUserData->mainList.has_value() && !fullUserData->mainList->empty()) {
-		auto mainLevelsNode = createUserLevelsNode(
+		auto mainLevelsNode = TailyUI::createUserLevelsNode(
 			fullUserData->mainList,
 			"Main levels",
-			"main-levels-icon.png"_spr
+			"main-levels-icon.png"_spr,
+			m_mainLayer->getContentWidth() - 60.0f
 		);
 		content->addChild(mainLevelsNode);
 	}
 
 	if (fullUserData->extendedList.has_value() && !fullUserData->extendedList->empty()) {
-		auto extendedLevelsNode = createUserLevelsNode(
+		auto extendedLevelsNode = TailyUI::createUserLevelsNode(
 			fullUserData->extendedList,
 			"Extended levels",
-			"extended-levels-icon.png"_spr
+			"extended-levels-icon.png"_spr,
+			m_mainLayer->getContentWidth() - 60.0f
 		);
 		content->addChild(extendedLevelsNode);
 	}
 
 	if (fullUserData->advancedList.has_value() && !fullUserData->advancedList->empty()) {
-		auto advancedLevelsNode = createUserLevelsNode(
+		auto advancedLevelsNode = TailyUI::createUserLevelsNode(
 			fullUserData->advancedList,
 			"Advanced levels",
-			"advanced-levels-icon.png"_spr
+			"advanced-levels-icon.png"_spr,
+			m_mainLayer->getContentWidth() - 60.0f
 		);
 		content->addChild(advancedLevelsNode);
 	}
 
 	if (fullUserData->unboundedList.has_value() && !fullUserData->unboundedList->empty()) {
-		auto unboundedLevelsNode = createUserLevelsNode(
+		auto unboundedLevelsNode = TailyUI::createUserLevelsNode(
 			fullUserData->unboundedList,
 			"Unbounded levels",
-			"unbounded-levels-icon.png"_spr
+			"unbounded-levels-icon.png"_spr,
+			m_mainLayer->getContentWidth() - 60.0f
 		);
 		content->addChild(unboundedLevelsNode);
 	}
 
 	if (fullUserData->verifiedList.has_value() && !fullUserData->verifiedList->empty()) {
-		auto verifiedLevelsNode = createUserLevelsNode(
+		auto verifiedLevelsNode = TailyUI::createUserLevelsNode(
 			fullUserData->verifiedList,
 			"Verified levels",
-			"verified-levels-icon.png"_spr
+			"verified-levels-icon.png"_spr,
+			m_mainLayer->getContentWidth() - 60.0f
 		);
 		content->addChild(verifiedLevelsNode);
 	}
@@ -233,169 +239,4 @@ void UserInfoPopup::drawUI() {
 
 	content->updateLayout();
 	scrollLayer->scrollToTop();
-}
-
-CCNode* UserInfoPopup::createStatNode(const std::string& text, const std::string& subtext, const std::string& icon, float width) {
-	auto node = CCNode::create();
-	node->setContentSize({ width, 40.0f });
-	node->setAnchorPoint({ 0.5f, 0.5f });
-
-	auto bg = NineSlice::create("square02b_001.png");
-	bg->setColor({ 0, 0, 0 });
-	bg->setOpacity(51);
-	bg->setContentSize(node->getContentSize() * 2.0f);
-	bg->setScale(0.5f);
-	node->addChildAtPosition(
-		bg,
-		Anchor::Center,
-		{}
-	);
-
-	auto iconBG = NineSlice::create("square02b_001.png");
-	iconBG->setColor({ 0, 0, 0 });
-	iconBG->setOpacity(51);
-	iconBG->setContentSize({ 50.0f, 50.0f });
-	iconBG->setScale(0.5f);
-	node->addChildAtPosition(
-		iconBG,
-		Anchor::Left,
-		{ node->getContentHeight() / 2.0f, 0.0f }
-	);
-
-	auto iconSpr = CCSprite::create(icon.c_str());
-	iconSpr->setScale(16.0f / iconSpr->getContentWidth());
-	node->addChildAtPosition(
-		iconSpr,
-		Anchor::Left,
-		{ node->getContentHeight() / 2.0f, 0.0f }
-	);
-
-	auto textLabel = CCLabelBMFont::create(text.c_str(), "bigFont.fnt");
-	textLabel->setScale(0.35f);
-	textLabel->setAnchorPoint({ 0.0f, 1.0f });
-	node->addChildAtPosition(
-		textLabel,
-		Anchor::Left,
-		{ (node->getContentHeight() - iconBG->getScaledContentHeight()) / 2.0f + iconBG->getScaledContentWidth() + 5.0f, 10.0f }
-	);
-
-	auto subtextLabel = CCLabelBMFont::create(subtext.c_str(), "chatFont.fnt");
-	subtextLabel->setScale(0.4f);
-	subtextLabel->setAnchorPoint({ 0.0f, 0.0f });
-	node->addChildAtPosition(
-		subtextLabel,
-		Anchor::Left,
-		{ (node->getContentHeight() - iconBG->getScaledContentHeight()) / 2.0f + iconBG->getScaledContentWidth() + 5.0f, -10.0f }
-	);
-
-	return node;
-}
-
-CCNode* UserInfoPopup::createUserLevelsNode(const OptGDLBasicLevels& levels, const std::string& text, const std::string& icon) {
-	auto node = CCNode::create();
-	node->setContentWidth(m_mainLayer->getContentWidth() - 60.0f);
-	node->setAnchorPoint({ 0.5f, 0.5f });
-
-	auto bg = NineSlice::create("square02b_001.png");
-	bg->setColor({ 0, 0, 0 });
-	bg->setOpacity(51);
-	bg->setScale(0.5f);
-
-	auto iconSpr = CCSprite::create(icon.c_str());
-	iconSpr->setScale(12.0f / iconSpr->getContentWidth());
-
-	auto textLabel = CCLabelBMFont::create(text.c_str(), "bigFont.fnt");
-	textLabel->setScale(0.25f);
-	textLabel->setAnchorPoint({ 0.0f, 0.5f });
-
-	auto countLabel = CCLabelBMFont::create(
-		fmt::format("{}", levels->size()).c_str(),
-		"bigFont.fnt"
-	);
-	countLabel->setScale(0.25f);
-	countLabel->setAnchorPoint({ 1.0f, 0.5f });
-
-	auto levelsMenu = CCMenu::create();
-	levelsMenu->setContentSize({ node->getContentWidth(), 0.0f });
-	levelsMenu->setAnchorPoint({ 0.5f, 1.0f });
-	levelsMenu->setLayout(
-		RowLayout::create()
-		->setGap(3.0f)
-		->setAxisAlignment(AxisAlignment::Start)
-		->setGrowCrossAxis(true)
-		->setCrossAxisOverflow(true)
-		->setPadding({ 7.5f, 0, 7.5f, 7.5f })
-	);
-
-	for (const auto& level : *levels) {
-		auto levelBtnSpr = createLevelButtonSprite(level);
-
-		auto levelBtn = CCMenuItemExt::createSpriteExtra(
-			levelBtnSpr, [level](auto) {
-				utils::web::openLinkInBrowser(level.videoURL);
-			}
-		);
-		levelsMenu->addChild(levelBtn);
-	}
-	levelsMenu->updateLayout();
-
-	node->setContentHeight(levelsMenu->getContentHeight() + 20.0f);
-	bg->setContentSize(node->getContentSize() * 2.0f);
-
-	node->addChildAtPosition(
-		bg,
-		Anchor::Center,
-		{}
-	);
-	node->addChildAtPosition(
-		iconSpr,
-		Anchor::TopLeft,
-		{ 7.5f + iconSpr->getScaledContentWidth() / 2.0f, -10.0f }
-	);
-	node->addChildAtPosition(
-		textLabel,
-		Anchor::TopLeft,
-		{ iconSpr->getPositionX() + iconSpr->getScaledContentWidth() / 2.0f + 3.0f, -10.0f }
-	);
-	node->addChildAtPosition(
-		countLabel,
-		Anchor::TopRight,
-		{ -7.5f, -10.0f }
-	);
-	node->addChildAtPosition(
-		levelsMenu,
-		Anchor::Top,
-		{ 0.0f, -20.0f }
-	);
-
-	return node;
-}
-
-CCNode* UserInfoPopup::createLevelButtonSprite(const GDLBasicLevel& level) {
-	auto levelNameLabel = CCLabelBMFont::create(level.name.c_str(), "chatFont.fnt");
-	levelNameLabel->setScale(0.5f);
-	levelNameLabel->setAnchorPoint({ 0.5f, 0.5f });
-
-	auto node = CCNode::create();
-	node->setContentSize(levelNameLabel->getScaledContentSize() + ccp(8.0f, 4.0f));
-	node->setAnchorPoint({ 0.5f, 0.5f });
-
-	auto bg = NineSlice::create("square02b_001.png");
-	bg->setColor({ 0, 0, 0 });
-	bg->setOpacity(51);
-	bg->setContentSize(node->getContentSize() * 4.0f);
-	bg->setScale(0.25f);
-	node->addChildAtPosition(
-		bg,
-		Anchor::Center,
-		{}
-	);
-
-	node->addChildAtPosition(
-		levelNameLabel,
-		Anchor::Center,
-		{}
-	);
-
-	return node;
 }
