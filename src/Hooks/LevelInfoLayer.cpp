@@ -2,7 +2,7 @@
 #include "../API/Levels/Levels.hpp"
 #include "../Utils/RemovePlacement.hpp"
 #include "../Settings/Settings.hpp"
-#include "../Events/LevelLoadedEvent.hpp"
+#include "../Events/DemonlistLoadedEvent.hpp"
 
 using namespace geode::prelude;
 
@@ -14,6 +14,7 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer) {
 
     bool init(GJGameLevel* level, bool challenge) {
         if (!LevelInfoLayer::init(level, challenge)) return false;
+
         if (
             !level || level->m_levelType == GJLevelType::Main || level->m_levelType == GJLevelType::Editor ||
             GDL::Cache::Levels::isLevelWOPlacement(level->m_levelID.value()) ||
@@ -74,29 +75,24 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer) {
             gdlLabel->setID("gdl-label"_spr);
             addChild(gdlLabel);
 
-            m_fields->m_levelLoadListener = LevelLoadedEvent(level->m_levelID.value()).listen(
-                [this](Result<GDLLevel, APIError> result) {
+            m_fields->m_levelLoadListener = DemonlistLoadedEvent().listen(
+                [this](Result<std::vector<int>, APIError> result) {
+                    auto gdlLevel = GDL::Cache::Levels::getLevel(m_level->m_levelID);
                     auto gdlLabel = static_cast<CCLabelBMFont*>(getChildByID("gdl-label"_spr));
                     auto gdlIcon = getChildByID("gdl-icon"_spr);
-                    if (result.isOk()) {
+
+                    if (result.isOk() && gdlLevel) {
                         if (gdlLabel && gdlIcon) {
-                            auto GDLLevel = result.unwrap();
-                            gdlLabel->setString(fmt::format("#{}", GDLLevel.placement).c_str());
+                            gdlLabel->setString(fmt::format("#{}", gdlLevel->placement).c_str());
                         }
                     }
                     else if (gdlLabel && gdlIcon) {
-                        auto error = result.err().value();
-                        if (error.message == APIMessage::LevelNotFound) {
-                            Utils::removePlacement(m_level->m_levelID, gdlLabel, gdlIcon, m_fields->m_origPositions, true);
-                        }
-                        else {
-                            gdlLabel->setString("N/A");
-                        }
+                        Utils::removePlacement(m_level->m_levelID, gdlLabel, gdlIcon, m_fields->m_origPositions, false);
                     }
                 }
             );
 
-            GDL::API::Levels::getLevel(level->m_levelID.value(), false);
+            GDL::API::Levels::getDemonlist();
         }
 
         return true;

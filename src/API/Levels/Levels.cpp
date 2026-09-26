@@ -59,6 +59,8 @@ namespace GDL::API::Levels {
                         verifierID, verificationURL, dateCreated
                     };
                     levels.push_back(gdlLevel);
+                    
+                    GDL::Cache::Levels::setLevel(std::move(gdlLevel));
                 }
                 
                 GDL::Cache::Levels::setDemonlist(std::move(levels));
