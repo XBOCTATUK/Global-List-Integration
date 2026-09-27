@@ -192,7 +192,7 @@ void UserInfoPopup::drawUI() {
 	statsMenu->updateLayout();
 
 	auto hardestNode = TailyUI::StatNode::create(
-		fmt::format("#{} {}", fullUserData->hardest->placement, fullUserData->hardest->name).c_str(),
+		fmt::format("{}. {}", fullUserData->hardest->placement, fullUserData->hardest->name).c_str(),
 		"Hardest", "hardest-icon.png"_spr,
 		m_mainLayer->getContentWidth() - 60.0f
 	);

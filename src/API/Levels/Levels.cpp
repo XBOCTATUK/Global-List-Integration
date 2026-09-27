@@ -9,10 +9,10 @@ using namespace geode::prelude;
 
 namespace GDL::API::Levels {
     void getDemonlist() {
-        auto& cachedDemonlist = GDL::Cache::Levels::getDemonlist();
-        if (!cachedDemonlist.empty()) {
+        auto cachedDemonlist = GDL::Cache::Levels::getDemonlist();
+        if (!cachedDemonlist) {
             DemonlistLoadedEvent().send(
-                Ok(cachedDemonlist)
+                Ok(*cachedDemonlist)
             );
             return;
         }
@@ -65,7 +65,7 @@ namespace GDL::API::Levels {
                 
                 GDL::Cache::Levels::setDemonlist(std::move(levels));
                 DemonlistLoadedEvent().send(
-                    Ok(GDL::Cache::Levels::getDemonlist())
+                    Ok(*GDL::Cache::Levels::getDemonlist())
                 );
             }
         );

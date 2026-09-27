@@ -5,12 +5,16 @@
 namespace GDL::Cache::Levels {
     constexpr auto LEVELS_TTL = std::chrono::minutes{30};
 
-    static std::vector<int> levelList;
+    static CacheEntry<std::vector<int>> levelList;
     static std::unordered_map<int, CacheEntry<GDLLevel>> levelData;
     static std::vector<int> levelsWOPlacement;
 
-    const std::vector<int>& getDemonlist() {
-        return levelList;
+    const std::vector<int>* getDemonlist() {
+        if (
+            isExpired(levelList.cachedAt, LEVELS_TTL)
+        ) return nullptr;
+
+        return &levelList.value;
     }
 
     void setDemonlist(std::vector<GDLLevel>&& levels) {
@@ -21,8 +25,9 @@ namespace GDL::Cache::Levels {
                 level.ingameID,
                 CacheEntry{std::move(level), std::chrono::steady_clock::now()}
             );
-            levelList.push_back(levelData[level.ingameID].value.ingameID);
+            levelList.value.push_back(levelData[level.ingameID].value.ingameID);
         }
+        levelList.cachedAt = std::chrono::steady_clock::now();
     }
 
 
@@ -41,7 +46,7 @@ namespace GDL::Cache::Levels {
             level.ingameID,
             CacheEntry{std::move(level), std::chrono::steady_clock::now()}
         );
-        levelList.push_back(level.ingameID);
+        levelList.value.push_back(level.ingameID);
     }
 
     
@@ -57,7 +62,8 @@ namespace GDL::Cache::Levels {
 
     void clear() {
         levelData.clear();
-        levelList.clear();
+        levelList.value.clear();
+        levelList.cachedAt = std::chrono::steady_clock::time_point{};
         levelsWOPlacement.clear();
     }
 }

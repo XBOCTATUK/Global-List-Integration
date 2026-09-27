@@ -163,19 +163,8 @@ namespace TailyUI {
             {}
         );
 
-        auto placementLabel = CCLabelBMFont::create(
-            fmt::format("#{}", placement).c_str(), "bigFont.fnt"
-        );
-        placementLabel->setScale(0.5f);
-        placementLabel->setAnchorPoint({ 0.5f, 0.5f });
-        node->addChildAtPosition(
-            placementLabel,
-            Anchor::Left,
-            { 10.0f + placementLabel->getScaledContentWidth() / 2.0f, 0.0f }
-        );
-
         auto usernameLabel = CCLabelBMFont::create(
-            user.username.c_str(), "bigFont.fnt"
+            fmt::format("{}. {}", placement, user.username).c_str(), "bigFont.fnt"
         );
         usernameLabel->setScale(0.5f);
 
@@ -184,10 +173,11 @@ namespace TailyUI {
                 UserInfoPopup::create(user.id)->show();
             }
         );
-        usernameBtn->setPosition(
-            placementLabel->getPosition() + ccp(placementLabel->getScaledContentWidth() / 2.0f + usernameBtn->getContentWidth() / 2.0f + 10.0f, 0.0f)
+        menu->addChildAtPosition(
+            usernameBtn,
+            Anchor::Left,
+            { 10.0f + usernameBtn->getContentWidth() / 2.0f, 0.0f }
         );
-        menu->addChild(usernameBtn);
 
         auto pointsLabel = CCLabelBMFont::create(
             fmt::format("{:.2f}", user.points).c_str(), "bigFont.fnt"

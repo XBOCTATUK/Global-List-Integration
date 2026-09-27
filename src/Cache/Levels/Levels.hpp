@@ -4,7 +4,7 @@
 #include <vector>
 
 namespace GDL::Cache::Levels {
-    const std::vector<int>& getDemonlist();
+    const std::vector<int>* getDemonlist();
     void setDemonlist(std::vector<GDLLevel>&& levels);
 
     const GDLLevel* getLevel(int levelID);

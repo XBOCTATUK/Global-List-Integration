@@ -42,30 +42,18 @@ bool GDLLeaderboardCell::init(const GDLUser& userData) {
     rightMenu->setZOrder(1);
     addChild(rightMenu);
 
-    m_placementLabel = CCLabelBMFont::create(
-        fmt::format("{}.", userData.placement).c_str(),
-        "bigFont.fnt"
-    );
-    m_placementLabel->setScale(0.5f);
-    m_placementLabel->setPosition({ 15.0f, getContentHeight() / 2.0f });
-    m_placementLabel->setAnchorPoint({ 0.0f, 0.5f });
-    addChild(m_placementLabel);
-
     auto nameLabel = CCLabelBMFont::create(
-        userData.username.c_str(),
+        fmt::format("{}. {}", userData.placement, userData.username).c_str(),
         "bigFont.fnt"
     );
-    nameLabel->limitLabelWidth(125.0f, 0.5f, 0.3f);
+    nameLabel->limitLabelWidth(160.0f, 0.5f, 0.3f);
 
     m_nameBtn = CCMenuItemExt::createSpriteExtra(
         nameLabel, [this](auto) {
             UserInfoPopup::create(m_userData.id)->show();
         }
     );
-    m_nameBtn->setPosition({
-        m_placementLabel->getPositionX() + m_placementLabel->getScaledContentWidth() + m_nameBtn->getContentWidth() / 2.0f + 10.0f,
-        getContentHeight() / 2.0f
-    });
+    m_nameBtn->setPosition({ 15.0f + m_nameBtn->getContentWidth() / 2.0f, getContentHeight() / 2.0f });
     m_nameBtn->setAnchorPoint({ 0.5f, 0.5f });
     rightMenu->addChild(m_nameBtn);
 

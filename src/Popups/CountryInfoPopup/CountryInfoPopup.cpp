@@ -215,7 +215,7 @@ void CountryInfoPopup::drawAdvancedTypeUI() {
 	statsMenu->updateLayout();
 
 	auto hardestNode = TailyUI::StatNode::create(
-		fmt::format("#{} {}", advancedCountryData->hardestLevel.placement, advancedCountryData->hardestLevel.name).c_str(),
+		fmt::format("{}. {}", advancedCountryData->hardestLevel.placement, advancedCountryData->hardestLevel.name).c_str(),
 		"Hardest", "hardest-icon.png"_spr,
 		m_mainLayer->getContentWidth() - 60.0f
 	);

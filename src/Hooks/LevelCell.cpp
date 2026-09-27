@@ -1,8 +1,6 @@
 #include <Geode/modify/LevelCell.hpp>
-#include "../API/Levels/Levels.hpp"
-#include "../Utils/RemovePlacement.hpp"
+#include "../Cache/Levels/Levels.hpp"
 #include "../Settings/Settings.hpp"
-#include "../Events/DemonlistLoadedEvent.hpp"
 
 using namespace geode::prelude;
 
@@ -15,94 +13,72 @@ class $modify(MyLevelCell, LevelCell) {
     void loadFromLevel(GJGameLevel* level) {
         LevelCell::loadFromLevel(level);
 
+        auto gdlLevel = GDL::Cache::Levels::getLevel(level->m_levelID.value());
         if (
             !level || level->m_levelType == GJLevelType::Main || level->m_levelType == GJLevelType::Editor ||
-            GDL::Cache::Levels::isLevelWOPlacement(level->m_levelID.value()) ||
-            !Settings::shouldLoadPlacement()
+            !gdlLevel || !Settings::shouldLoadPlacement()
         ) return;
 
-        bool isExtremeDemon =
-            level->m_demonDifficulty == static_cast<int>(DemonDifficultyType::ExtremeDemon) ||
-            level->m_demonDifficulty == static_cast<int>(DemonDifficultyType::InsaneDemon);
+        auto downloadsIcon = m_mainLayer->getChildByID("downloads-icon");
+        auto downloadsLabel = m_mainLayer->getChildByID("downloads-label");
+        auto likesIcon = m_mainLayer->getChildByID("likes-icon");
+        auto likesLabel = m_mainLayer->getChildByID("likes-label");
+        auto orbsIcon = m_mainLayer->getChildByID("orbs-icon");
+        auto orbsLabel = m_mainLayer->getChildByID("orbs-label");
 
-        if (isExtremeDemon || level->m_stars == 0) {
-            auto downloadsIcon = m_mainLayer->getChildByID("downloads-icon");
-            auto downloadsLabel = m_mainLayer->getChildByID("downloads-label");
-            auto likesIcon = m_mainLayer->getChildByID("likes-icon");
-            auto likesLabel = m_mainLayer->getChildByID("likes-label");
-            auto orbsIcon = m_mainLayer->getChildByID("orbs-icon");
-            auto orbsLabel = m_mainLayer->getChildByID("orbs-label");
+        if ( !downloadsIcon || !downloadsLabel || !likesIcon || !likesLabel ) return;
 
-            if ( !downloadsIcon || !downloadsLabel || !likesIcon || !likesLabel ) return;
+        float likesLabelPos = likesLabel->getPositionX() + likesLabel->getScaledContentWidth();
+        float likesIconPos = likesIcon->getPositionX() - likesIcon->getScaledContentWidth() / 2.0f;
+        float downloadsLabelPos = downloadsLabel->getPositionX() + downloadsLabel->getScaledContentWidth();
+        
+        float gdlIconX = (
+            orbsLabel
+            ? orbsLabel->getPositionX() + orbsLabel->getScaledContentWidth() + (likesIconPos - downloadsLabelPos)
+            : likesLabelPos + (likesIconPos - downloadsLabelPos)
+        )
+        + (m_compactView ? 9.2f : 13.8f) / 2.0f;
 
-            float likesLabelPos = likesLabel->getPositionX() + likesLabel->getScaledContentWidth();
-            float likesIconPos = likesIcon->getPositionX() - likesIcon->getScaledContentWidth() / 2.0f;
-            float downloadsLabelPos = downloadsLabel->getPositionX() + downloadsLabel->getScaledContentWidth();
-            
-            float gdlIconX = (
-                orbsLabel
-                ? orbsLabel->getPositionX() + orbsLabel->getScaledContentWidth() + (likesIconPos - downloadsLabelPos)
-                : likesLabelPos + (likesIconPos - downloadsLabelPos)
-            )
-            + (m_compactView ? 9.2f : 13.8f) / 2.0f;
+        auto gdlIcon = CCSprite::create("globalListIcon.png"_spr);
+        gdlIcon->setScale((m_compactView ? 9.2f : 13.8f) / gdlIcon->getContentWidth());
+        gdlIcon->setPosition({ gdlIconX, m_compactView ? 8.5f : 14.0f });
+        gdlIcon->setID("gdl-icon"_spr);
+        m_mainLayer->addChild(gdlIcon);
 
-            auto gdlIcon = CCSprite::create("globalListIcon.png"_spr);
-            gdlIcon->setScale((m_compactView ? 9.2f : 13.8f) / gdlIcon->getContentWidth());
-            gdlIcon->setPosition({ gdlIconX, m_compactView ? 8.5f : 14.0f });
-            gdlIcon->setID("gdl-icon"_spr);
-            m_mainLayer->addChild(gdlIcon);
+        float gdlLabelX = gdlIconX + gdlIcon->getScaledContentWidth() / 2.0f + (m_compactView ? 5.4f : 3.1f);
 
-            float gdlLabelX = gdlIconX + gdlIcon->getScaledContentWidth() / 2.0f + (m_compactView ? 5.4f : 3.1f);
+        auto gdlLabel = CCLabelBMFont::create(
+            fmt::format("#{}", gdlLevel->placement).c_str(),
+            "bigFont.fnt"
+        );
+        gdlLabel->setScale(m_compactView ? 0.3 : 0.4f);
+        gdlLabel->setAnchorPoint({ 0.0f, 0.5f });
+        gdlLabel->setPosition({ gdlLabelX, m_compactView ? 8.5f : 14.0f });
+        gdlLabel->setID("gdl-label"_spr);
+        m_mainLayer->addChild(gdlLabel);
 
-            auto gdlLabel = CCLabelBMFont::create("...", "bigFont.fnt");
-            gdlLabel->setScale(m_compactView ? 0.3 : 0.4f);
-            gdlLabel->setAnchorPoint({ 0.0f, 0.5f });
-            gdlLabel->setPosition({ gdlLabelX, m_compactView ? 8.5f : 14.0f });
-            gdlLabel->setID("gdl-label"_spr);
-            m_mainLayer->addChild(gdlLabel);
+        auto& origPositions = m_fields->m_origPositions;
 
-            auto& origPositions = m_fields->m_origPositions;
+        if (gdlLabel->getPositionX() + 50.0f > 350.0f) {
+            float gap = ((gdlLabel->getPositionX() + 50.0f) - 350.0f) / (orbsIcon ? 4.0f : 3.0f);
 
-            if (gdlLabel->getPositionX() + 50.0f > 350.0f) {
-                float gap = ((gdlLabel->getPositionX() + 50.0f) - 350.0f) / (orbsIcon ? 4.0f : 3.0f);
+            origPositions[downloadsIcon] = downloadsIcon->getPositionX();
+            origPositions[downloadsLabel] = downloadsLabel->getPositionX();
+            origPositions[likesIcon] = likesIcon->getPositionX();
+            origPositions[likesLabel] = likesLabel->getPositionX();
+            origPositions[gdlIcon] = gdlIcon->getPositionX();
+            origPositions[gdlLabel] = gdlLabel->getPositionX();
+            if (orbsIcon) origPositions[orbsIcon] = orbsIcon->getPositionX();
+            if (orbsLabel) origPositions[orbsLabel] = orbsLabel->getPositionX();
 
-                origPositions[downloadsIcon] = downloadsIcon->getPositionX();
-                origPositions[downloadsLabel] = downloadsLabel->getPositionX();
-                origPositions[likesIcon] = likesIcon->getPositionX();
-                origPositions[likesLabel] = likesLabel->getPositionX();
-                origPositions[gdlIcon] = gdlIcon->getPositionX();
-                origPositions[gdlLabel] = gdlLabel->getPositionX();
-                if (orbsIcon) origPositions[orbsIcon] = orbsIcon->getPositionX();
-                if (orbsLabel) origPositions[orbsLabel] = orbsLabel->getPositionX();
-
-                downloadsIcon->setPositionX(downloadsIcon->getPositionX() - gap);
-                downloadsLabel->setPositionX(downloadsLabel->getPositionX() - gap);
-                likesIcon->setPositionX(likesIcon->getPositionX() - gap * 2.0f);
-                likesLabel->setPositionX(likesLabel->getPositionX() - gap * 2.0f);
-                gdlIcon->setPositionX(gdlIcon->getPositionX() - gap * (orbsIcon ? 4.0f : 3.0f));
-                gdlLabel->setPositionX(gdlLabel->getPositionX() - gap * (orbsIcon ? 4.0f : 3.0f));
-                if (orbsIcon) orbsIcon->setPositionX(orbsIcon->getPositionX() - gap * 3.0f);
-                if (orbsLabel) orbsLabel->setPositionX(orbsLabel->getPositionX() - gap * 3.0f);
-            }
-
-            m_fields->m_levelLoadListener = DemonlistLoadedEvent().listen(
-                [this](Result<std::vector<int>, APIError> result) {
-                    auto gdlLevel = GDL::Cache::Levels::getLevel(m_level->m_levelID);
-                    auto gdlLabel = static_cast<CCLabelBMFont*>(m_mainLayer->getChildByID("gdl-label"_spr));
-                    auto gdlIcon = m_mainLayer->getChildByID("gdl-icon"_spr);
-
-                    if (result.isOk() && gdlLevel) {
-                        if (gdlLabel && gdlIcon) {
-                            gdlLabel->setString(fmt::format("#{}", gdlLevel->placement).c_str());
-                        }
-                    }
-                    else if (gdlLabel && gdlIcon) {
-                        Utils::removePlacement(m_level->m_levelID, gdlLabel, gdlIcon, m_fields->m_origPositions, true);
-                    }
-                }
-            );
-
-            GDL::API::Levels::getDemonlist();
+            downloadsIcon->setPositionX(downloadsIcon->getPositionX() - gap);
+            downloadsLabel->setPositionX(downloadsLabel->getPositionX() - gap);
+            likesIcon->setPositionX(likesIcon->getPositionX() - gap * 2.0f);
+            likesLabel->setPositionX(likesLabel->getPositionX() - gap * 2.0f);
+            gdlIcon->setPositionX(gdlIcon->getPositionX() - gap * (orbsIcon ? 4.0f : 3.0f));
+            gdlLabel->setPositionX(gdlLabel->getPositionX() - gap * (orbsIcon ? 4.0f : 3.0f));
+            if (orbsIcon) orbsIcon->setPositionX(orbsIcon->getPositionX() - gap * 3.0f);
+            if (orbsLabel) orbsLabel->setPositionX(orbsLabel->getPositionX() - gap * 3.0f);
         }
     }
 };

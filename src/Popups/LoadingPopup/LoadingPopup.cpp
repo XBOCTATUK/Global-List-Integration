@@ -138,7 +138,7 @@ void LoadingPopup::startLoading() {
 	m_currentBatch = 0;
 	m_requiredLevels.clear();
 
-	for (auto levelID : GDL::Cache::Levels::getDemonlist()) {
+	for (auto levelID : *GDL::Cache::Levels::getDemonlist()) {
 		m_requiredLevels.push_back(levelID);
 	}
 
