@@ -61,6 +61,7 @@ void CountryInfoPopup::drawBasicInfoUI() {
 	scrollBG->setColor({ 0, 0, 0 });
 	scrollBG->setOpacity(51);
 	scrollBG->setContentSize({ m_mainLayer->getContentSize() - ccp(40.0f, 40.0f) });
+	scrollBG->setID("scroll-background");
 	m_mainLayer->addChildAtPosition(
 		scrollBG,
 		Anchor::Center,
@@ -78,6 +79,7 @@ void CountryInfoPopup::drawBasicInfoUI() {
 		->setPadding(Padding::uniform(10.0f))
 	);
 	m_scrollLayer->ignoreAnchorPointForPosition(false);
+	m_scrollLayer->setID("scroll-layer");
 	m_mainLayer->addChildAtPosition(
 		m_scrollLayer,
 		Anchor::Center,
@@ -86,6 +88,7 @@ void CountryInfoPopup::drawBasicInfoUI() {
 
 	auto scrollBorder = ListBorders::create();
 	scrollBorder->setContentSize(scrollBG->getContentSize());
+	scrollBorder->setID("scroll-border");
 	m_mainLayer->addChildAtPosition(
 		scrollBorder,
 		Anchor::Center,
@@ -97,6 +100,7 @@ void CountryInfoPopup::drawBasicInfoUI() {
 		m_scrollLayer->getPositionX() + m_scrollLayer->getContentWidth() / 2.0f + 6.0f,
 		m_scrollLayer->getPositionY()
 	});
+	scrollbar->setID("scrollbar");
 	m_mainLayer->addChild(scrollbar);
 
 	auto content = m_scrollLayer->m_contentLayer;
@@ -105,6 +109,7 @@ void CountryInfoPopup::drawBasicInfoUI() {
 	basicInfoNode->setContentSize({
 		m_mainLayer->getContentWidth() - 60.0f, 30.0f
 	});
+	basicInfoNode->setID("basic-info");
 	content->addChild(basicInfoNode);
 
 	auto basicInfoBG = NineSlice::create("square02b_001.png");
@@ -112,6 +117,7 @@ void CountryInfoPopup::drawBasicInfoUI() {
 	basicInfoBG->setOpacity(51);
 	basicInfoBG->setContentSize(basicInfoNode->getContentSize() * 2.0f);
 	basicInfoBG->setScale(0.5f);
+	basicInfoBG->setID("basic-info-background");
 	basicInfoNode->addChildAtPosition(
 		basicInfoBG,
 		Anchor::Center,
@@ -128,6 +134,7 @@ void CountryInfoPopup::drawBasicInfoUI() {
 	);
 	countryNameLabel->setScale(0.65f);
 	countryNameLabel->setAnchorPoint({ 0.0f, 0.5f });
+	countryNameLabel->setID("country-name");
 	basicInfoNode->addChildAtPosition(
 		countryNameLabel,
 		Anchor::Left,
@@ -139,6 +146,7 @@ void CountryInfoPopup::drawBasicInfoUI() {
     auto flagSpr = CCSprite::create(flagSprName.c_str());
     flagSpr->setScale(20.0f / flagSpr->getContentHeight());
 	flagSpr->setAnchorPoint({ 0.5f, 0.5f });
+	flagSpr->setID("flag-sprite");
     basicInfoNode->addChildAtPosition(
 		flagSpr,
 		Anchor::Right,
@@ -158,6 +166,7 @@ void CountryInfoPopup::drawMainTypeUI() {
 		*mainCountryData,
 		m_mainLayer->getContentWidth() - 60.0f
 	);
+	playerListNode->setID("player-list");
 	content->addChild(playerListNode);
 
 	m_scrollLayer->m_contentLayer->updateLayout();
@@ -189,6 +198,7 @@ void CountryInfoPopup::drawAdvancedTypeUI() {
 		m_mainLayer->getContentWidth() - 60.0f, 40.0f
 	});
 	statsMenu->setAnchorPoint({ 0.5f, 0.5f });
+	statsMenu->setID("stats-row");
 	content->addChild(statsMenu);
 
 	auto rankNode = TailyUI::StatNode::create(
@@ -196,6 +206,7 @@ void CountryInfoPopup::drawAdvancedTypeUI() {
 		"Rank", "rank-icon.png"_spr,
 		(m_mainLayer->getContentWidth() - 60.0f - 10.0f) / 3.0f
 	);
+	rankNode->setID("rank-node");
 	statsMenu->addChild(rankNode);
 
 	auto scoreNode = TailyUI::StatNode::create(
@@ -203,6 +214,7 @@ void CountryInfoPopup::drawAdvancedTypeUI() {
 		"Score", "score-icon.png"_spr,
 		(m_mainLayer->getContentWidth() - 60.0f - 10.0f) / 3.0f
 	);
+	scoreNode->setID("score-node");
 	statsMenu->addChild(scoreNode);
 
 	auto playersNode = TailyUI::StatNode::create(
@@ -210,6 +222,7 @@ void CountryInfoPopup::drawAdvancedTypeUI() {
 		"Players", "green-players-icon.png"_spr,
 		(m_mainLayer->getContentWidth() - 60.0f - 10.0f) / 3.0f
 	);
+	playersNode->setID("players-node");
 	statsMenu->addChild(playersNode);
 
 	statsMenu->updateLayout();
@@ -219,6 +232,7 @@ void CountryInfoPopup::drawAdvancedTypeUI() {
 		"Hardest", "hardest-icon.png"_spr,
 		m_mainLayer->getContentWidth() - 60.0f
 	);
+	hardestNode->setID("hardest-node");
 	content->addChild(hardestNode);
 
 	if (!advancedCountryData->mainList.empty()) {
@@ -228,6 +242,7 @@ void CountryInfoPopup::drawAdvancedTypeUI() {
 			"main-levels-icon.png"_spr,
 			m_mainLayer->getContentWidth() - 60.0f
 		);
+		mainLevelsNode->setID("main-levels");
 		content->addChild(mainLevelsNode);
 	}
 
@@ -238,6 +253,7 @@ void CountryInfoPopup::drawAdvancedTypeUI() {
 			"extended-levels-icon.png"_spr,
 			m_mainLayer->getContentWidth() - 60.0f
 		);
+		extendedLevelsNode->setID("extended-levels");
 		content->addChild(extendedLevelsNode);
 	}
 
@@ -248,6 +264,7 @@ void CountryInfoPopup::drawAdvancedTypeUI() {
 			"advanced-levels-icon.png"_spr,
 			m_mainLayer->getContentWidth() - 60.0f
 		);
+		advancedLevelsNode->setID("advanced-levels");
 		content->addChild(advancedLevelsNode);
 	}
 
@@ -258,6 +275,7 @@ void CountryInfoPopup::drawAdvancedTypeUI() {
 			"unbounded-levels-icon.png"_spr,
 			m_mainLayer->getContentWidth() - 60.0f
 		);
+		unboundedLevelsNode->setID("unbounded-levels");
 		content->addChild(unboundedLevelsNode);
 	}
 
@@ -268,6 +286,7 @@ void CountryInfoPopup::drawAdvancedTypeUI() {
 			"progress-icon.png"_spr,
 			m_mainLayer->getContentWidth() - 60.0f
 		);
+		progressLevelsNode->setID("progress-levels");
 		content->addChild(progressLevelsNode);
 	}
 
@@ -278,6 +297,7 @@ void CountryInfoPopup::drawAdvancedTypeUI() {
 			"verified-levels-icon.png"_spr,
 			m_mainLayer->getContentWidth() - 60.0f
 		);
+		verifiedLevelsNode->setID("verified-levels");
 		content->addChild(verifiedLevelsNode);
 	}
 
@@ -288,6 +308,7 @@ void CountryInfoPopup::drawAdvancedTypeUI() {
 			"uncompleted-levels-icon.png"_spr,
 			m_mainLayer->getContentWidth() - 60.0f
 		);
+		uncompletedLevelsNode->setID("uncompleted-levels");
 		content->addChild(uncompletedLevelsNode);
 	}
 

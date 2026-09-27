@@ -46,6 +46,7 @@ void UserInfoPopup::drawUI() {
 	scrollBG->setColor({ 0, 0, 0 });
 	scrollBG->setOpacity(51);
 	scrollBG->setContentSize({ m_mainLayer->getContentSize() - ccp(40.0f, 40.0f) });
+	scrollBG->setID("scroll-background");
 	m_mainLayer->addChildAtPosition(
 		scrollBG,
 		Anchor::Center,
@@ -63,6 +64,7 @@ void UserInfoPopup::drawUI() {
 		->setPadding(Padding::uniform(10.0f))
 	);
 	scrollLayer->ignoreAnchorPointForPosition(false);
+	scrollLayer->setID("scroll-layer");
 	m_mainLayer->addChildAtPosition(
 		scrollLayer,
 		Anchor::Center,
@@ -71,6 +73,7 @@ void UserInfoPopup::drawUI() {
 
 	auto scrollBorder = ListBorders::create();
 	scrollBorder->setContentSize(scrollBG->getContentSize());
+	scrollBorder->setID("scroll-border");
 	m_mainLayer->addChildAtPosition(
 		scrollBorder,
 		Anchor::Center,
@@ -82,6 +85,7 @@ void UserInfoPopup::drawUI() {
 		scrollLayer->getPositionX() + scrollLayer->getContentWidth() / 2.0f + 6.0f,
 		scrollLayer->getPositionY()
 	});
+	scrollbar->setID("scrollbar");
 	m_mainLayer->addChild(scrollbar);
 
 	auto content = scrollLayer->m_contentLayer;
@@ -90,6 +94,7 @@ void UserInfoPopup::drawUI() {
 	basicInfoNode->setContentSize({
 		m_mainLayer->getContentWidth() - 60.0f, 30.0f
 	});
+	basicInfoNode->setID("basic-info");
 	content->addChild(basicInfoNode);
 
 	auto basicInfoBG = NineSlice::create("square02b_001.png");
@@ -97,6 +102,7 @@ void UserInfoPopup::drawUI() {
 	basicInfoBG->setOpacity(51);
 	basicInfoBG->setContentSize(basicInfoNode->getContentSize() * 2.0f);
 	basicInfoBG->setScale(0.5f);
+	basicInfoBG->setID("basic-info-background");
 	basicInfoNode->addChildAtPosition(
 		basicInfoBG,
 		Anchor::Center,
@@ -105,6 +111,7 @@ void UserInfoPopup::drawUI() {
 
 	m_basicInfoMenu = CCMenu::create();
 	m_basicInfoMenu->setContentSize(basicInfoNode->getContentSize());
+	m_basicInfoMenu->setID("basic-info-menu");
 	basicInfoNode->addChildAtPosition(
 		m_basicInfoMenu,
 		Anchor::Center,
@@ -117,6 +124,7 @@ void UserInfoPopup::drawUI() {
 	);
 	m_usernameLabel->setScale(0.65f);
 	m_usernameLabel->setAnchorPoint({ 0.0f, 0.5f });
+	m_usernameLabel->setID("username-text");
 	basicInfoNode->addChildAtPosition(
 		m_usernameLabel,
 		Anchor::Left,
@@ -136,6 +144,7 @@ void UserInfoPopup::drawUI() {
         }
     );
     m_badgeBtn->setAnchorPoint({ 0.5f, 0.5f });
+	m_badgeBtn->setID("badge-button");
     m_basicInfoMenu->addChildAtPosition(
 		m_badgeBtn,
 		Anchor::Right,
@@ -156,6 +165,7 @@ void UserInfoPopup::drawUI() {
         }
     );
     m_flagBtn->setAnchorPoint({ 0.5f, 0.5f });
+	m_flagBtn->setID("flag-button");
     m_basicInfoMenu->addChildAtPosition(
 		m_flagBtn,
 		Anchor::Right,
@@ -173,6 +183,7 @@ void UserInfoPopup::drawUI() {
 		m_mainLayer->getContentWidth() - 60.0f, 40.0f }
 	);
 	statsMenu->setAnchorPoint({ 0.5f, 0.5f });
+	statsMenu->setID("stats-row");
 	content->addChild(statsMenu);
 
 	auto rankNode = TailyUI::StatNode::create(
@@ -180,6 +191,7 @@ void UserInfoPopup::drawUI() {
 		"Rank", "rank-icon.png"_spr,
 		(m_mainLayer->getContentWidth() - 60.0f - 5.0f) / 2.0f
 	);
+	rankNode->setID("rank-node");
 	statsMenu->addChild(rankNode);
 
 	auto scoreNode = TailyUI::StatNode::create(
@@ -187,6 +199,7 @@ void UserInfoPopup::drawUI() {
 		"Score", "score-icon.png"_spr,
 		(m_mainLayer->getContentWidth() - 60.0f - 5.0f) / 2.0f
 	);
+	scoreNode->setID("score-node");
 	statsMenu->addChild(scoreNode);
 
 	statsMenu->updateLayout();
@@ -196,6 +209,7 @@ void UserInfoPopup::drawUI() {
 		"Hardest", "hardest-icon.png"_spr,
 		m_mainLayer->getContentWidth() - 60.0f
 	);
+	hardestNode->setID("hardest-node");
 	content->addChild(hardestNode);
 
 	if (fullUserData->mainList.has_value() && !fullUserData->mainList->empty()) {
@@ -205,6 +219,7 @@ void UserInfoPopup::drawUI() {
 			"main-levels-icon.png"_spr,
 			m_mainLayer->getContentWidth() - 60.0f
 		);
+		mainLevelsNode->setID("main-levels");
 		content->addChild(mainLevelsNode);
 	}
 
@@ -215,6 +230,7 @@ void UserInfoPopup::drawUI() {
 			"extended-levels-icon.png"_spr,
 			m_mainLayer->getContentWidth() - 60.0f
 		);
+		extendedLevelsNode->setID("extended-levels");
 		content->addChild(extendedLevelsNode);
 	}
 
@@ -225,6 +241,7 @@ void UserInfoPopup::drawUI() {
 			"advanced-levels-icon.png"_spr,
 			m_mainLayer->getContentWidth() - 60.0f
 		);
+		advancedLevelsNode->setID("advanced-levels");
 		content->addChild(advancedLevelsNode);
 	}
 
@@ -235,6 +252,7 @@ void UserInfoPopup::drawUI() {
 			"unbounded-levels-icon.png"_spr,
 			m_mainLayer->getContentWidth() - 60.0f
 		);
+		unboundedLevelsNode->setID("unbounded-levels");
 		content->addChild(unboundedLevelsNode);
 	}
 
@@ -245,6 +263,7 @@ void UserInfoPopup::drawUI() {
 			"progress-icon.png"_spr,
 			m_mainLayer->getContentWidth() - 60.0f
 		);
+		progressLevelsNode->setID("progress-levels");
 		content->addChild(progressLevelsNode);
 	}
 
@@ -255,9 +274,9 @@ void UserInfoPopup::drawUI() {
 			"verified-levels-icon.png"_spr,
 			m_mainLayer->getContentWidth() - 60.0f
 		);
+		verifiedLevelsNode->setID("verified-levels");
 		content->addChild(verifiedLevelsNode);
 	}
-
 
 	content->updateLayout();
 	scrollLayer->scrollToTop();

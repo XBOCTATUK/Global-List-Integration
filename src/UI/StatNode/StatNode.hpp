@@ -10,8 +10,8 @@ namespace TailyUI {
 
     protected:
         cocos2d::CCSprite* m_icon;
-        cocos2d::CCLabelBMFont* m_textLabel;
-        cocos2d::CCLabelBMFont* m_subtextLabel;
+        cocos2d::CCLabelBMFont* m_statLabel;
+        cocos2d::CCLabelBMFont* m_statNameLabel;
 
         bool init(
             const std::string& text, const std::string& subtext,

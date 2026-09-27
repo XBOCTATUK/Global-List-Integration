@@ -35,12 +35,13 @@ bool GDLLeaderboardCell::init(const GDLUser& userData) {
 
     setContentSize({356.0f, (compactCellsEnabled ? 30.0f : 40.0f)});
 
-    auto rightMenu = CCMenu::create();
-    rightMenu->setContentSize(getContentSize());
-    rightMenu->setPosition({ 0.0f, 0.0f });
-    rightMenu->setAnchorPoint({ 0.0f, 0.0f });
-    rightMenu->setZOrder(1);
-    addChild(rightMenu);
+    auto menu = CCMenu::create();
+    menu->setContentSize(getContentSize());
+    menu->setPosition({ 0.0f, 0.0f });
+    menu->setAnchorPoint({ 0.0f, 0.0f });
+    menu->setZOrder(1);
+    menu->setID("main-menu");
+    addChild(menu);
 
     auto nameLabel = CCLabelBMFont::create(
         fmt::format("{}. {}", userData.placement, userData.username).c_str(),
@@ -55,7 +56,8 @@ bool GDLLeaderboardCell::init(const GDLUser& userData) {
     );
     m_nameBtn->setPosition({ 15.0f + m_nameBtn->getContentWidth() / 2.0f, getContentHeight() / 2.0f });
     m_nameBtn->setAnchorPoint({ 0.5f, 0.5f });
-    rightMenu->addChild(m_nameBtn);
+    m_nameBtn->setID("username-button");
+    menu->addChild(m_nameBtn);
 
     auto badgeSprName = Utils::getBadgeSpriteName(userData.badge);
     auto bagdeSpr = CCSprite::create(badgeSprName.c_str());
@@ -71,7 +73,8 @@ bool GDLLeaderboardCell::init(const GDLUser& userData) {
     );
     m_badgeBtn->setAnchorPoint({ 0.5f, 0.5f });
     m_badgeBtn->setPosition({ getContentWidth() - 15.0f - m_badgeBtn->getContentWidth() / 2.0f, getContentHeight() / 2.0f });
-    rightMenu->addChild(m_badgeBtn);
+    m_badgeBtn->setID("badge-button");
+    menu->addChild(m_badgeBtn);
 
     auto flagSprName = Utils::getCountrySpriteName(userData.country);
     m_flagSpr = CCSprite::create(flagSprName.c_str());
@@ -91,7 +94,8 @@ bool GDLLeaderboardCell::init(const GDLUser& userData) {
         m_badgeBtn->getPositionX() - m_badgeBtn->getContentWidth() / 2.0f - m_flagBtn->getContentWidth() / 2.0f - 10.0f,
         getContentHeight() / 2.0f
     });
-    rightMenu->addChild(m_flagBtn);
+    m_flagBtn->setID("flag-button");
+    menu->addChild(m_flagBtn);
 
     m_pointsLabel = CCLabelBMFont::create(
         fmt::format("{:.2f}", userData.points).c_str(),
@@ -103,9 +107,10 @@ bool GDLLeaderboardCell::init(const GDLUser& userData) {
     m_pointsLabel->setPosition({
         m_flagBtn->getPositionX() - m_flagBtn->getContentWidth() / 2.0f - 10.0f, getContentHeight() / 2.0f
     });
+    m_pointsLabel->setID("points-text");
     addChild(m_pointsLabel);
 
-    rightMenu->updateLayout();
+    menu->updateLayout();
 
     return true;
 }
@@ -119,12 +124,13 @@ bool GDLLeaderboardCell::init(const GDLCountry& countryData, CountriesLeaderboar
 
     setContentSize({356.0f, (compactCellsEnabled ? 30.0f : 40.0f)});
 
-    auto rightMenu = CCMenu::create();
-    rightMenu->setContentSize(getContentSize());
-    rightMenu->setPosition({ 0.0f, 0.0f });
-    rightMenu->setAnchorPoint({ 0.0f, 0.0f });
-    rightMenu->setZOrder(1);
-    addChild(rightMenu);
+    auto menu = CCMenu::create();
+    menu->setContentSize(getContentSize());
+    menu->setPosition({ 0.0f, 0.0f });
+    menu->setAnchorPoint({ 0.0f, 0.0f });
+    menu->setZOrder(1);
+    menu->setID("main-menu");
+    addChild(menu);
 
     m_placementLabel = CCLabelBMFont::create(
         fmt::format("{}.", countryData.placement).c_str(),
@@ -133,6 +139,7 @@ bool GDLLeaderboardCell::init(const GDLCountry& countryData, CountriesLeaderboar
     m_placementLabel->setScale(0.5f);
     m_placementLabel->setPosition({ 15.0f, getContentHeight() / 2.0f });
     m_placementLabel->setAnchorPoint({ 0.0f, 0.5f });
+    m_placementLabel->setID("placement-text");
     addChild(m_placementLabel);
 
     auto flagSprName = Utils::getCountrySpriteName(countryData.title);
@@ -142,6 +149,7 @@ bool GDLLeaderboardCell::init(const GDLCountry& countryData, CountriesLeaderboar
         m_placementLabel->getPositionX() + m_placementLabel->getScaledContentWidth() + m_flagSpr->getScaledContentWidth() / 2.0f + 10.0f,
         getContentHeight() / 2.0f
     });
+    m_flagSpr->setID("flag-button");
     addChild(m_flagSpr);
 
     auto countryName = string::replace(countryData.title, "-", " ");
@@ -158,7 +166,8 @@ bool GDLLeaderboardCell::init(const GDLCountry& countryData, CountriesLeaderboar
         getContentHeight() / 2.0f
     });
     m_nameBtn->setAnchorPoint({ 0.5f, 0.5f });
-    rightMenu->addChild(m_nameBtn);
+    m_nameBtn->setID("country-button");
+    menu->addChild(m_nameBtn);
 
     m_pointsLabel = CCLabelBMFont::create(
         fmt::format("{:.2f}", countryData.points).c_str(),
@@ -168,6 +177,7 @@ bool GDLLeaderboardCell::init(const GDLCountry& countryData, CountriesLeaderboar
     m_pointsLabel->setColor({ 0, 212, 255 });
     m_pointsLabel->setAnchorPoint({ 1.0f, 0.5f });
     m_pointsLabel->setPosition({ getContentWidth() - 15.0f, getContentHeight() / 2.0f });
+    m_pointsLabel->setID("points-text");
     addChild(m_pointsLabel);
 
     return true;

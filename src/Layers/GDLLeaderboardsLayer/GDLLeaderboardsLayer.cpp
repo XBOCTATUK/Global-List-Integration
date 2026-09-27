@@ -103,6 +103,7 @@ bool GDLLeaderboardsLayer::init() {
 	);
 	m_playersTabBtn->setTag(static_cast<int>(LeaderboardsType::Players));
 	m_playersTabBtn->toggle(true);
+	m_playersTabBtn->setID("players-tab-button");
 	btnsMenu->addChild(m_playersTabBtn);
 
 	m_countriesTabBtn = TabButton::create(
@@ -113,6 +114,7 @@ bool GDLLeaderboardsLayer::init() {
 		m_listNode->getPosition() + ccp(m_listNode->getContentWidth() / 4.0f, m_listNode->getContentHeight() / 2.0f + 30.0f)
 	);
 	m_countriesTabBtn->setTag(static_cast<int>(LeaderboardsType::Countries));
+	m_countriesTabBtn->setID("countries-tab-button");
 	btnsMenu->addChild(m_countriesTabBtn);
 
 	auto backSpr = CCSprite::createWithSpriteFrameName("GJ_arrow_01_001.png");
@@ -175,7 +177,7 @@ bool GDLLeaderboardsLayer::init() {
 	m_loadingSpinner = LoadingSpinner::create(65.0f);
 	m_loadingSpinner->setAnchorPoint({ 0.5f, 0.5f });
 	m_loadingSpinner->setPosition(winSize / 2.0f);
-	m_loadingSpinner->setID("lodaing-spinner");
+	m_loadingSpinner->setID("loading-spinner");
 	addChild(m_loadingSpinner, 10);
 
     setKeypadEnabled(true);

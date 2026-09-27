@@ -36,10 +36,12 @@ namespace TailyUI {
 		);
 		m_menu->setPosition({ m_mainLayer->getContentWidth() / 2.0f, 68.0f });
 		m_menu->setContentSize({ m_mainLayer->getContentWidth() - 40.0f, 40.0f });
+		m_menu->setID("main-menu");
 		m_mainLayer->addChild(m_menu);
 
 		auto fromLabel = CCLabelBMFont::create("From", "bigFont.fnt");
 		fromLabel->setScale(0.5f);
+		fromLabel->setID("from-text");
 		m_menu->addChild(fromLabel);
 
 		m_fromTextInput = TextInput::create(45.0f, "");
@@ -69,10 +71,12 @@ namespace TailyUI {
 				m_previousFromValue = text;
 			}
 		);
+		m_fromTextInput->setID("from-input");
 		m_menu->addChild(m_fromTextInput);
 
 		auto toLabel = CCLabelBMFont::create("to", "bigFont.fnt");
 		toLabel->setScale(0.5f);
+		toLabel->setID("to-text");
 		m_menu->addChild(toLabel);
 
 		m_toTextInput = TextInput::create(45.0f, "");
@@ -102,6 +106,7 @@ namespace TailyUI {
 				m_previousToValue = text;
 			}
 		);
+		m_toTextInput->setID("to-input");
 		m_menu->addChild(m_toTextInput);
 
 		m_menu->updateLayout();
@@ -111,6 +116,7 @@ namespace TailyUI {
 			applySpr, this, menu_selector(RangePopup::onApply)
 		);
 		applyBtn->setPosition({ 100.0f, 28.0f });
+		applyBtn->setID("apply-button");
 		m_buttonMenu->addChild(applyBtn);
 
 		setRange(minValue, maxValue);

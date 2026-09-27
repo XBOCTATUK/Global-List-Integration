@@ -30,13 +30,16 @@ namespace TailyUI {
         m_bg->setColor({ 0, 0, 0 });
         m_bg->setOpacity(51);
         m_bg->setScale(0.5f);
+        m_bg->setID("background");
 
         m_icon = CCSprite::create("blue-players-icon.png"_spr);
         m_icon->setScale(12.0f / m_icon->getContentWidth());
+        m_icon->setID("icon");
 
         m_textLabel = CCLabelBMFont::create("Players", "bigFont.fnt");
         m_textLabel->setScale(0.35f);
         m_textLabel->setAnchorPoint({ 0.0f, 0.5f });
+        m_textLabel->setID("title-text");
 
         m_countLabel = CCLabelBMFont::create(
             fmt::format("{}", users.size()).c_str(),
@@ -44,6 +47,7 @@ namespace TailyUI {
         );
         m_countLabel->setScale(0.35f);
         m_countLabel->setAnchorPoint({ 1.0f, 0.5f });
+        m_countLabel->setID("count-text");
 
         m_topPageMenu = TailyUI::PageSelector::create(
             users.size() / m_perPage + 1, [this](int currentPage) {
@@ -52,6 +56,7 @@ namespace TailyUI {
                 m_bottomPageMenu->page(currentPage);
             }
         );
+        m_topPageMenu->setID("top-page-menu");
 
         m_bottomPageMenu = TailyUI::PageSelector::create(
             users.size() / m_perPage + 1, [this](int currentPage) {
@@ -60,6 +65,7 @@ namespace TailyUI {
                 m_topPageMenu->page(currentPage);
             }
         );
+        m_bottomPageMenu->setID("bottom-page-menu");
 
         m_listNode = CCNode::create();
         m_listNode->setContentSize({ getContentWidth(), 0.0f });
@@ -73,6 +79,7 @@ namespace TailyUI {
             ->ignoreInvisibleChildren(true)
             ->setPadding({ 7.5f, 0, 7.5f, 0.0f })
         );
+        m_listNode->setID("list-node");
 
         page(1);
 
@@ -142,13 +149,14 @@ namespace TailyUI {
         node->setContentSize({ width, 30.0f });
         node->setAnchorPoint({ 0.5f, 0.5f });
 
-        auto m_bg = NineSlice::create("square02b_001.png");
-        m_bg->setColor({ 0, 0, 0 });
-        m_bg->setOpacity(51);
-        m_bg->setContentSize(node->getContentSize() * 2.0f);
-        m_bg->setScale(0.5f);
+        auto bg = NineSlice::create("square02b_001.png");
+        bg->setColor({ 0, 0, 0 });
+        bg->setOpacity(51);
+        bg->setContentSize(node->getContentSize() * 2.0f);
+        bg->setScale(0.5f);
+        bg->setID("background");
         node->addChildAtPosition(
-            m_bg,
+            bg,
             Anchor::Center,
             {}
         );
@@ -157,6 +165,7 @@ namespace TailyUI {
         menu->setContentSize(node->getContentSize());
         menu->setAnchorPoint({ 0.5f, 0.5f });
         menu->ignoreAnchorPointForPosition(false);
+        menu->setID("main-menu");
         node->addChildAtPosition(
             menu,
             Anchor::Center,
@@ -173,6 +182,7 @@ namespace TailyUI {
                 UserInfoPopup::create(user.id)->show();
             }
         );
+        usernameBtn->setID("username-button");
         menu->addChildAtPosition(
             usernameBtn,
             Anchor::Left,
@@ -185,6 +195,7 @@ namespace TailyUI {
         pointsLabel->setScale(0.5f);
         pointsLabel->setColor({ 0, 212, 255 });
         pointsLabel->setAnchorPoint({ 0.5f, 0.5f });
+        pointsLabel->setID("points-text");
         node->addChildAtPosition(
             pointsLabel,
             Anchor::Right,

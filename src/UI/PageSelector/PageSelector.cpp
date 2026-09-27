@@ -39,6 +39,7 @@ namespace TailyUI {
             }
         );
         m_leftBtn->setVisible(false);
+        m_leftBtn->setID("prev-page-button");
         addChildAtPosition(
             m_leftBtn,
             Anchor::Left,
@@ -58,6 +59,7 @@ namespace TailyUI {
                 }
             }
         );
+        m_rightBtn->setID("next-page-button");
         addChildAtPosition(
             m_rightBtn,
             Anchor::Right,
@@ -69,6 +71,7 @@ namespace TailyUI {
             "bigFont.fnt"
         );
         m_pageLabel->setScale(0.4f);
+        m_pageLabel->setID("page-text");
         addChildAtPosition(
             m_pageLabel,
             Anchor::Center,

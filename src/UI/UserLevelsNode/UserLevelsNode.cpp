@@ -29,13 +29,16 @@ namespace TailyUI {
         bg->setColor({ 0, 0, 0 });
         bg->setOpacity(51);
         bg->setScale(0.5f);
+        bg->setID("background");
 
         m_icon = CCSprite::create(icon.c_str());
         m_icon->setScale(12.0f / m_icon->getContentWidth());
+        m_icon->setID("icon");
 
         m_textLabel = CCLabelBMFont::create(text.c_str(), "bigFont.fnt");
         m_textLabel->setScale(0.35f);
         m_textLabel->setAnchorPoint({ 0.0f, 0.5f });
+        m_textLabel->setID("list-title");
 
         m_countLabel = CCLabelBMFont::create(
             fmt::format("{}", levels->size()).c_str(),
@@ -43,6 +46,7 @@ namespace TailyUI {
         );
         m_countLabel->setScale(0.35f);
         m_countLabel->setAnchorPoint({ 1.0f, 0.5f });
+        m_countLabel->setID("count-text");
 
         m_levelsMenu = CCMenu::create();
         m_levelsMenu->setContentSize({ getContentWidth(), 0.0f });
@@ -55,6 +59,7 @@ namespace TailyUI {
             ->setCrossAxisOverflow(true)
             ->setPadding({ 7.5f, 0, 7.5f, 7.5f })
         );
+        m_levelsMenu->setID("level-menu");
 
         for (const auto& level : *levels) {
             auto levelBtnSpr = createLevelButtonSprite(level);
@@ -109,6 +114,7 @@ namespace TailyUI {
         auto levelNameLabel = CCLabelBMFont::create(text.c_str(), "chatFont.fnt");
         levelNameLabel->setScale(0.6f);
         levelNameLabel->setAnchorPoint({ 0.5f, 0.5f });
+        levelNameLabel->setID("level-name");
 
         auto node = CCNode::create();
         node->setContentSize(levelNameLabel->getScaledContentSize() + ccp(8.0f, 4.0f));
@@ -119,6 +125,7 @@ namespace TailyUI {
         bg->setOpacity(51);
         bg->setContentSize(node->getContentSize() * 4.0f);
         bg->setScale(0.25f);
+        bg->setID("background");
         node->addChildAtPosition(
             bg,
             Anchor::Center,

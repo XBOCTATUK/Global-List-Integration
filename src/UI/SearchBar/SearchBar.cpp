@@ -34,6 +34,7 @@ namespace TailyUI {
 			{ 194, 114, 62, 255 },
 			getContentWidth(), getContentHeight()
 		);
+		searchBarBG->setID("background");
 		addChild(searchBarBG);
 
 		m_searchBarMenu = CCMenu::create();
@@ -48,6 +49,7 @@ namespace TailyUI {
 		m_searchBarMenu->setPosition({ 0.0f, 0.0f });
 		m_searchBarMenu->setTouchPriority(-256);
 		m_searchBarMenu->setUserObject("gdl-block-touches", CCBool::create(true));
+		m_searchBarMenu->setID("main-menu");
 		addChild(m_searchBarMenu, 5);
 
 		float width = type == SearchBarType::WithFilters
@@ -61,6 +63,7 @@ namespace TailyUI {
 		m_searchInput->getInputNode()->setLabelPlaceholderScale(0.70f);
 		m_searchInput->getInputNode()->setMaxLabelScale(0.70f);
 		m_searchInput->setScale(0.75f);
+		m_searchInput->setID("search-input");
 		m_searchBarMenu->addChild(m_searchInput, 1);
 
 		auto findIcon = CCSprite::create("findIcon.png"_spr);
@@ -75,6 +78,7 @@ namespace TailyUI {
 				}
 			}
 		);
+		m_searchBtn->setID("search-button");
 		m_searchBarMenu->addChild(m_searchBtn, 3);
 
 		setSearchBarType(type);
@@ -117,6 +121,7 @@ namespace TailyUI {
 						FilterPopup::create()->show();
 					}
 				);
+				m_filterBtn->setID("filter-button");
 
 				m_searchBarMenu->addChild(m_filterBtn, 2);
 			}
@@ -147,8 +152,9 @@ namespace TailyUI {
 						}
 					}
 				);
-
 				m_dropdown->setScale(0.75f);
+				m_dropdown->setID("dropdown");
+
 				m_searchBarMenu->addChild(m_dropdown, 2);
 			}
 			else {
