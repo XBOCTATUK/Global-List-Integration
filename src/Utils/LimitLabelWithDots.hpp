@@ -1,3 +1,5 @@
+#pragma once
+
 namespace Utils {
     inline void limitLabelWithDots(cocos2d::CCLabelBMFont* label, float width) {
         if (label->getScaledContentWidth() <= width) return;

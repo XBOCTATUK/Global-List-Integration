@@ -1,4 +1,4 @@
-#include "../../Models/GDLUser.hpp"
+#pragma once
 
 class UserInfoPopup : public geode::Popup {
 public:

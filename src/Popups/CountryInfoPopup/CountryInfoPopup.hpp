@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../../Models/GDLCountry.hpp"
 
 class CountryInfoPopup : public geode::Popup {
@@ -8,6 +10,7 @@ protected:
 	GDLCountry m_countryData{};
 	CountriesLeaderboardType m_type = CountriesLeaderboardType::Main;
 	geode::ListenerHandle m_countryLoadListener;
+	geode::ListenerHandle m_updateScrollListener;
 
 	geode::ScrollLayer* m_scrollLayer = nullptr;
 

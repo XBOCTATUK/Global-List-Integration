@@ -1,3 +1,5 @@
+#pragma once
+
 namespace TailyUI {
     class SimpleClippingNode : public cocos2d::CCClippingNode {
     public:

@@ -1,3 +1,5 @@
+#pragma once
+
 namespace Utils {
     inline float calculateCoverScale(const cocos2d::CCSize& targetSize, const cocos2d::CCSize& spriteSize) {
         if (targetSize.width / targetSize.height <= spriteSize.width / spriteSize.height) {

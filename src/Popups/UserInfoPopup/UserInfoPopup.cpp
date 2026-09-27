@@ -1,5 +1,6 @@
 #include "UserInfoPopup.hpp"
-#include "../../UI/nodes.hpp"
+#include "../../UI/StatNode/StatNode.hpp"
+#include "../../UI/UserLevelsNode/UserLevelsNode.hpp"
 #include "../../API/Users/Users.hpp"
 #include "../../Cache/Users/Users.hpp"
 #include "../../Events/UserLoadedEvent.hpp"
@@ -174,14 +175,14 @@ void UserInfoPopup::drawUI() {
 	statsMenu->setAnchorPoint({ 0.5f, 0.5f });
 	content->addChild(statsMenu);
 
-	auto rankNode = TailyUI::createStatNode(
+	auto rankNode = TailyUI::StatNode::create(
 		fmt::format("#{}", fullUserData->placement).c_str(),
 		"Rank", "rank-icon.png"_spr,
 		(m_mainLayer->getContentWidth() - 60.0f - 5.0f) / 2.0f
 	);
 	statsMenu->addChild(rankNode);
 
-	auto scoreNode = TailyUI::createStatNode(
+	auto scoreNode = TailyUI::StatNode::create(
 		fmt::format("{:.2f}", fullUserData->points).c_str(),
 		"Score", "score-icon.png"_spr,
 		(m_mainLayer->getContentWidth() - 60.0f - 5.0f) / 2.0f
@@ -190,7 +191,7 @@ void UserInfoPopup::drawUI() {
 
 	statsMenu->updateLayout();
 
-	auto hardestNode = TailyUI::createStatNode(
+	auto hardestNode = TailyUI::StatNode::create(
 		fmt::format("#{} {}", fullUserData->hardest->placement, fullUserData->hardest->name).c_str(),
 		"Hardest", "hardest-icon.png"_spr,
 		m_mainLayer->getContentWidth() - 60.0f
@@ -198,7 +199,7 @@ void UserInfoPopup::drawUI() {
 	content->addChild(hardestNode);
 
 	if (fullUserData->mainList.has_value() && !fullUserData->mainList->empty()) {
-		auto mainLevelsNode = TailyUI::createUserLevelsNode(
+		auto mainLevelsNode = TailyUI::UserLevelsNode::create(
 			fullUserData->mainList,
 			"Main levels",
 			"main-levels-icon.png"_spr,
@@ -208,7 +209,7 @@ void UserInfoPopup::drawUI() {
 	}
 
 	if (fullUserData->extendedList.has_value() && !fullUserData->extendedList->empty()) {
-		auto extendedLevelsNode = TailyUI::createUserLevelsNode(
+		auto extendedLevelsNode = TailyUI::UserLevelsNode::create(
 			fullUserData->extendedList,
 			"Extended levels",
 			"extended-levels-icon.png"_spr,
@@ -218,7 +219,7 @@ void UserInfoPopup::drawUI() {
 	}
 
 	if (fullUserData->advancedList.has_value() && !fullUserData->advancedList->empty()) {
-		auto advancedLevelsNode = TailyUI::createUserLevelsNode(
+		auto advancedLevelsNode = TailyUI::UserLevelsNode::create(
 			fullUserData->advancedList,
 			"Advanced levels",
 			"advanced-levels-icon.png"_spr,
@@ -228,7 +229,7 @@ void UserInfoPopup::drawUI() {
 	}
 
 	if (fullUserData->unboundedList.has_value() && !fullUserData->unboundedList->empty()) {
-		auto unboundedLevelsNode = TailyUI::createUserLevelsNode(
+		auto unboundedLevelsNode = TailyUI::UserLevelsNode::create(
 			fullUserData->unboundedList,
 			"Unbounded levels",
 			"unbounded-levels-icon.png"_spr,
@@ -238,7 +239,7 @@ void UserInfoPopup::drawUI() {
 	}
 
 	if (fullUserData->progressList.has_value() && !fullUserData->progressList->empty()) {
-		auto progressLevelsNode = TailyUI::createUserLevelsNode(
+		auto progressLevelsNode = TailyUI::UserLevelsNode::create(
 			fullUserData->progressList,
 			"Progress",
 			"progress-icon.png"_spr,
@@ -248,7 +249,7 @@ void UserInfoPopup::drawUI() {
 	}
 
 	if (fullUserData->verifiedList.has_value() && !fullUserData->verifiedList->empty()) {
-		auto verifiedLevelsNode = TailyUI::createUserLevelsNode(
+		auto verifiedLevelsNode = TailyUI::UserLevelsNode::create(
 			fullUserData->verifiedList,
 			"Verified levels",
 			"verified-levels-icon.png"_spr,

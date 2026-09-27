@@ -1,9 +1,12 @@
 #include "CountryInfoPopup.hpp"
-#include "../../UI/nodes.hpp"
+#include "../../UI/StatNode/StatNode.hpp"
+#include "../../UI/UserLevelsNode/UserLevelsNode.hpp"
+#include "../../UI/PlayerList/PlayerList.hpp"
 #include "../../API/Leaderboards/Leaderboards.hpp"
 #include "../../Cache/Leaderboards/Leaderboards.hpp"
 #include "../../Events/MainCountryLeaderboardLoadedEvent.hpp"
 #include "../../Events/AdvancedCountryLeaderboardLoadedEvent.hpp"
+#include "../../Events/UpdateScrollEvent.hpp"
 #include "../../Utils/FlagUtils.hpp"
 
 using namespace geode::prelude;
@@ -151,7 +154,7 @@ void CountryInfoPopup::drawMainTypeUI() {
 
 	auto content = m_scrollLayer->m_contentLayer;
 
-	auto playerListNode = TailyUI::createPlayerListNode(
+	auto playerListNode = TailyUI::PlayerList::create(
 		*mainCountryData,
 		m_mainLayer->getContentWidth() - 60.0f
 	);
@@ -159,6 +162,13 @@ void CountryInfoPopup::drawMainTypeUI() {
 
 	m_scrollLayer->m_contentLayer->updateLayout();
 	m_scrollLayer->scrollToTop();
+
+	m_updateScrollListener = UpdateScrollEvent().listen(
+		[this] {
+			m_scrollLayer->m_contentLayer->updateLayout();
+			m_scrollLayer->scrollToTop();
+		}
+	);
 }
 
 void CountryInfoPopup::drawAdvancedTypeUI() {
@@ -181,21 +191,21 @@ void CountryInfoPopup::drawAdvancedTypeUI() {
 	statsMenu->setAnchorPoint({ 0.5f, 0.5f });
 	content->addChild(statsMenu);
 
-	auto rankNode = TailyUI::createStatNode(
+	auto rankNode = TailyUI::StatNode::create(
 		fmt::format("#{}", m_countryData.placement).c_str(),
 		"Rank", "rank-icon.png"_spr,
 		(m_mainLayer->getContentWidth() - 60.0f - 10.0f) / 3.0f
 	);
 	statsMenu->addChild(rankNode);
 
-	auto scoreNode = TailyUI::createStatNode(
+	auto scoreNode = TailyUI::StatNode::create(
 		fmt::format("{:.2f}", m_countryData.points).c_str(),
 		"Score", "score-icon.png"_spr,
 		(m_mainLayer->getContentWidth() - 60.0f - 10.0f) / 3.0f
 	);
 	statsMenu->addChild(scoreNode);
 
-	auto playersNode = TailyUI::createStatNode(
+	auto playersNode = TailyUI::StatNode::create(
 		fmt::format("{}", advancedCountryData->userCount).c_str(),
 		"Players", "green-players-icon.png"_spr,
 		(m_mainLayer->getContentWidth() - 60.0f - 10.0f) / 3.0f
@@ -204,7 +214,7 @@ void CountryInfoPopup::drawAdvancedTypeUI() {
 
 	statsMenu->updateLayout();
 
-	auto hardestNode = TailyUI::createStatNode(
+	auto hardestNode = TailyUI::StatNode::create(
 		fmt::format("#{} {}", advancedCountryData->hardestLevel.placement, advancedCountryData->hardestLevel.name).c_str(),
 		"Hardest", "hardest-icon.png"_spr,
 		m_mainLayer->getContentWidth() - 60.0f
@@ -212,7 +222,7 @@ void CountryInfoPopup::drawAdvancedTypeUI() {
 	content->addChild(hardestNode);
 
 	if (!advancedCountryData->mainList.empty()) {
-		auto mainLevelsNode = TailyUI::createUserLevelsNode(
+		auto mainLevelsNode = TailyUI::UserLevelsNode::create(
 			advancedCountryData->mainList,
 			"Main levels",
 			"main-levels-icon.png"_spr,
@@ -222,7 +232,7 @@ void CountryInfoPopup::drawAdvancedTypeUI() {
 	}
 
 	if (!advancedCountryData->extendedList.empty()) {
-		auto extendedLevelsNode = TailyUI::createUserLevelsNode(
+		auto extendedLevelsNode = TailyUI::UserLevelsNode::create(
 			advancedCountryData->extendedList,
 			"Extended levels",
 			"extended-levels-icon.png"_spr,
@@ -232,7 +242,7 @@ void CountryInfoPopup::drawAdvancedTypeUI() {
 	}
 
 	if (!advancedCountryData->advancedList.empty()) {
-		auto advancedLevelsNode = TailyUI::createUserLevelsNode(
+		auto advancedLevelsNode = TailyUI::UserLevelsNode::create(
 			advancedCountryData->advancedList,
 			"Advanced levels",
 			"advanced-levels-icon.png"_spr,
@@ -242,7 +252,7 @@ void CountryInfoPopup::drawAdvancedTypeUI() {
 	}
 
 	if (!advancedCountryData->unboundedList.empty()) {
-		auto unboundedLevelsNode = TailyUI::createUserLevelsNode(
+		auto unboundedLevelsNode = TailyUI::UserLevelsNode::create(
 			advancedCountryData->unboundedList,
 			"Unbounded levels",
 			"unbounded-levels-icon.png"_spr,
@@ -252,7 +262,7 @@ void CountryInfoPopup::drawAdvancedTypeUI() {
 	}
 
 	if (!advancedCountryData->progressList.empty()) {
-		auto progressLevelsNode = TailyUI::createUserLevelsNode(
+		auto progressLevelsNode = TailyUI::UserLevelsNode::create(
 			advancedCountryData->progressList,
 			"Progress",
 			"progress-icon.png"_spr,
@@ -262,7 +272,7 @@ void CountryInfoPopup::drawAdvancedTypeUI() {
 	}
 
 	if (!advancedCountryData->verifiedList.empty()) {
-		auto verifiedLevelsNode = TailyUI::createUserLevelsNode(
+		auto verifiedLevelsNode = TailyUI::UserLevelsNode::create(
 			advancedCountryData->verifiedList,
 			"Which are verified",
 			"verified-levels-icon.png"_spr,
@@ -272,7 +282,7 @@ void CountryInfoPopup::drawAdvancedTypeUI() {
 	}
 
 	if (!advancedCountryData->uncompletedList.empty()) {
-		auto uncompletedLevelsNode = TailyUI::createUserLevelsNode(
+		auto uncompletedLevelsNode = TailyUI::UserLevelsNode::create(
 			advancedCountryData->uncompletedList,
 			"Uncompleted levels",
 			"uncompleted-levels-icon.png"_spr,
