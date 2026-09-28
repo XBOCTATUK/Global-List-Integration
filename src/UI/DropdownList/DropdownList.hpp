@@ -64,7 +64,6 @@ namespace TailyUI {
 
         virtual void onEnter() override;
         virtual void onExit() override;
-        virtual void update(float dt) override;
 
         virtual bool ccTouchBegan(cocos2d::CCTouch* touch, cocos2d::CCEvent* event) override;
         virtual void ccTouchMoved(cocos2d::CCTouch* touch, cocos2d::CCEvent* event) override;

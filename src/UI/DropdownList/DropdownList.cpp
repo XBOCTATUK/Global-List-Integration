@@ -272,13 +272,10 @@ namespace TailyUI {
 
         CCDirector::get()->getTouchDispatcher()
             ->addTargetedDelegate(this, -256, true);
-
-        scheduleUpdate();
     }
 
     void DropdownList::onExit() {
         CCDirector::get()->getTouchDispatcher()->removeDelegate(this);
-        unscheduleUpdate();
 
         CCNode::onExit();
     }
