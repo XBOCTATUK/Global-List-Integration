@@ -1,11 +1,11 @@
 #include "DropdownList.hpp"
 #include "../SimpleClippingNode/SimpleClippingNode.hpp"
 #include "../../Utils/LimitLabelWithDots.hpp"
-#include <cstdint>
 
 using namespace geode::prelude;
 
 constexpr float animDuration = 0.4f;
+constexpr float scrollToSoftBoundsDuration = 0.3f;
 
 namespace TailyUI {
     DropdownList* DropdownList::create(
@@ -83,18 +83,14 @@ namespace TailyUI {
         m_clippingNode->setVisible(false);
         addChild(m_clippingNode);
 
-        m_scrollLayer = ScrollLayer::create({width - 4.0f, m_maxScrollHeight});
-        m_scrollLayer->setAnchorPoint({ 0.0f, 0.0f });
-        m_scrollLayer->setPosition({ 2.0f, 0.0f });
-        m_scrollLayer->ignoreAnchorPointForPosition(false);
-        m_scrollLayer->m_peekLimitTop = 15.0f;
-        m_scrollLayer->m_peekLimitBottom = 15.0f;
-        m_scrollLayer->setMouseEnabled(false);
-        m_scrollLayer->setTouchPriority(-256);
-        m_clippingNode->addChild(m_scrollLayer);
-
-        auto content = m_scrollLayer->m_contentLayer;
-        content->setLayout(ScrollLayer::createDefaultListLayout(0.0f));
+        m_scroll = CCNode::create();
+        m_scroll->setLayout(
+            ScrollLayer::createDefaultListLayout(0.0f)
+        );
+        m_scroll->setContentSize({ width - 4.0f, 0.0f });
+        m_scroll->setAnchorPoint({ 0.0f, 0.0f });
+        m_scroll->setPosition({ 2.0f, 0.0f });
+        m_clippingNode->addChild(m_scroll);
 
         setValues(values);
         setSelectedIndex(0);
@@ -128,15 +124,13 @@ namespace TailyUI {
         );
 
         m_clippingNode->setContentSize({ width, 0.0f });
-        m_scrollLayer->setContentSize({ width - 4.0f, m_maxScrollHeight });
-        m_scrollLayer->m_contentLayer->setContentWidth(width - 4.0f);
+        m_scroll->setContentSize({ width - 4.0f, 0.0f });
 
         setValues(m_values);
     }
 
     void DropdownList::setValues(const std::vector<std::string>& values) {
-        auto content = m_scrollLayer->m_contentLayer;
-        content->removeAllChildrenWithCleanup(true);
+        m_scroll->removeAllChildren();
         m_selectedIndex = SIZE_MAX;
         m_valueBGs.clear();
 
@@ -145,15 +139,14 @@ namespace TailyUI {
         for (const auto& value : m_values) {
             addValue(value);
         }
-        content->updateLayout();
+        m_scroll->updateLayout();
 
         setSelectedIndex(0);
         
         m_maxScrollHeight = std::min(
             30.0f * m_maxVisibleRows + 15.0f, 30.0f * values.size()
         );
-        m_scrollLayer->setContentHeight(m_maxScrollHeight);
-        m_scrollLayer->scrollToTop();
+        m_scroll->setPositionY(-m_scroll->getContentHeight() + m_maxScrollHeight);
     }
 
     void DropdownList::setSelectedIndex(size_t index, bool call) {
@@ -208,30 +201,27 @@ namespace TailyUI {
         m_arrowSpr->runAction(easeRotateAnim);
 
         if (open) {
-            // m_scrollLayer->setMouseEnabled(true);
             m_clippingNode->setVisible(true);
         }
 
         unschedule(schedule_selector(DropdownList::updateHeight));
 
-        m_elapsed = 0.0f;
+        m_animElapsed = 0.0f;
         schedule(schedule_selector(DropdownList::updateHeight));
     }
     
     void DropdownList::addValue(const std::string& value) {
         auto node = CCNode::create();
-        node->setContentSize({ m_scrollLayer->getContentWidth(), 30.0f });
+        node->setContentSize({ m_scroll->getContentWidth(), 30.0f });
 
-        auto content = m_scrollLayer->m_contentLayer;
-
-        bool isParity = content->getChildrenCount() % 2 == 0;
+        bool isParity = m_scroll->getChildrenCount() % 2 == 0;
         auto bgColor =
             isParity ?
             ccColor4B{161, 88, 44, 255} :
             ccColor4B{194, 114, 62, 255};
 
         auto bg = CCLayerColor::create(
-            bgColor, m_scrollLayer->getContentWidth(), 30.0f
+            bgColor, m_scroll->getContentWidth(), 30.0f
         );
         bg->setAnchorPoint({ 0.0f, 0.0f });
         bg->setPosition({ 0.0f, 0.0f });
@@ -246,12 +236,12 @@ namespace TailyUI {
         Utils::limitLabelWithDots(label, node->getContentWidth() - 10.0f);
         node->addChild(label, 2);
 
-        content->addChild(node);
+        m_scroll->addChild(node);
     }
 
     void DropdownList::updateHeight(float dt) {
-        m_elapsed += dt;
-        float t = std::min(m_elapsed / animDuration, 1.0f);
+        m_animElapsed += dt;
+        float t = std::min(m_animElapsed / animDuration, 1.0f);
 
         t = t >= 1.0f ? 1.0f : 1.0f - std::pow(2.0f, -10.0f * t);
         float maxBGHeight = 30.0f + m_maxScrollHeight + 2.0f;
@@ -277,10 +267,6 @@ namespace TailyUI {
         }
     }
 
-    void DropdownList::onClick(CCObject*) {
-        setOpen(m_state == State::Closed);
-    }
-
     void DropdownList::onEnter() {
         CCNode::onEnter();
 
@@ -297,20 +283,6 @@ namespace TailyUI {
         CCNode::onExit();
     }
 
-    void DropdownList::update(float dt) {
-        CCNode::update(dt);
-
-        auto mousePos = getMousePos();
-        auto mousePosOnNode = convertToNodeSpace(mousePos);
-
-        bool insideScroll = CCRect{
-            {0.0f, -m_clippingNode->getContentHeight() - 2.0f},
-            m_clippingNode->getContentSize()
-        }.containsPoint(mousePosOnNode);
-
-        m_scrollLayer->setMouseEnabled(insideScroll && m_state != State::Closed);
-    }
-
     bool DropdownList::ccTouchBegan(CCTouch* touch, CCEvent* event) {
         auto point = convertTouchToNodeSpace(touch);
 
@@ -321,13 +293,15 @@ namespace TailyUI {
         bool insideScroll = CCRect{
             {0.0f, -m_clippingNode->getContentHeight() - 2.0f},
             m_clippingNode->getContentSize()
-        }.containsPoint(point);
+        }.containsPoint(point) && m_clippingNode->isVisible();
 
-        m_touchStart = point;
+        m_startTouchPoint = point;
+
         if (insideHeader) {
             m_touchRegion = Region::Header;
         }
         else if (insideScroll) {
+            m_lastTouchPoint = point;
             m_touchRegion = Region::Scroll;
         }
 
@@ -341,53 +315,91 @@ namespace TailyUI {
         if (isAnimating) return;
 
         auto point = convertTouchToNodeSpace(touch);
-
-        if (m_touchStart.getDistance(point) > 3.0f) {
+        
+        if (m_startTouchPoint.getDistance(point) > 3.0f) {
             m_touchMoved = true;
+        }
+
+        if (m_touchRegion == Region::Scroll) {
+            float delta = point.y - m_lastTouchPoint.y;
+            m_lastTouchPoint = point;
+
+            float minY = -m_scroll->getContentHeight() + m_clippingNode->getContentHeight() - 15.0f;
+            float maxY = 15.0f;
+
+            float newOffset = std::clamp(
+                m_scroll->getPositionY() + delta, minY, maxY
+            );
+
+            m_scroll->setPositionY(newOffset);
         }
     }
 
     void DropdownList::ccTouchEnded(CCTouch* touch, CCEvent* event) {
         bool isAnimating = m_state == State::Opening || m_state == State::Closing;
-        if (isAnimating) return;
 
-        CCPoint point = convertTouchToNodeSpace(touch);
+        if (!isAnimating && !m_touchMoved) {
+            auto point = convertTouchToNodeSpace(touch);
 
-        bool insideHeader = CCRect{
-            {0.0f, 0.0f}, getContentSize()
-        }.containsPoint(point);
+            bool insideHeader = CCRect{
+                {0.0f, 0.0f}, getContentSize()
+            }.containsPoint(point);
 
-        bool insideScroll = CCRect{
-            {0.0f, -m_clippingNode->getContentHeight() - 2.0f},
-            m_clippingNode->getContentSize()
-        }.containsPoint(point);
+            bool insideScroll = CCRect{
+                {0.0f, -m_clippingNode->getContentHeight() - 2.0f},
+                m_clippingNode->getContentSize()
+            }.containsPoint(point);
 
-        if (insideHeader && m_touchRegion == Region::Header && !m_touchMoved) {
-            onClick(nullptr);
+            if (m_touchRegion == Region::Header && insideHeader) {
+                setOpen(m_state == State::Closed);
+            }
+            else if (m_touchRegion == Region::Scroll && insideScroll) {
+                float scrollHeight = m_scroll->getContentHeight();
+                float scrollPosY = m_scroll->getPositionY();
+                float clipNodeHeight = m_clippingNode->getContentHeight();
+
+                float touchPointY = scrollHeight + scrollPosY - clipNodeHeight - point.y;
+                if (touchPointY < 0.0f || touchPointY > scrollHeight) return;
+
+                setSelectedIndex(
+                    std::clamp(
+                        static_cast<size_t>(touchPointY / 30.0f),
+                        static_cast<size_t>(0),
+                        m_values.size()-1
+                    ),
+                    true
+                );
+                setOpen(false);
+            }
         }
-        else if (insideScroll && m_touchRegion == Region::Scroll && !m_touchMoved) {
-            float contentHeight = m_scrollLayer->m_contentLayer->getContentHeight();
-            float scrollHeight = m_scrollLayer->getContentHeight();
-            float contentPosY = m_scrollLayer->m_contentLayer->getPositionY();
 
-            float touchPointY = contentHeight - scrollHeight + contentPosY - point.y;
-            if (touchPointY < 0.0f || touchPointY > contentHeight) return;
+        float minY = -m_scroll->getContentHeight() + m_clippingNode->getContentHeight();
+        float maxY = 0.0f;
 
-            setSelectedIndex(
-                std::clamp(
-                    static_cast<size_t>(touchPointY / 30.0f),
-                    static_cast<size_t>(0),
-                    m_values.size()-1
-                ),
-                true
+        if (m_scroll->getPositionY() < minY || m_scroll->getPositionY() > maxY) {
+            float newOffset = std::clamp(
+                m_scroll->getPositionY(), minY, maxY
             );
-            setOpen(false);
+
+            auto moveAnim = CCMoveTo::create(
+                scrollToSoftBoundsDuration,
+                { m_scroll->getPositionX(), newOffset }
+            );
+            auto easingMoveAnim = CCEaseInOut::create(moveAnim, 2.0f);
+
+            m_scroll->runAction(easingMoveAnim);
         }
 
+        m_touchRegion = Region::None;
         m_touchMoved = false;
+        m_startTouchPoint.setPoint(0.0f, 0.0f);
+        m_lastTouchPoint.setPoint(0.0f, 0.0f);
     }
 
     void DropdownList::ccTouchCancelled(CCTouch* touch, CCEvent* event) {
+        m_touchRegion = Region::None;
         m_touchMoved = false;
+        m_startTouchPoint.setPoint(0.0f, 0.0f);
+        m_lastTouchPoint.setPoint(0.0f, 0.0f);
     }
 }
