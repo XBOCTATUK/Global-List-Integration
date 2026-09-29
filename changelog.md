@@ -1,3 +1,7 @@
+# 3.0.1
+Changes:
+- <co>Fixed</c> country search in leaderboards
+
 # 3.0.0
 I CAN'T BELIEVE I FINISHED THIS UPDATE, BUT I DID IT!
 

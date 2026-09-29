@@ -321,9 +321,12 @@ void GDLLeaderboardsLayer::populateCountryLeaderboard(const std::vector<GDLCount
 	auto searchQuery = m_searchBar->getSearchInput()->getString();
 
 	for (const auto& country : countries) {
+		auto countryNameLower = string::toLower(string::replace(country.title, "-", " "));
+		auto searchQueryLower = string::toLower(searchQuery);
+
 		if (
 			!searchQuery.empty() &&
-			!country.title.contains(searchQuery)
+			!countryNameLower.contains(searchQueryLower)
 		) continue;
 
 		auto dropdown = m_searchBar->getDropdownList();
