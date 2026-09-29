@@ -1,3 +1,14 @@
+# 3.0.0
+I CAN'T BELIEVE I FINISHED THIS UPDATE, BUT I DID IT!
+
+Changes:
+- <cc>Completely rewrote</c> the mod's code
+- <cg>Added leaderboards</c>
+  - <cg>Added popups</c> with detailed information about players and countries
+- <cg>Added mod settings</c>
+- The leaderboard is now <cg>loaded on game startup</c> and automatically refreshed regularly
+- Minor changes and fixes
+
 # 2.0.6
 - <co>Changed</c> the difficulty filter again (top 50: top 1 - 50, top 150: top 51 - 150, etc.).
 

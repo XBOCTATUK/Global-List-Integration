@@ -10,7 +10,7 @@
 	"name": "Global List Integration",
 	"version": "v3.0.0",
 	"developer": "xboctatuk",
-	"description": "Mod adds some features from demonlist.org",
+	"description": "This mod brings the core features of demonlist.org",
 	"settings": {
 		"placements": {
 			"type": "title",
