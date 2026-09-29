@@ -1,6 +1,7 @@
 #include "Leaderboards.hpp"
 #include "../API.hpp"
 #include "../../Utils/WedReq.hpp"
+#include "../../Utils/Transliterator.hpp"
 #include "../../Cache/Leaderboards/Leaderboards.hpp"
 #include "../../Cache/Users/Users.hpp"
 #include "../../Events/UserLeaderboardLoadedEvent.hpp"
@@ -57,6 +58,8 @@ namespace GDL::API::Leaderboards {
                     auto points = numFromString<double>(pointsStr);
                     std::string country = user["country"].asString().unwrapOrDefault();
                     std::string badge = user["badge"].asString().unwrapOrDefault();
+
+                    username = Utils::transliterator(username);
 
                     auto gdlUser = GDLUser{
                         id, username, placement,
@@ -162,6 +165,7 @@ namespace GDL::API::Leaderboards {
                 for (const auto& user : data["users"]) {
                     int id = user["id"].asInt().unwrapOrDefault();
                     std::string username = user["username"].asString().unwrapOrDefault();
+                    username = Utils::transliterator(username);
                     auto pointsStr = user["points"].asString().unwrapOrDefault();
                     auto points = numFromString<double>(pointsStr);
 

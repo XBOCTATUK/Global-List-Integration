@@ -1,6 +1,7 @@
 #include "Users.hpp"
 #include "../API.hpp"
 #include "../../Utils/WedReq.hpp"
+#include "../../Utils/Transliterator.hpp"
 #include "../../Cache/Users/Users.hpp"
 #include "../../Events/UserLoadedEvent.hpp"
 #include "../../Events/UserRecordsLoadedEvent.hpp"
@@ -37,6 +38,7 @@ namespace GDL::API::Users {
                 }
 
                 std::string username = data["username"].asString().unwrapOrDefault();
+                username = Utils::transliterator(username);
                 int placement = data["placement"].asInt().unwrapOrDefault();
                 auto pointsStr = data["points"].asString().unwrapOrDefault();
                 auto points = numFromString<double>(pointsStr);
