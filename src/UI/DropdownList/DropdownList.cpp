@@ -94,6 +94,24 @@ namespace TailyUI {
 
         setValues(values);
         setSelectedIndex(0);
+
+        m_scrollWheelListener = ScrollWheelEvent().listen(
+            [this](double x, double y) {
+                if (!isMouseOver()) return ListenerResult::Propagate;
+
+                float minY = -m_scroll->getContentHeight() + m_clippingNode->getContentHeight();
+                float maxY = 0.0f;
+
+                float newOffset = std::clamp(
+                    m_scroll->getPositionY() - static_cast<float>(y * 12.0),
+                    minY, maxY
+                );
+
+                m_scroll->setPositionY(newOffset);
+
+                return ListenerResult::Stop;
+            }
+        );
         
         return true;
     }
@@ -265,6 +283,18 @@ namespace TailyUI {
             unschedule(schedule_selector(DropdownList::updateHeight));
             return;
         }
+    }
+
+    bool DropdownList::isMouseOver() {
+        auto mousePos = getMousePos();
+        auto mousePosOnNode = convertToNodeSpace(mousePos);
+
+        bool insideScroll = CCRect{
+            {0.0f, -m_clippingNode->getContentHeight() - 2.0f},
+            m_clippingNode->getContentSize()
+        }.containsPoint(mousePosOnNode);
+
+        return insideScroll && m_clippingNode->isVisible();
     }
 
     void DropdownList::onEnter() {

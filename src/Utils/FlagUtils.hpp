@@ -2,31 +2,28 @@
 
 #include "Geode/utils/string.hpp"
 inline const std::vector<std::string> allCountries = {
-    "All countries", "Andorra", "United-Arab-Emirates", "Afghanistan", "Albania", "Armenia", "Argentina",
-    "Austria", "Australia", "Aruba", "Azerbaijan", "Bosnia-and-Herzegovina", "Bangladesh",
-    "Belgium", "Bulgaria", "Bahrain", "Bolivia", "Brazil", "Belarus", "Canada",
-    "Republic-of-the-Congo", "Switzerland", "Chile", "China", "Colombia", "Costa-Rica",
-    "Cuba", "Cape-Verde", "Cyprus", "Czech-Republic", "Germany", "Denmark",
-    "Dominican-Republic", "Algeria", "Ecuador", "Estonia", "Egypt", "Spain",
-    "Finland", "France", "Gabon", "United-Kingdom", "England", "Scotland", "Wales",
-    "Georgia", "Guernsey", "Ghana", "Gibraltar", "Greenland", "Greece", "Guatemala",
-    "Guam", "Guyana", "Hong-Kong", "Honduras", "Croatia", "Haiti", "Hungary",
-    "Canary-Islands", "Indonesia", "Ireland", "Israel", "Isle-of-Man", "India",
-    "Iraq", "Iran", "Iceland", "Italy", "Jamaica", "Jordan", "Japan", "Kenya",
-    "Kyrgyzstan", "Cambodia", "South-Korea", "Kuwait", "Kazakhstan", "Laos", "Lebanon",
-    "Liechtenstein", "Lithuania", "Luxembourg", "Latvia", "Libya", "Morocco", "Moldova",
-    "Montenegro", "Macedonia", "Mali", "Myanmar", "Mongolia", "Malta", "Maldives",
-    "Mexico", "Malaysia", "Nigeria", "Nicaragua", "Netherlands", "Norway", "New-Zealand",
-    "Oman", "Panama", "Peru", "Philippines", "Pakistan", "Poland", "Puerto-Rico",
-    "Palestine", "Portugal", "Paraguay", "Qatar", "Romania", "Serbia", "Russia",
-    "Saudi-Arabia", "Sweden", "Singapore", "Slovenia", "Slovakia", "Senegal",
-    "Somalia", "El-Salvador", "Syria", "Togo", "Thailand", "Turkmenistan",
-    "Tunisia", "Turkey", "Trinidad-and-Tobago", "Taiwan", "Ukraine", "United-States",
-    "Uruguay", "Uzbekistan", "Saint-Vincent-and-the-Grenadines", "Venezuela", "Vietnam",
-    "Kosovo", "Yemen", "South-Africa", "Zambia", "Tajikistan", "San-Marino",
-    "Bahamas", "Unknown"
+    "All countries", "United-States", "New-Zealand", "Russia", "Armenia", "Finland", "Spain",
+    "South-Korea", "Portugal", "Brazil", "Kazakhstan", "Moldova", "Poland", "Canada",
+    "Germany", "Chile", "Peru", "United-Kingdom", "Australia", "Japan", "Romania", "Norway",
+    "Netherlands", "Ukraine", "Denmark", "Austria", "Israel", "Uzbekistan", "Estonia", "Italy",
+    "France", "Belgium", "Serbia", "China", "Colombia", "Argentina", "Panama", "Albania",
+    "Czech-Republic", "Sweden", "Lithuania", "Philippines", "Hungary", "Belarus", "Mexico",
+    "India", "Venezuela", "Pakistan", "Ireland", "Indonesia", "United-Arab-Emirates", "Nigeria",
+    "Georgia", "Slovakia", "Iceland", "Costa-Rica", "Laos", "Bosnia-and-Herzegovina",
+    "South-Africa", "Kosovo", "Latvia", "Bulgaria", "Slovenia", "Guernsey", "Ecuador",
+    "Vietnam", "Cambodia", "Iran", "Dominican-Republic", "Malta", "Turkmenistan", "Algeria",
+    "Palestine", "Egypt", "Greece", "Cuba", "Turkey", "Taiwan", "Paraguay", "Tunisia",
+    "Kyrgyzstan", "Croatia", "Azerbaijan", "Morocco", "Bolivia", "Switzerland", "Hong-Kong",
+    "Iraq", "Uruguay", "Nicaragua", "Luxembourg", "Thailand", "Canary-Islands", "Jamaica",
+    "Guatemala", "Ghana", "Puerto-Rico", "Montenegro", "Somalia", "Mongolia", "El-Salvador",
+    "Syria", "Greenland", "Saudi-Arabia", "Afghanistan", "Malaysia", "Macedonia", "Bahrain",
+    "Maldives", "Libya", "Senegal", "Cape-Verde", "Guyana", "Honduras",
+    "Saint-Vincent-and-the-Grenadines", "Trinidad-and-Tobago", "Guam", "Wales", "Cyprus",
+    "Haiti", "Singapore", "Yemen", "Lebanon", "Oman", "Gibraltar", "England", "Kenya",
+    "Kuwait", "Aruba", "Jordan", "Andorra", "San-Marino", "Myanmar", "Liechtenstein",
+    "Scotland", "Bahamas", "Mali", "Togo", "Zambia", "Tajikistan", "Isle-of-Man", "Bangladesh",
+    "Republic-of-the-Congo", "Gabon", "Qatar", "Unknown"
 };
-
 inline std::vector<std::string> allCountryNames;
 
 namespace Utils {

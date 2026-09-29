@@ -28,6 +28,7 @@ namespace TailyUI {
         void setOpen(bool open);
 
     protected:
+        geode::ListenerHandle m_scrollWheelListener;
         SelectionCallback m_callback = nullptr;
 
         std::vector<std::string> m_values;
@@ -61,6 +62,7 @@ namespace TailyUI {
         );
         void addValue(const std::string& value);
         void updateHeight(float dt);
+        bool isMouseOver();
 
         virtual void onEnter() override;
         virtual void onExit() override;
