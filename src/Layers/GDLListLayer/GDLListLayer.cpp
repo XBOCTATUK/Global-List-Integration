@@ -419,7 +419,7 @@ void GDLListLayer::loadLevelsFailed(char const* key) {
 
 void GDLListLayer::page(int page) {
 	int maxPage = calculateMaxPage();
-	m_page = page <= maxPage ? (page < 1 ? 1 : page) : maxPage;
+	m_page = std::clamp(page, 1, maxPage);
 
 	showLoading();
 	populateList();

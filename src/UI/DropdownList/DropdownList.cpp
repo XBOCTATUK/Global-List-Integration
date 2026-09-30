@@ -93,7 +93,6 @@ namespace TailyUI {
         m_clippingNode->addChild(m_scroll);
 
         setValues(values);
-        setSelectedIndex(0);
 
         m_scrollWheelListener = ScrollWheelEvent().listen(
             [this](double x, double y) {

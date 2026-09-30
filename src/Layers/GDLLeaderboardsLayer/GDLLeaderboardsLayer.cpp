@@ -190,6 +190,12 @@ bool GDLLeaderboardsLayer::init() {
 			showLoading(false);
 		}
 		else {
+			auto err = result.err();
+			if (err->type == APIErrorType::NoSearchResults) {
+				m_playersMaxPage = m_playersLastPage - 1;
+				page(m_playersLastPage - 1);
+			}
+
 			m_loadingSpinner->setVisible(false);
 
 			auto error = result.err().value();
@@ -294,15 +300,9 @@ void GDLLeaderboardsLayer::onTabButton(cocos2d::CCObject* sender) {
 
 void GDLLeaderboardsLayer::populateUserLeaderboard(const std::vector<int>& userIDs) {
 	m_listNode->getScrollLayer()->m_contentLayer->removeAllChildrenWithCleanup(true);
-	if (userIDs.empty()) {
-		if (m_playersLastPage > 1) {
-			page(m_playersLastPage - 1);
-		}
-		return;
-	}
-	else if (userIDs.size() < m_cellsPerPage) {
+	if (userIDs.size() < m_cellsPerPage) {
 		m_playersMaxPage = m_playersLastPage;
-		m_rightBtn->setVisible(false);
+		// m_rightBtn->setVisible(false);
 	}
 
 	for (const int& userID : userIDs) {
@@ -368,7 +368,7 @@ void GDLLeaderboardsLayer::search() {
 void GDLLeaderboardsLayer::page(int page) {
 	if (m_type == LeaderboardsType::Countries) return;
 
-	m_playersLastPage = page < 1 ? 1 : page > m_playersMaxPage ? m_playersMaxPage : page;
+	m_playersLastPage = std::clamp(page, 1, m_playersMaxPage);
 	search();
 }
 

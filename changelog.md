@@ -1,3 +1,7 @@
+# 3.0.2
+Changes:
+- <co>Fixed</c> empty page loading when the number of found players is divisible by the page size
+
 # 3.0.1
 Changes:
 - <co>Fixed</c> country search in leaderboards
