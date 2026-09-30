@@ -1,4 +1,5 @@
 # 3.0.3
+Changes:
 - <co>Fixed</c> leaderboard search
 - <co>Fixed</c> error handle on leaderboard popups
 - <cg>Added</c> loading spinner on leaderboard popups
