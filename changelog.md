@@ -1,3 +1,8 @@
+# 3.0.3
+- Fixed leaderboard search
+- Fixed error handle on leaderboard popups
+- Added loading spinner on leaderboard popups
+
 # 3.0.2
 Changes:
 - <co>Fixed</c> empty page loading when the number of found players is divisible by the page size
