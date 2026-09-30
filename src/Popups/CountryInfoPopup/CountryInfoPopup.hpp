@@ -12,6 +12,9 @@ protected:
 	geode::ListenerHandle m_countryLoadListener;
 	geode::ListenerHandle m_updateScrollListener;
 
+	cocos2d::CCLabelBMFont* m_errorMessage = nullptr;
+	geode::LoadingSpinner* m_loadingSpinner = nullptr;
+
 	geode::ScrollLayer* m_scrollLayer = nullptr;
 
 	bool init(const GDLCountry& countryData, CountriesLeaderboardType type);

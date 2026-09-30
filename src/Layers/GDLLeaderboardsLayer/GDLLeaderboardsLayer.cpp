@@ -152,6 +152,7 @@ bool GDLLeaderboardsLayer::init() {
 		refreshSpr, [this](auto) {
 			if (m_type == LeaderboardsType::Players) {
 				m_playersLastPage = 1;
+				m_playersMaxPage = INT_MAX;
 				m_playersLastSearchQuery.clear();
 				m_lastCountryIndex = SIZE_MAX;
 
@@ -185,18 +186,19 @@ bool GDLLeaderboardsLayer::init() {
 
 	auto userLeaderboardCallback =
 	[this](geode::Result<std::vector<int>, APIError> result) {
+		showLoading(false);
+
 		if (result.isOk()) {
 			populateUserLeaderboard(result.unwrap());
-			showLoading(false);
 		}
 		else {
 			auto err = result.err();
 			if (err->type == APIErrorType::NoSearchResults) {
 				m_playersMaxPage = m_playersLastPage - 1;
 				page(m_playersLastPage - 1);
-			}
 
-			m_loadingSpinner->setVisible(false);
+				return;
+			}
 
 			auto error = result.err().value();
 			auto errorStr = fmt::format("Failed to load demonlist.\nError: {}", error.typeAsString());
@@ -205,18 +207,18 @@ bool GDLLeaderboardsLayer::init() {
 			}
 			
 			m_errorMessage->setString(errorStr.c_str());
+			m_errorMessage->setVisible(true);
 		}
 	};
 	
 	auto countryLeaderboardCallback =
 	[this](geode::Result<std::vector<GDLCountry>, APIError> result) {
+		showLoading(false);
+
 		if (result.isOk()) {
 			populateCountryLeaderboard(result.unwrap());
-			showLoading(false);
 		}
 		else {
-			m_loadingSpinner->setVisible(false);
-
 			auto error = result.err().value();
 			auto errorStr = fmt::format("Failed to load demonlist.\nError: {}", error.typeAsString());
 			if (error.message != APIMessage::None) {
@@ -224,6 +226,7 @@ bool GDLLeaderboardsLayer::init() {
 			}
 			
 			m_errorMessage->setString(errorStr.c_str());
+			m_errorMessage->setVisible(true);
 		}
 	};
 
@@ -258,6 +261,7 @@ void GDLLeaderboardsLayer::onTabButton(cocos2d::CCObject* sender) {
 		m_type = LeaderboardsType::Players;
 
 		m_searchBar->setSearchBarType(TailyUI::SearchBarType::WithCountrySelection);
+		m_searchBar->getSearchInput()->setString(m_playersLastSearchQuery);
 		m_searchBar->getSearchInput()->setPlaceholder("Search players...");
 
 		auto dropdown = m_searchBar->getDropdownList();
@@ -281,6 +285,7 @@ void GDLLeaderboardsLayer::onTabButton(cocos2d::CCObject* sender) {
 		m_type = LeaderboardsType::Countries;
 
 		m_searchBar->setSearchBarType(TailyUI::SearchBarType::WithLeaderboardTypeSelection);
+		m_searchBar->getSearchInput()->setString(m_countriesLastSearchQuery);
 		m_searchBar->getSearchInput()->setPlaceholder("Search countries...");
 
 		auto dropdown = m_searchBar->getDropdownList();
@@ -318,14 +323,13 @@ void GDLLeaderboardsLayer::populateUserLeaderboard(const std::vector<int>& userI
 
 void GDLLeaderboardsLayer::populateCountryLeaderboard(const std::vector<GDLCountry>& countries) {
 	m_listNode->getScrollLayer()->m_contentLayer->removeAllChildrenWithCleanup(true);
-	auto searchQuery = m_searchBar->getSearchInput()->getString();
 
 	for (const auto& country : countries) {
 		auto countryNameLower = string::toLower(string::replace(country.title, "-", " "));
-		auto searchQueryLower = string::toLower(searchQuery);
+		auto searchQueryLower = string::toLower(m_countriesLastSearchQuery);
 
 		if (
-			!searchQuery.empty() &&
+			!searchQueryLower.empty() &&
 			!countryNameLower.contains(searchQueryLower)
 		) continue;
 
@@ -342,16 +346,28 @@ void GDLLeaderboardsLayer::populateCountryLeaderboard(const std::vector<GDLCount
 void GDLLeaderboardsLayer::search() {
 	if (m_type == LeaderboardsType::Players) {
 		auto dropdown = m_searchBar->getDropdownList();
+		auto selectedValue = string::replace(dropdown->getSelectedValue(), " ", "-");
+
+		auto searchQuery = m_searchBar->getSearchInput()->getString();
+		if (searchQuery != m_playersLastSearchQuery) {
+			m_playersLastPage = 1;
+			m_playersMaxPage = INT_MAX;
+		}
+
+		m_playersLastSearchQuery = searchQuery;
 		
 		showLoading();
 		GDL::API::Leaderboards::getUserLeaderboard(
 			m_playersLastPage,
-			m_searchBar->getSearchInput()->getString(),
-			dropdown ? dropdown->getSelectedValue() == "All countries" ? "" : dropdown->getSelectedValue() : ""
+			m_playersLastSearchQuery,
+			dropdown ? selectedValue == "All-countries" ? "" : selectedValue : ""
 		);
 	}
 	else if (m_type == LeaderboardsType::Countries) {
 		auto dropdown = m_searchBar->getDropdownList();
+
+		auto searchQuery = m_searchBar->getSearchInput()->getString();
+		m_countriesLastSearchQuery = searchQuery;
 		
 		auto typeValue =
 		dropdown

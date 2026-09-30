@@ -25,10 +25,35 @@ bool UserInfoPopup::init(int userID) {
 
 	m_userID = userID;
 
+	m_errorMessage = CCLabelBMFont::create("", "bigFont.fnt");
+	m_errorMessage->setScale(0.6f);
+	m_errorMessage->setPosition(m_mainLayer->getContentSize() / 2.0f);
+	m_errorMessage->setAlignment(CCTextAlignment::kCCTextAlignmentCenter);
+	m_errorMessage->setID("error-message");
+	m_mainLayer->addChild(m_errorMessage);
+
+	m_loadingSpinner = LoadingSpinner::create(65.0f);
+	m_loadingSpinner->setAnchorPoint({ 0.5f, 0.5f });
+	m_loadingSpinner->setPosition(m_mainLayer->getContentSize() / 2.0f);
+	m_loadingSpinner->setID("loading-spinner");
+	m_mainLayer->addChild(m_loadingSpinner, 10);
+
 	m_userLoadListener = UserLoadedEvent(m_userID).listen(
 		[this](Result<GDLUser, APIError> result) {
+			m_loadingSpinner->setVisible(false);
+			
 			if (result.isOk()) {
 				drawUI();
+			}
+			else {
+				auto error = result.err().value();
+				auto errorStr = fmt::format("Failed to load demonlist.\nError: {}", error.typeAsString());
+				if (error.message != APIMessage::None) {
+					errorStr += fmt::format(", Message: {}", error.messageAsString());
+				}
+				
+				m_errorMessage->setString(errorStr.c_str());
+				m_errorMessage->setVisible(true);
 			}
 		}
 	);

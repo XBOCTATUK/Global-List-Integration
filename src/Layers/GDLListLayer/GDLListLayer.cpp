@@ -224,13 +224,13 @@ bool GDLListLayer::init() {
 
 	m_demonlistLoadListener = DemonlistLoadedEvent().listen(
 		[this](Result<std::vector<int>, APIError> result) {
+			showLoading(false);
+			
 			if (result.isOk()) {
 				m_gdlLevels = result.unwrap();
 				populateList();
 			}
 			else {
-				m_loadingSpinner->setVisible(false);
-
 				auto error = result.err().value();
 				auto errorStr = fmt::format("Failed to load demonlist.\nError: {}", error.typeAsString());
 				if (error.message != APIMessage::None) {
@@ -238,6 +238,7 @@ bool GDLListLayer::init() {
 				}
 				
 				m_errorMessage->setString(errorStr.c_str());
+				m_errorMessage->setVisible(true);
 			}
 		}
 	);
@@ -442,6 +443,8 @@ void GDLListLayer::setIDPopupClosed(SetIDPopup*, int page) {
 }
 
 void GDLListLayer::showLoading(bool show) {
+	m_errorMessage->setVisible(false);
+	
 	m_loadingSpinner->setVisible(show);
 	if (auto listView = m_levelList->m_listView) listView->setVisible(!show);
 	m_searchBar->setVisible(!show);

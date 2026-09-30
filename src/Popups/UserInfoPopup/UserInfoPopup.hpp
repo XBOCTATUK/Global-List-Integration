@@ -8,6 +8,9 @@ protected:
 	int m_userID = 0;
 	geode::ListenerHandle m_userLoadListener;
 
+	cocos2d::CCLabelBMFont* m_errorMessage = nullptr;
+	geode::LoadingSpinner* m_loadingSpinner = nullptr;
+
 	cocos2d::CCMenu* m_basicInfoMenu = nullptr;
 	cocos2d::CCLabelBMFont* m_usernameLabel = nullptr;
 	CCMenuItemSpriteExtra* m_badgeBtn = nullptr;

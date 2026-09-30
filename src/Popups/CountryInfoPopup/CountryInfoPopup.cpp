@@ -25,6 +25,20 @@ bool CountryInfoPopup::init(const GDLCountry& countryData, CountriesLeaderboardT
     if (!Popup::init(450.0f, 280.0f)) return false;
 
 	m_countryData = countryData;
+
+	m_errorMessage = CCLabelBMFont::create("", "bigFont.fnt");
+	m_errorMessage->setScale(0.6f);
+	m_errorMessage->setPosition(m_mainLayer->getContentSize() / 2.0f);
+	m_errorMessage->setAlignment(CCTextAlignment::kCCTextAlignmentCenter);
+	m_errorMessage->setID("error-message");
+	m_mainLayer->addChild(m_errorMessage);
+
+	m_loadingSpinner = LoadingSpinner::create(65.0f);
+	m_loadingSpinner->setAnchorPoint({ 0.5f, 0.5f });
+	m_loadingSpinner->setPosition(m_mainLayer->getContentSize() / 2.0f);
+	m_loadingSpinner->setID("loading-spinner");
+	m_mainLayer->addChild(m_loadingSpinner, 10);
+
 	auto countryName = string::replace(
 		countryData.title,
 		" ", "-"
@@ -33,8 +47,20 @@ bool CountryInfoPopup::init(const GDLCountry& countryData, CountriesLeaderboardT
 	if (type == CountriesLeaderboardType::Main) {
 		m_countryLoadListener = MainCountryLeaderboardLoadedEvent(countryName).listen(
 			[this](Result<std::vector<GDLCountryUser>, APIError> result) {
+				m_loadingSpinner->setVisible(false);
+
 				if (result.isOk()) {
 					drawMainTypeUI();
+				}
+				else {
+					auto error = result.err().value();
+					auto errorStr = fmt::format("Failed to load demonlist.\nError: {}", error.typeAsString());
+					if (error.message != APIMessage::None) {
+						errorStr += fmt::format(", Message: {}", error.messageAsString());
+					}
+					
+					m_errorMessage->setString(errorStr.c_str());
+					m_errorMessage->setVisible(true);
 				}
 			}
 		);
@@ -44,8 +70,20 @@ bool CountryInfoPopup::init(const GDLCountry& countryData, CountriesLeaderboardT
 	else {
 		m_countryLoadListener = AdvancedCountryLeaderboardLoadedEvent(countryName).listen(
 			[this](Result<GDLCountryAdvanced, APIError> result) {
+				m_loadingSpinner->setVisible(false);
+
 				if (result.isOk()) {
 					drawAdvancedTypeUI();
+				}
+				else {
+					auto error = result.err().value();
+					auto errorStr = fmt::format("Failed to load demonlist.\nError: {}", error.typeAsString());
+					if (error.message != APIMessage::None) {
+						errorStr += fmt::format(", Message: {}", error.messageAsString());
+					}
+					
+					m_errorMessage->setString(errorStr.c_str());
+					m_errorMessage->setVisible(true);
 				}
 			}
 		);
