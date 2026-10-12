@@ -5,10 +5,10 @@ using namespace geode::prelude;
 namespace TailyUI {
     UserLevelsNode* UserLevelsNode::create(
         const OptGDLBasicLevels& levels, const std::string& text,
-        const std::string& icon, float width
+        const std::string& icon, float width, bool clickable
     ) {
     	auto ret = new UserLevelsNode();
-        if (ret && ret->init(levels, text, icon, width)) {
+        if (ret && ret->init(levels, text, icon, width, clickable)) {
             ret->autorelease();
             return ret;
         }
@@ -18,7 +18,7 @@ namespace TailyUI {
 
     bool UserLevelsNode::init(
         const OptGDLBasicLevels& levels, const std::string& text,
-        const std::string& icon, float width
+        const std::string& icon, float width, bool clickable
     ) {
         if (!CCNode::init()) return false;
 
@@ -63,6 +63,11 @@ namespace TailyUI {
 
         for (const auto& level : *levels) {
             auto levelBtnSpr = createLevelButtonSprite(level);
+
+            if (!clickable) {
+                m_levelsMenu->addChild(levelBtnSpr);
+                continue;
+            }
 
             auto levelBtn = cocos::CCMenuItemExt::createSpriteExtra(
                 levelBtnSpr, [level](auto) {

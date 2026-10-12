@@ -7,7 +7,7 @@ namespace TailyUI {
     public:
         static UserLevelsNode* create(
             const OptGDLBasicLevels& levels, const std::string& text,
-            const std::string& icon, float width
+            const std::string& icon, float width, bool clickable = true
         );
 
     protected:
@@ -18,7 +18,7 @@ namespace TailyUI {
 
         bool init(
             const OptGDLBasicLevels& levels, const std::string& text,
-            const std::string& icon, float width
+            const std::string& icon, float width, bool clickable
         );
         cocos2d::CCNode* createLevelButtonSprite(const GDLBasicLevel& level);
     };

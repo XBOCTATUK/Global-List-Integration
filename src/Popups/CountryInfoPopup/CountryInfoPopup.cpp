@@ -278,7 +278,8 @@ void CountryInfoPopup::drawAdvancedTypeUI() {
 			advancedCountryData->mainList,
 			"Main levels",
 			"main-levels-icon.png"_spr,
-			m_mainLayer->getContentWidth() - 60.0f
+			m_mainLayer->getContentWidth() - 60.0f,
+			false
 		);
 		mainLevelsNode->setID("main-levels");
 		content->addChild(mainLevelsNode);
@@ -289,7 +290,8 @@ void CountryInfoPopup::drawAdvancedTypeUI() {
 			advancedCountryData->extendedList,
 			"Extended levels",
 			"extended-levels-icon.png"_spr,
-			m_mainLayer->getContentWidth() - 60.0f
+			m_mainLayer->getContentWidth() - 60.0f,
+			false
 		);
 		extendedLevelsNode->setID("extended-levels");
 		content->addChild(extendedLevelsNode);
@@ -300,7 +302,8 @@ void CountryInfoPopup::drawAdvancedTypeUI() {
 			advancedCountryData->advancedList,
 			"Advanced levels",
 			"advanced-levels-icon.png"_spr,
-			m_mainLayer->getContentWidth() - 60.0f
+			m_mainLayer->getContentWidth() - 60.0f,
+			false
 		);
 		advancedLevelsNode->setID("advanced-levels");
 		content->addChild(advancedLevelsNode);
@@ -311,7 +314,8 @@ void CountryInfoPopup::drawAdvancedTypeUI() {
 			advancedCountryData->unboundedList,
 			"Unbounded levels",
 			"unbounded-levels-icon.png"_spr,
-			m_mainLayer->getContentWidth() - 60.0f
+			m_mainLayer->getContentWidth() - 60.0f,
+			false
 		);
 		unboundedLevelsNode->setID("unbounded-levels");
 		content->addChild(unboundedLevelsNode);
@@ -322,7 +326,8 @@ void CountryInfoPopup::drawAdvancedTypeUI() {
 			advancedCountryData->progressList,
 			"Progress",
 			"progress-icon.png"_spr,
-			m_mainLayer->getContentWidth() - 60.0f
+			m_mainLayer->getContentWidth() - 60.0f,
+			false
 		);
 		progressLevelsNode->setID("progress-levels");
 		content->addChild(progressLevelsNode);
@@ -333,7 +338,8 @@ void CountryInfoPopup::drawAdvancedTypeUI() {
 			advancedCountryData->verifiedList,
 			"Which are verified",
 			"verified-levels-icon.png"_spr,
-			m_mainLayer->getContentWidth() - 60.0f
+			m_mainLayer->getContentWidth() - 60.0f,
+			false
 		);
 		verifiedLevelsNode->setID("verified-levels");
 		content->addChild(verifiedLevelsNode);
@@ -344,7 +350,8 @@ void CountryInfoPopup::drawAdvancedTypeUI() {
 			advancedCountryData->uncompletedList,
 			"Uncompleted levels",
 			"uncompleted-levels-icon.png"_spr,
-			m_mainLayer->getContentWidth() - 60.0f
+			m_mainLayer->getContentWidth() - 60.0f,
+			false
 		);
 		uncompletedLevelsNode->setID("uncompleted-levels");
 		content->addChild(uncompletedLevelsNode);
