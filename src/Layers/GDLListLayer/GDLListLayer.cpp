@@ -270,6 +270,10 @@ void GDLListLayer::populateList() {
 
 	if (m_searchResults.empty()) {
 		loadLevelsFinished(CCArray::create(), "", 0);
+		m_levelsCountLabel->setString("0 levels");
+
+		m_errorMessage->setString("No levels found.");
+		m_errorMessage->setVisible(true);
 	}
 	else {
 		auto glm = GameLevelManager::get();
@@ -364,7 +368,10 @@ std::vector<int> GDLListLayer::getSuitableLevels() {
             : false
         : true;
 
-        bool byPlayer = GDL::Filters::getCompletedBy(true) ? levelIsCompleted : true;
+        bool byPlayer =
+            GDL::Filters::getCompletedBy(true) && !GDL::Filters::getUsername(true).empty()
+            ? levelIsCompleted
+            : true;
 
         bool byCreator =
         GDL::Filters::getCreatedBy(true) ?
@@ -455,13 +462,12 @@ void GDLListLayer::showLoading(bool show) {
 	m_levelsCountLabel->setVisible(!show);
 	
 	int maxPage = calculateMaxPage();
-	if (m_searchResults.size() > m_lvlsPerPage) {
-		m_leftBtn->setVisible(m_page > 1 ? !show : false);
-		m_rightBtn->setVisible(m_page < maxPage ? !show : false);
-		m_firstBtn->setVisible(m_page > 1 ? !show : false);
-		m_lastBtn->setVisible(m_page < maxPage ? !show : false);
-		m_pageMenu->setVisible(!show);
-	}
+	bool showPages = !show && m_searchResults.size() > m_lvlsPerPage;
+	m_leftBtn->setVisible(showPages && m_page > 1);
+	m_rightBtn->setVisible(showPages && m_page < maxPage);
+	m_firstBtn->setVisible(showPages && m_page > 1);
+	m_lastBtn->setVisible(showPages && m_page < maxPage);
+	m_pageMenu->setVisible(showPages);
 }
 
 int GDLListLayer::calculateMaxPage() {

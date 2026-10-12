@@ -9,6 +9,7 @@ namespace GDL::Cache::Users {
     static std::unordered_map<int, CacheEntry<GDLUser>> userData;
     static std::unordered_map<int, CacheEntry<GDLUserRecords>> userRecords;
     static std::unordered_map<std::string, int> userIDByUsername;
+    static std::unordered_map<int, std::chrono::steady_clock::time_point> fullUserCachedAt;
 
     const GDLUser* getUser(int userID) {
         auto it = userData.find(userID);
@@ -28,11 +29,11 @@ namespace GDL::Cache::Users {
     }
 
     void setUser(GDLUser&& user) {
-        // Keep full info of already loaded user
         auto it = userData.find(user.id);
+        auto fullIt = fullUserCachedAt.find(user.id);
         if (
             !user.isFull() && it != userData.end() && it->second.value.isFull() &&
-            !isExpired(it->second.cachedAt, USERS_TTL)
+            fullIt != fullUserCachedAt.end() && !isExpired(fullIt->second, USERS_TTL)
         ) {
             auto& oldUser = it->second.value;
             user.isBanned = std::move(oldUser.isBanned);
@@ -43,6 +44,9 @@ namespace GDL::Cache::Users {
             user.unboundedList = std::move(oldUser.unboundedList);
             user.progressList = std::move(oldUser.progressList);
             user.verifiedList = std::move(oldUser.verifiedList);
+        }
+        else if (user.isFull()) {
+            fullUserCachedAt.insert_or_assign(user.id, std::chrono::steady_clock::now());
         }
 
         userIDByUsername.insert_or_assign(
@@ -58,6 +62,7 @@ namespace GDL::Cache::Users {
     void clearUsers() {
         userData.clear();
         userIDByUsername.clear();
+        fullUserCachedAt.clear();
     }
 
 

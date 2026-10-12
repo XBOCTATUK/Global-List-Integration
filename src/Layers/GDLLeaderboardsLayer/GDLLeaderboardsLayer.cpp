@@ -186,14 +186,28 @@ bool GDLLeaderboardsLayer::init() {
 
 	auto userLeaderboardCallback =
 	[this](geode::Result<std::vector<int>, APIError> result) {
-		showLoading(false);
-
 		if (result.isOk()) {
 			populateUserLeaderboard(result.unwrap());
+			showLoading(false);
 		}
 		else {
+			showLoading(false);
+
 			auto err = result.err();
 			if (err->type == APIErrorType::NoSearchResults) {
+				if (m_playersLastPage <= 1) {
+					m_playersMaxPage = 1;
+					m_listNode->getScrollLayer()->m_contentLayer->removeAllChildrenWithCleanup(true);
+					
+					m_leftBtn->setVisible(false);
+					m_rightBtn->setVisible(false);
+
+					m_errorMessage->setString("No players found.");
+					m_errorMessage->setVisible(true);
+
+					return;
+				}
+
 				m_playersMaxPage = m_playersLastPage - 1;
 				page(m_playersLastPage - 1);
 
@@ -272,7 +286,8 @@ void GDLLeaderboardsLayer::onTabButton(cocos2d::CCObject* sender) {
 		GDL::API::Leaderboards::getUserLeaderboard(
 			m_playersLastPage == 0 ? 1 : m_playersLastPage,
 			m_playersLastSearchQuery,
-			m_lastCountryIndex == SIZE_MAX || dropdown->getSelectedValue() == "All countries" ? "" : dropdown->getSelectedValue(),
+			m_lastCountryIndex == SIZE_MAX || dropdown->getSelectedValue() == "All countries"
+				? "" : string::replace(dropdown->getSelectedValue(), " ", "-"),
 			m_cellsPerPage
 		);
 	}
@@ -308,7 +323,6 @@ void GDLLeaderboardsLayer::populateUserLeaderboard(const std::vector<int>& userI
 	m_listNode->getScrollLayer()->m_contentLayer->removeAllChildrenWithCleanup(true);
 	if (userIDs.size() < m_cellsPerPage) {
 		m_playersMaxPage = m_playersLastPage;
-		// m_rightBtn->setVisible(false);
 	}
 
 	for (const int& userID : userIDs) {

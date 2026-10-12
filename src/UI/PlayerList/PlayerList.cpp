@@ -49,8 +49,10 @@ namespace TailyUI {
         m_countLabel->setAnchorPoint({ 1.0f, 0.5f });
         m_countLabel->setID("count-text");
 
+        int maxPage = std::max<int>(1, (users.size() + m_perPage - 1) / m_perPage);
+
         m_topPageMenu = TailyUI::PageSelector::create(
-            users.size() / m_perPage + 1, [this](int currentPage) {
+            maxPage, [this](int currentPage) {
                 page(currentPage);
 
                 m_bottomPageMenu->page(currentPage);
@@ -59,7 +61,7 @@ namespace TailyUI {
         m_topPageMenu->setID("top-page-menu");
 
         m_bottomPageMenu = TailyUI::PageSelector::create(
-            users.size() / m_perPage + 1, [this](int currentPage) {
+            maxPage, [this](int currentPage) {
                 page(currentPage);
 
                 m_topPageMenu->page(currentPage);

@@ -25,7 +25,7 @@ constexpr const char* filterWarning =
 "Click <cr>I confirm</c> to continue, confirming your understanding of this limitation.";
 
 constexpr const char* filterInfo =
-"<cc>The difficulty filter</c> allows you to select levels in the top 50/150/300, Unbounded, or your range.\n"
+"<cc>The difficulty filter</c> allows you to select levels in the top 75/150/300, Unbounded, or your range.\n"
 "<cc>The length filter</c> allows you to select lengths up to 30/60/120/>120, or your range.\n"
 "The <cg>rated</c> and <cr>unrated</c> <cc>checkboxes</c> allow you to display only the corresponding levels.\n"
 "The <cg>Completed</c> <cc>checkbox</c> only has an effect if the <cf>Username</c> field is not empty and displays the user's completions.\n"
@@ -110,7 +110,7 @@ bool FilterPopup::init() {
             auto rangePopup = TailyUI::RangePopup::create(
                 "Custom length range", 1, 9999,
                 [](int from, int to) {
-                    GDL::Filters::setCustomDifficulty(from, to);
+                    GDL::Filters::setCustomLength(from, to);
                 }
             );
             rangePopup->show();
@@ -312,7 +312,11 @@ bool FilterPopup::init() {
             auto cachedUser = GDL::Cache::Users::getUser(cachedUserID);
 
             bool needLevelData = GDL::Filters::isLevelDataRequired() && isOutOfDate;
-            bool needUserData = GDL::Filters::getCompletedBy(false) && !cachedUser;
+            bool needUserData =
+                GDL::Filters::getCompletedBy(false) && !GDL::Filters::getUsername(false).empty() &&
+                (!cachedUser || !cachedUser->isFull());
+
+            GDL::Filters::setUserID(cachedUserID);
 
             if (!needLevelData && !needUserData) {
                 PopulateListEvent().send();

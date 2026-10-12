@@ -144,13 +144,9 @@ namespace TailyUI {
 	}
 
 	void RangePopup::onApply(CCObject*) {
-		int from = numFromString<int>(
-			!m_fromTextInput->getString().empty() ? m_fromTextInput->getString() : "0"
-		).unwrapOrDefault();
-
-		int to = numFromString<int>(
-			!m_toTextInput->getString().empty() ? m_toTextInput->getString() : "0"
-		).unwrapOrDefault();
+		int from = numFromString<int>(m_fromTextInput->getString()).unwrapOr(m_minValue);
+		int to = numFromString<int>(m_toTextInput->getString()).unwrapOr(m_maxValue);
+		if (from > to) std::swap(from, to);
 
 		if (m_onApplyCallback) {
 			m_onApplyCallback(from, to);

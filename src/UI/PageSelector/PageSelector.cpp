@@ -59,6 +59,7 @@ namespace TailyUI {
                 }
             }
         );
+        m_rightBtn->setVisible(m_maxPage > 1);
         m_rightBtn->setID("next-page-button");
         addChildAtPosition(
             m_rightBtn,

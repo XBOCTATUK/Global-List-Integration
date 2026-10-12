@@ -22,7 +22,6 @@ namespace TailyUI {
     ) {
         if (!CCMenu::init()) return false;
 
-        // setTouchEnabled(true);
         setTogglerCallback(std::move(togglerCallback));
 
         m_toggler = CCMenuItemExt::createTogglerWithStandardSprites(1.0f,

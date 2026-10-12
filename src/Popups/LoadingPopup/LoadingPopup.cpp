@@ -86,9 +86,9 @@ bool LoadingPopup::init() {
 								else {
 									auto error = result.err().value();
 									Utils::alert(
-										"User records load failed",
+										"User load failed",
 										fmt::format(
-											"Failed to load user records data.\nError: {}.\nMessage: {}.\nTry again later.",
+											"Failed to load user data.\nError: {}.\nMessage: {}.\nTry again later.",
 											error.typeAsString(),
 											error.messageAsString()
 										).c_str()
@@ -105,6 +105,17 @@ bool LoadingPopup::init() {
 						return;
 					}
 				}
+
+				Utils::alert(
+					"User not found",
+					fmt::format(
+						"User '{}' was not found.",
+						GDL::Filters::getUsername(false)
+					).c_str()
+				);
+
+				m_loading = false;
+				onClose(nullptr);
 			}
 			else {
 				auto error = result.err().value();

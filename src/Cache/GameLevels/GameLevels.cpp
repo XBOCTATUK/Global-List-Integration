@@ -34,5 +34,6 @@ namespace GDL::Cache::GameLevels {
 
     void clear() {
         gameLevelData.clear();
+        cachedAt.reset();
     }
 }
