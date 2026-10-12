@@ -164,7 +164,7 @@ bool GDLListLayer::init() {
 			static std::mt19937 mt(std::random_device{}());
 			page(
 				std::uniform_int_distribution<int>(
-					0, (m_searchResults.size() - 1) / m_lvlsPerPage
+					1, calculateMaxPage()
 				)(mt)
 			);
 		}
@@ -224,13 +224,13 @@ bool GDLListLayer::init() {
 
 	m_demonlistLoadListener = DemonlistLoadedEvent().listen(
 		[this](Result<std::vector<int>, APIError> result) {
-			showLoading(false);
-			
 			if (result.isOk()) {
 				m_gdlLevels = result.unwrap();
 				populateList();
 			}
 			else {
+				showLoading(false);
+
 				auto error = result.err().value();
 				auto errorStr = fmt::format("Failed to load demonlist.\nError: {}", error.typeAsString());
 				if (error.message != APIMessage::None) {
@@ -245,6 +245,8 @@ bool GDLListLayer::init() {
 
 	m_populateListListener = PopulateListEvent().listen(
 		[this] {
+			m_page = 1;
+			showLoading();
 			populateList();
 		}
 	);
@@ -413,9 +415,11 @@ void GDLListLayer::loadLevelsFinished(CCArray* levels, const char*, int) {
 }
 
 void GDLListLayer::loadLevelsFailed(char const* key) {
-	FLAlertLayer::create(
-		"Loading failed", "Something wrong.", "Ok"
-	)->show();
+	showLoading(false);
+	if (auto listView = m_levelList->m_listView) listView->setVisible(false);
+
+	m_errorMessage->setString("Failed to load levels.\nTry again later.");
+	m_errorMessage->setVisible(true);
 }
 
 void GDLListLayer::page(int page) {

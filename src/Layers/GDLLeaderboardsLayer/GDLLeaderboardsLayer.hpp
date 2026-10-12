@@ -50,7 +50,7 @@ protected:
 	CCMenuItemSpriteExtra* m_rightBtn = nullptr;
 	CCMenuItemSpriteExtra* m_refreshBtn = nullptr;
 
-	int m_cellsPerPage = Settings::increaseLevelsPerPage() ? 50 : 25;
+	int m_cellsPerPage = Settings::leaderboardPageSize();
 
     bool init() override;
 	void onTabButton(cocos2d::CCObject* sender);

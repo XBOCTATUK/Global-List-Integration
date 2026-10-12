@@ -10,7 +10,7 @@ using namespace geode::prelude;
 namespace GDL::API::Levels {
     void getDemonlist() {
         auto cachedDemonlist = GDL::Cache::Levels::getDemonlist();
-        if (!cachedDemonlist) {
+        if (cachedDemonlist) {
             DemonlistLoadedEvent().send(
                 Ok(*cachedDemonlist)
             );
@@ -58,9 +58,7 @@ namespace GDL::API::Levels {
                         listPercent, length, holder, verifier,
                         verifierID, verificationURL, dateCreated
                     };
-                    levels.push_back(gdlLevel);
-                    
-                    GDL::Cache::Levels::setLevel(std::move(gdlLevel));
+                    levels.push_back(std::move(gdlLevel));
                 }
                 
                 GDL::Cache::Levels::setDemonlist(std::move(levels));

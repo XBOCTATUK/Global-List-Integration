@@ -47,7 +47,7 @@ bool UserInfoPopup::init(int userID) {
 			}
 			else {
 				auto error = result.err().value();
-				auto errorStr = fmt::format("Failed to load demonlist.\nError: {}", error.typeAsString());
+				auto errorStr = fmt::format("Failed to load user.\nError: {}", error.typeAsString());
 				if (error.message != APIMessage::None) {
 					errorStr += fmt::format(", Message: {}", error.messageAsString());
 				}

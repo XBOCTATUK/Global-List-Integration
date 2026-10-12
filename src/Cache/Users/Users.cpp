@@ -28,6 +28,23 @@ namespace GDL::Cache::Users {
     }
 
     void setUser(GDLUser&& user) {
+        // Keep full info of already loaded user
+        auto it = userData.find(user.id);
+        if (
+            !user.isFull() && it != userData.end() && it->second.value.isFull() &&
+            !isExpired(it->second.cachedAt, USERS_TTL)
+        ) {
+            auto& oldUser = it->second.value;
+            user.isBanned = std::move(oldUser.isBanned);
+            user.hardest = std::move(oldUser.hardest);
+            user.mainList = std::move(oldUser.mainList);
+            user.extendedList = std::move(oldUser.extendedList);
+            user.advancedList = std::move(oldUser.advancedList);
+            user.unboundedList = std::move(oldUser.unboundedList);
+            user.progressList = std::move(oldUser.progressList);
+            user.verifiedList = std::move(oldUser.verifiedList);
+        }
+
         userIDByUsername.insert_or_assign(
             user.username,
             user.id

@@ -4,6 +4,7 @@
 #include "../../Utils/BadgeUtils.hpp"
 #include "../../Utils/FlagUtils.hpp"
 #include "../../Utils/Alert.hpp"
+#include "../../Settings/Settings.hpp"
 
 using namespace geode::prelude;
 
@@ -31,7 +32,7 @@ bool GDLLeaderboardCell::init(const GDLUser& userData) {
     if (!CCNode::init()) return false;
 
     m_userData = userData;
-    bool compactCellsEnabled = Mod::get()->getSettingValue<bool>("compact-cells");
+    bool compactCellsEnabled = Settings::compactLeaderboardCells();
 
     setContentSize({356.0f, (compactCellsEnabled ? 30.0f : 40.0f)});
 
@@ -120,7 +121,7 @@ bool GDLLeaderboardCell::init(const GDLCountry& countryData, CountriesLeaderboar
 
     m_countryData = countryData;
     m_type = type;
-    bool compactCellsEnabled = Mod::get()->getSettingValue<bool>("compact-cells");
+    bool compactCellsEnabled = Settings::compactLeaderboardCells();
 
     setContentSize({356.0f, (compactCellsEnabled ? 30.0f : 40.0f)});
 

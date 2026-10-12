@@ -18,14 +18,31 @@ namespace GDL::Cache::Levels {
     }
 
     void setDemonlist(std::vector<GDLLevel>&& levels) {
+        auto oldLevelData = std::move(levelData);
         clear();
 
         for (auto& level : levels) {
+            auto it = oldLevelData.find(level.ingameID);
+            if (
+                it != oldLevelData.end() && it->second.value.isFull() &&
+                !isExpired(it->second.cachedAt, LEVELS_TTL)
+            ) {
+                auto& oldLevel = it->second.value;
+                level.objects = std::move(oldLevel.objects);
+                level.description = std::move(oldLevel.description);
+                level.creator = std::move(oldLevel.creator);
+                level.songURL = std::move(oldLevel.songURL);
+                level.gameVersion = std::move(oldLevel.gameVersion);
+                level.isCopyable = std::move(oldLevel.isCopyable);
+                level.password = std::move(oldLevel.password);
+            }
+
+            int levelID = level.ingameID;
             levelData.insert_or_assign(
-                level.ingameID,
+                levelID,
                 CacheEntry{std::move(level), std::chrono::steady_clock::now()}
             );
-            levelList.value.push_back(levelData[level.ingameID].value.ingameID);
+            levelList.value.push_back(levelID);
         }
         levelList.cachedAt = std::chrono::steady_clock::now();
     }
@@ -46,7 +63,6 @@ namespace GDL::Cache::Levels {
             level.ingameID,
             CacheEntry{std::move(level), std::chrono::steady_clock::now()}
         );
-        levelList.value.push_back(level.ingameID);
     }
 
     

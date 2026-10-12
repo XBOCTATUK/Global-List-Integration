@@ -6,6 +6,7 @@ struct UserLeaderboardKey {
     int page = 0;
     std::string search;
     std::string country;
+    int limit = 0;
 
     bool operator==(const UserLeaderboardKey&) const = default;
 };
@@ -17,6 +18,7 @@ struct std::hash<UserLeaderboardKey> {
         geode::hashCombine(seed, key.page);
         geode::hashCombine(seed, key.search);
         geode::hashCombine(seed, key.country);
+        geode::hashCombine(seed, key.limit);
         return seed;
     }
 };

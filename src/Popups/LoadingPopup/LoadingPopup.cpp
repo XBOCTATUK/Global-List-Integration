@@ -137,9 +137,10 @@ void LoadingPopup::startLoading() {
 	m_currentStage = 0;
 	m_currentBatch = 0;
 	m_requiredLevels.clear();
+	m_stages.clear();
 
-	for (auto levelID : *GDL::Cache::Levels::getDemonlist()) {
-		m_requiredLevels.push_back(levelID);
+	if (auto demonlist = GDL::Cache::Levels::getDemonlist()) {
+		m_requiredLevels = *demonlist;
 	}
 
 	if (GDL::Filters::getCompletedBy(false) && !GDL::Filters::getUsername(false).empty()) {

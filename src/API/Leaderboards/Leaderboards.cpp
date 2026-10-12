@@ -12,8 +12,8 @@
 using namespace geode::prelude;
 
 namespace GDL::API::Leaderboards {
-    void getUserLeaderboard(int page, const std::string& search, const std::string& country) {
-        auto key = UserLeaderboardKey{page, search, country};
+    void getUserLeaderboard(int page, const std::string& search, const std::string& country, int limit) {
+        auto key = UserLeaderboardKey{page, search, country, limit};
         auto cachedUsers = GDL::Cache::Leaderboards::getUserLeaderboard(key);
         if (cachedUsers) {
             UserLeaderboardLoadedEvent().send(
@@ -24,7 +24,7 @@ namespace GDL::API::Leaderboards {
 
         Utils::WebReq(
             USER_LEADERBOARD_EP,
-            matjson::makeObject({ {"limit", 50}, {"offset", 50 * (page-1)}, {"search", search}, {"country", country} }),
+            matjson::makeObject({ {"limit", limit}, {"offset", limit * (page-1)}, {"search", search}, {"country", country} }),
             matjson::Value::object(),
             [key](matjson::Value data, APIError error) {
                 if (error) {
@@ -198,14 +198,14 @@ namespace GDL::API::Leaderboards {
             matjson::Value::object(),
             [country](matjson::Value data, APIError error) {
                 if (error) {
-                    UserLeaderboardLoadedEvent().send(
+                    AdvancedCountryLeaderboardLoadedEvent(country).send(
                         Err(error)
                     );
                     return;
                 }
                 else if (!data.contains("levels") || !data["levels"].isObject() || data["levels"].size() == 0) {
                     log::error("The advanced country leaderboard data is incomplete or invalid.");
-                    UserLeaderboardLoadedEvent().send(
+                    AdvancedCountryLeaderboardLoadedEvent(country).send(
                         Err(APIError{APIErrorType::InvalidEndpointResponse, APIMessage::None})
                     );
                     return;

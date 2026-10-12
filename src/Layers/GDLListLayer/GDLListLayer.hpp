@@ -39,7 +39,7 @@ protected:
 	CCMenuItemSpriteExtra* m_lastBtn = nullptr;
     
 	int m_page = 1;
-	int m_lvlsPerPage = Settings::increaseLevelsPerPage() ? 25 : 10;
+	int m_lvlsPerPage = Settings::demonlistPageSize();
 	std::string m_query;
 	std::vector<int> m_searchResults;
 

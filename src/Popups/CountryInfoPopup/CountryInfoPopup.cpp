@@ -54,7 +54,7 @@ bool CountryInfoPopup::init(const GDLCountry& countryData, CountriesLeaderboardT
 				}
 				else {
 					auto error = result.err().value();
-					auto errorStr = fmt::format("Failed to load demonlist.\nError: {}", error.typeAsString());
+					auto errorStr = fmt::format("Failed to load country data.\nError: {}", error.typeAsString());
 					if (error.message != APIMessage::None) {
 						errorStr += fmt::format(", Message: {}", error.messageAsString());
 					}
@@ -77,7 +77,7 @@ bool CountryInfoPopup::init(const GDLCountry& countryData, CountriesLeaderboardT
 				}
 				else {
 					auto error = result.err().value();
-					auto errorStr = fmt::format("Failed to load demonlist.\nError: {}", error.typeAsString());
+					auto errorStr = fmt::format("Failed to load country data.\nError: {}", error.typeAsString());
 					if (error.message != APIMessage::None) {
 						errorStr += fmt::format(", Message: {}", error.messageAsString());
 					}

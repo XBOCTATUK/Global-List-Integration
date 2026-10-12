@@ -156,7 +156,7 @@ bool GDLLeaderboardsLayer::init() {
 				m_playersLastSearchQuery.clear();
 				m_lastCountryIndex = SIZE_MAX;
 
-				GDL::API::Leaderboards::getUserLeaderboard();
+				GDL::API::Leaderboards::getUserLeaderboard(1, "", "", m_cellsPerPage);
 			}
 			else {
 				m_countriesLastSearchQuery.clear();
@@ -201,7 +201,7 @@ bool GDLLeaderboardsLayer::init() {
 			}
 
 			auto error = result.err().value();
-			auto errorStr = fmt::format("Failed to load demonlist.\nError: {}", error.typeAsString());
+			auto errorStr = fmt::format("Failed to load leaderboard.\nError: {}", error.typeAsString());
 			if (error.message != APIMessage::None) {
 				errorStr += fmt::format(", Message: {}", error.messageAsString());
 			}
@@ -220,7 +220,7 @@ bool GDLLeaderboardsLayer::init() {
 		}
 		else {
 			auto error = result.err().value();
-			auto errorStr = fmt::format("Failed to load demonlist.\nError: {}", error.typeAsString());
+			auto errorStr = fmt::format("Failed to load leaderboard.\nError: {}", error.typeAsString());
 			if (error.message != APIMessage::None) {
 				errorStr += fmt::format(", Message: {}", error.messageAsString());
 			}
@@ -243,7 +243,7 @@ bool GDLLeaderboardsLayer::init() {
 	);
 
 	showLoading();
-	GDL::API::Leaderboards::getUserLeaderboard();
+	GDL::API::Leaderboards::getUserLeaderboard(1, "", "", m_cellsPerPage);
 
     return true;
 }
@@ -272,7 +272,8 @@ void GDLLeaderboardsLayer::onTabButton(cocos2d::CCObject* sender) {
 		GDL::API::Leaderboards::getUserLeaderboard(
 			m_playersLastPage == 0 ? 1 : m_playersLastPage,
 			m_playersLastSearchQuery,
-			m_lastCountryIndex == SIZE_MAX || dropdown->getSelectedValue() == "All countries" ? "" : dropdown->getSelectedValue()
+			m_lastCountryIndex == SIZE_MAX || dropdown->getSelectedValue() == "All countries" ? "" : dropdown->getSelectedValue(),
+			m_cellsPerPage
 		);
 	}
 	else if (sender->getTag() == static_cast<int>(LeaderboardsType::Countries) && m_type != LeaderboardsType::Countries) {
@@ -360,7 +361,8 @@ void GDLLeaderboardsLayer::search() {
 		GDL::API::Leaderboards::getUserLeaderboard(
 			m_playersLastPage,
 			m_playersLastSearchQuery,
-			dropdown ? selectedValue == "All-countries" ? "" : selectedValue : ""
+			dropdown ? selectedValue == "All-countries" ? "" : selectedValue : "",
+			m_cellsPerPage
 		);
 	}
 	else if (m_type == LeaderboardsType::Countries) {
