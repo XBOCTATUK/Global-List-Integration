@@ -9,14 +9,14 @@ This mod brings the <cy>core features</c> of [<cj>demonlist.org</c>](https://dem
 - <cc>Leaderboards</c> with player search, country selection, and leaderboard type selection
 - <cc>Detailed information</c> about users and countries in dedicated popups
 
-# Special Thanks
-- hiimjasmine00 (An in-game demonlist was created based on her mod [<co>Integrated DemonList</c>](mod:hiimjustin000.integrated_demonlist))
-- Erymanthus (Suggested improvements to my sh**ty code =3)
-
 ## Roadmap:
 - <cc>Add Global Demonlist account synchronization</c>
 - <cc>Add player profile comparison</c>
 - <cy>Add level packs?</c>
+
+# Special Thanks
+- hiimjasmine00 (An in-game demonlist was created based on her mod [<co>Integrated DemonList</c>](mod:hiimjustin000.integrated_demonlist))
+- Erymanthus (Suggested improvements to my sh**ty code =3)
 
 # Support
 Check the <cy>support</c> info (<cg>green</c> gift button =3).

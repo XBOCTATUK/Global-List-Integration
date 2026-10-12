@@ -1,3 +1,13 @@
+# 3.0.4
+Changes:
+- <co>Fixed</c> "Increase cells per page" setting
+- <co>Fixed</c> custom length filter
+- <co>Fixed</c> "Completed By" filter
+- <co>Fixed</c> endless loading on empty player search
+- <co>Fixed</c> pagination issues in the demonlist and leaderboards
+- Level buttons in country popups are <cr>no longer clickable</c> (videos are not available for countries)
+- Minor bug fixes
+
 # 3.0.3
 Changes:
 - <co>Fixed</c> leaderboard search
