@@ -1,3 +1,7 @@
+# 3.0.5
+Changes:
+- <cg>2.2091 support</cg>
+
 # 3.0.4
 Changes:
 - <co>Fixed</c> "Increase cells per page" setting

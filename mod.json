@@ -8,7 +8,7 @@
 	},
 	"id": "xboctatuk.globallistpositions",
 	"name": "Global List Integration",
-	"version": "v3.0.4",
+	"version": "v3.0.5",
 	"developer": "xboctatuk",
 	"description": "This mod brings the core features of demonlist.org",
 	"settings": {
@@ -62,7 +62,7 @@
 		"geode.node-ids": ">=v1.24.0-beta.1"
 	},
 	"links": {
-		"source": "https://github.com/XBOCTATUK/Global-List-Integrated"
+		"source": "https://github.com/XBOCTATUK/Global-List-Integration"
 	},
 	"tags": [
 		"online",
