@@ -448,7 +448,7 @@ void GDLLeaderboardsLayer::keyBackClicked() {
 
 void GDLLeaderboardsLayer::onExit() {
 	// Better Fuck Priority fix
-	if (m_searchBar) m_searchBar->getSearchInput()->defocus();
+	if (m_searchBar) m_searchBar->getSearchInput()->unfocus();
 
 	CCLayer::onExit();
 }

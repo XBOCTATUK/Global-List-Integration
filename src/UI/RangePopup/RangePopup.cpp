@@ -45,6 +45,7 @@ namespace TailyUI {
 		m_menu->addChild(fromLabel);
 
 		m_fromTextInput = TextInput::create(45.0f, "");
+		m_fromTextInput->setNumericMode(true);
 		m_fromTextInput->setScale(0.8f);
 		m_fromTextInput->setCallback(
 			[this](std::string text) {
@@ -80,6 +81,7 @@ namespace TailyUI {
 		m_menu->addChild(toLabel);
 
 		m_toTextInput = TextInput::create(45.0f, "");
+		m_fromTextInput->setNumericMode(true);
 		m_toTextInput->setScale(0.8f);
 		m_toTextInput->setCallback(
 			[this](std::string text) {

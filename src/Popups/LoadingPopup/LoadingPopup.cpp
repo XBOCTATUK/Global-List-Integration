@@ -292,6 +292,8 @@ void LoadingPopup::onClose(cocos2d::CCObject*) {
 			glm->m_levelManagerDelegate = nullptr;
 		}
 
-		Popup::onClose(nullptr);
+		Loader::get()->queueInMainThread([this] {
+			Popup::onClose(nullptr);
+		});
 	}
 }

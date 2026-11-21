@@ -437,7 +437,7 @@ void GDLListLayer::page(int page) {
 	populateList();
 }
 
-void GDLListLayer::setupPageInfo(gd::string, const char*) {
+void GDLListLayer::setupPageInfo(std::string, const char*) {
 	m_levelsCountLabel->setString(
 		fmt::format("{} to {} of {}",
 			m_lvlsPerPage * (m_page-1) + 1,
@@ -506,7 +506,7 @@ void GDLListLayer::onExit() {
 	}
 
 	// Better Fuck Priority fix
-	if (m_searchBar) m_searchBar->getSearchInput()->defocus();
+	if (m_searchBar) m_searchBar->getSearchInput()->unfocus();
 
 	CCLayer::onExit();
 }

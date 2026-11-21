@@ -2,7 +2,6 @@
 
 #include "../../Popups/FilterPopup/FilterPopup.hpp"
 #include "../../Utils/FlagUtils.hpp"
-#include "Geode/c++stl/string.hpp"
 #include <cue/ListNode.hpp>
 
 using namespace geode::prelude;
@@ -10,7 +9,7 @@ using namespace geode::prelude;
 namespace TailyUI {
     SearchBar* SearchBar::create(
 		ZStringView placeholder, SearchBarType type,
-		geode::Function<void(gd::string)> callback
+		geode::Function<void(std::string)> callback
 	) {
     	auto ret = new SearchBar();
         if (ret && ret->init(placeholder, type, std::move(callback))) {
@@ -23,7 +22,7 @@ namespace TailyUI {
 
 	bool SearchBar::init(
 		ZStringView placeholder, SearchBarType type,
-		geode::Function<void(gd::string)> searchCallback
+		geode::Function<void(std::string)> searchCallback
 	) {
 		if (!CCNode::init()) return false;
 
@@ -59,9 +58,7 @@ namespace TailyUI {
 
 		m_searchInput = TextInput::create(width, placeholder);
 		m_searchInput->setMaxCharCount(32);
-		m_searchInput->setTextAlign(TextInputAlign::Left);
-		m_searchInput->getInputNode()->setLabelPlaceholderScale(0.70f);
-		m_searchInput->getInputNode()->setMaxLabelScale(0.70f);
+		m_searchInput->setAlignment(Label::Alignment::Left);
 		m_searchInput->setScale(0.75f);
 		m_searchInput->setID("search-input");
 		m_searchBarMenu->addChild(m_searchInput, 1);
@@ -96,7 +93,7 @@ namespace TailyUI {
 		return nullptr;
 	}
 
-	void SearchBar::setSearchCallback(geode::Function<void(gd::string)> callback) {
+	void SearchBar::setSearchCallback(geode::Function<void(std::string)> callback) {
 		m_searchCallback = std::move(callback);
 	}
 
@@ -106,7 +103,7 @@ namespace TailyUI {
 			type == SearchBarType::WithCountrySelection ? 255.0f :
 			300.0f;
 
-		m_searchInput->setWidth(searchInputWidth);
+		m_searchInput->setContentWidth(searchInputWidth);
 		m_searchInput->updateLayout();
 
 		if (type == SearchBarType::WithFilters) {

@@ -48,7 +48,7 @@ protected:
 	std::vector<int> getSuitableLevels();
 	void search();
 	void page(int page);
-	void setupPageInfo(gd::string, const char*) override;
+	void setupPageInfo(std::string, const char*) override;
 	void showLoading(bool show = true);
 	void loadLevelsFinished(cocos2d::CCArray* levels, const char* key, int) override;
 	virtual void loadLevelsFailed(char const* key) override;

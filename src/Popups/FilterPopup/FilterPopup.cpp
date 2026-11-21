@@ -345,8 +345,12 @@ bool FilterPopup::init() {
 	m_buttonMenu->addChild(applyBtn);
 
     m_closeListener = CloseFiltersEvent().listen(
-		[this] { Popup::onClose(nullptr); }
-	);
+		[this] {
+			Loader::get()->queueInMainThread([this] {
+				Popup::onClose(nullptr);
+			});
+		}
+    );
 
     return true;
 }
