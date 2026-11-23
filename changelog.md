@@ -1,3 +1,7 @@
+# 3.0.6
+Changes:
+- <co>Removed iOS & Intel MacOS workarounds</c>
+
 # 3.0.5
 Changes:
 - <cg>2.2091 support</cg>
