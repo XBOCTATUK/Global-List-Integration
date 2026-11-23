@@ -294,9 +294,6 @@ void GDLListLayer::populateList() {
 		auto searchObject = GJSearchObject::create(SearchType::Type26);
 		searchObject->m_searchQuery = searchQuery;
 
-	#if defined(GEODE_IS_INTEL_MAC) || defined(GEODE_IS_IOS)
-		glm->getOnlineLevels(searchObject);
-	#else
 		std::string key = searchObject->getKey();
 		if (auto storedLevels = glm->getStoredOnlineLevels(
 			key.substr(std::max<ptrdiff_t>(0, key.size() - 256)).data()
@@ -307,7 +304,6 @@ void GDLListLayer::populateList() {
 		else {
 			glm->getOnlineLevels(searchObject);
 		}
-	#endif
 	}
 }
 
@@ -407,32 +403,17 @@ void GDLListLayer::search() {
 }
 
 void GDLListLayer::loadLevelsFinished(CCArray* levels, const char*, int) {
-#if defined(GEODE_IS_IOS)
-    auto listView = new CustomListView();
-    if (!listView->init(levels, nullptr, 190.0f, 356.0f, 0, BoomListType::Level, 0.0f)) {
-        listView->release();
-        loadLevelsFailed("");
-        return;
-    }
-    listView->autorelease();
-#else
-    auto listView = CustomListView::create(
-        levels, BoomListType::Level, 190.0f, 356.0f
-    );
-    if (!listView) {
-        loadLevelsFailed("");
-        return;
-    }
-#endif
+	if (auto listView = m_levelList->m_listView) {
+		listView->removeFromParent();
+		listView->release();
+	}
 
-    if (auto oldList = m_levelList->m_listView) {
-        oldList->removeFromParent();
-        oldList->release();
-    }
-
-    listView->retain();
-    m_levelList->addChild(listView, 6, 9);
-    m_levelList->m_listView = listView;
+	auto listView = CustomListView::create(
+		levels, BoomListType::Level, 190.0f, 356.0f
+	);
+	listView->retain();
+	m_levelList->addChild(listView, 6, 9);
+	m_levelList->m_listView = listView;
 
 	m_pageLabel->setString(fmt::to_string(m_page).c_str());
 	m_pageLabel->limitLabelWidth( 32.0f, 0.8f, 0.4f );
